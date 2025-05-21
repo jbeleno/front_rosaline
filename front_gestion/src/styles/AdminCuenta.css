@@ -1,0 +1,185 @@
+.admin-filtros-productos {
+  background: #ede7f6;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  box-shadow: 0 2px 8px #6c348344;
+}
+
+.admin-categoria-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #f3e5f5;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1rem 1.2rem;
+}
+.admin-categoria-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.admin-categoria-nombre {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #6C3483;
+}
+.admin-categoria-desc {
+  color: #2D2D2D;
+  font-size: 1rem;
+}
+.admin-categoria-botones {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 0.5rem;
+}
+
+.admin-cuenta-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #6c348344;
+  padding: 2.5rem 2rem;
+}
+.admin-cuenta-container h2 {
+  color: #6C3483;
+  margin-bottom: 1.5rem;
+}
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.admin-tabs button {
+  background: #ede7f6;
+  color: #6C3483;
+  border: none;
+  border-radius: 6px 6px 0 0;
+  padding: 0.7rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-tabs button.active {
+  background: #6C3483;
+  color: #fff;
+}
+.admin-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.admin-form input,
+.admin-form select {
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1.5px solid #6C3483;
+  font-size: 1rem;
+  flex: 1 1 180px;
+}
+.admin-form button {
+  background: #6C3483;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 1rem;
+}
+.admin-cuenta-container ul {
+  list-style: none;
+  padding: 0;
+}
+.admin-cuenta-container li {
+  /* El estilo base de li, pero las categorías usan admin-categoria-item */
+}
+.admin-cuenta-container li b {
+  color: #6C3483;
+}
+.admin-cuenta-container li button {
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 0.7rem;
+}
+.admin-cuenta-container li select {
+  margin-left: 0.7rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  border: 1.5px solid #6C3483;
+}
+
+/* NUEVO: Estilo para productos en dos columnas */
+.admin-producto-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+.admin-producto-info {
+  flex: 1 1 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.admin-producto-nombre {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #6C3483;
+}
+.admin-producto-desc {
+  color: #2D2D2D;
+  font-size: 1rem;
+}
+.admin-producto-precio {
+  color: #9575cd;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.admin-producto-stock {
+  color: #333;
+  font-size: 0.97rem;
+}
+.admin-producto-img {
+  flex: 0 0 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-producto-img img {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px #6c348344;
+}
+
+/* Botón morado para acciones de producto */
+.admin-btn-morado {
+  background: #6C3483 !important;
+  color: #fff !important;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0.7rem;
+  margin-left: 0.7rem;
+  transition: background 0.2s;
+}
+.admin-btn-morado:hover {
+  background: #9575cd !important;
+}

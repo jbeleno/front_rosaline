@@ -1,0 +1,118 @@
+.home-container {
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Bienvenida */
+.home-bienvenida {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F3EFFF;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  border: 2px solid #6C3483;
+  gap: 2rem;
+}
+.home-bienvenida-texto h1 {
+  color: #6C3483;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+.home-bienvenida-texto p {
+  color: #2D2D2D;
+  font-size: 1.2rem;
+}
+.home-bienvenida-imagen {
+  min-width: 220px;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-imagen-real {
+  width: 220px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #6c348344;
+}
+
+/* Productos destacados */
+.home-productos-destacados h2 {
+  color: #6C3483;
+  font-size: 1.7rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+.home-productos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+.home-producto-card {
+  background: #fff;
+  border: 2px solid #FFE066;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 220px;
+  box-shadow: 0 2px 8px #f3efff88;
+  transition: box-shadow 0.2s;
+  text-align: center;
+}
+.home-producto-card h3 {
+  color: #6C3483;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+.home-producto-precio {
+  color: #2D2D2D;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+.home-producto-img {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #eee;
+  overflow: hidden;
+}
+.home-producto-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Inspiración */
+.home-inspiracion {
+  margin-top: 3rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  border: 2px solid #6C3483;
+  text-align: center;
+}
+.home-inspiracion h2 {
+  color: #6C3483;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+.home-inspiracion ul {
+  list-style: none;
+  padding: 0;
+  color: #2D2D2D;
+  font-size: 1.1rem;
+}
+.home-inspiracion li {
+  margin-bottom: 0.7rem;
+}

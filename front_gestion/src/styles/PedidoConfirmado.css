@@ -1,0 +1,63 @@
+.pedido-confirmado-container {
+  max-width: 600px;
+  margin: 2.5rem auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #6c348344;
+  padding: 2.5rem 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+.pedido-confirmado-titulo {
+  color: #6C3483;
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+.pedido-confirmado-id {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.pedido-confirmado-subtitulo {
+  color: #6C3483;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+.pedido-confirmado-lista {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+.pedido-confirmado-producto {
+  background: #f3e5f5;
+  border-radius: 10px;
+  margin-bottom: 1.2rem;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 2px 8px #6c348344;
+}
+.pedido-confirmado-producto-nombre {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #6C3483;
+}
+.pedido-confirmado-producto-desc {
+  color: #2D2D2D;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+.pedido-confirmado-producto-info {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 1rem;
+  color: #333;
+}
+.pedido-confirmado-total {
+  font-size: 1.3rem;
+  color: #6C3483;
+  text-align: right;
+  margin-top: 2rem;
+  font-weight: bold;
+} 

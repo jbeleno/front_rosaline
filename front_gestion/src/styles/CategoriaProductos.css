@@ -1,0 +1,68 @@
+.categoria-productos-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+.categoria-nombre {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #6C3483;
+  margin-bottom: 0.5rem;
+}
+.categoria-descripcion {
+  font-size: 1.1rem;
+  color: #2D2D2D;
+  margin-bottom: 2rem;
+}
+.categoria-productos-title {
+  font-size: 1.3rem;
+  color: #6C3483;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+.categoria-productos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.categoria-producto-card {
+  background: #fff;
+  border: 2px solid #FFE066;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 220px;
+  box-shadow: 0 2px 8px #f3efff88;
+  transition: box-shadow 0.2s;
+}
+.categoria-producto-card:hover {
+  box-shadow: 0 4px 16px #6c348344;
+}
+.categoria-producto-nombre {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #6C3483;
+}
+.categoria-producto-precio {
+  color: #2D2D2D;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+.categoria-producto-img {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #eee;
+  overflow: hidden;
+}
+.categoria-producto-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}

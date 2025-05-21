@@ -1,0 +1,37 @@
+.footer {
+  background: #F3EFFF;
+  border-top: 2px solid #6C3483;
+  padding: 2rem 0;
+  margin-top: 2rem;
+  color: #6C3483;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  text-align: center;
+}
+.footer-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.footer-col {
+  flex: 1;
+  min-width: 200px;
+  text-align: left;
+}
+.footer .footer-info {
+  margin-bottom: 0.5rem;
+}
+@media (max-width: 700px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  .footer-col {
+    text-align: center;
+  }
+}

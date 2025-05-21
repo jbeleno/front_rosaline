@@ -1,0 +1,40 @@
+.productos-list-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+.productos-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #6C3483;
+}
+.productos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.producto-card {
+  background: #fff;
+  border: 2px solid #FFE066;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 250px;
+  box-shadow: 0 2px 8px #f3efff88;
+  transition: box-shadow 0.2s;
+}
+.producto-card:hover {
+  box-shadow: 0 4px 16px #6c348344;
+}
+.producto-nombre {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #6C3483;
+}
+.producto-precio {
+  color: #2D2D2D;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}

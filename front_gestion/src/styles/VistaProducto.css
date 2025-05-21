@@ -1,0 +1,110 @@
+.vista-producto-container {
+  display: flex;
+  gap: 2.5rem;
+  max-width: 900px;
+  margin: 2.5rem auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #6c348344;
+  padding: 2.5rem 2rem;
+}
+.vista-producto-img {
+  flex: 0 0 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ede7f6;
+  border-radius: 12px;
+  min-height: 260px;
+  min-width: 220px;
+  margin-right: 1.5rem;
+}
+.vista-producto-img-placeholder {
+  width: 180px;
+  height: 180px;
+  background: #b39ddb;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.1rem;
+}
+.vista-producto-info {
+  flex: 1 1 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.vista-producto-info h1 {
+  color: #6C3483;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.vista-producto-desc {
+  color: #2D2D2D;
+  font-size: 1.1rem;
+}
+.vista-producto-precio {
+  color: #9575cd;
+  font-weight: bold;
+  font-size: 1.3rem;
+  margin-bottom: 0.7rem;
+}
+.vista-producto-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+.vista-producto-cantidad label {
+  color: #6C3483;
+  font-weight: bold;
+}
+.vista-producto-cantidad input[type="number"] {
+  width: 60px;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1.5px solid #6C3483;
+  font-size: 1rem;
+  text-align: center;
+}
+.vista-producto-botones {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.7rem;
+}
+.vista-producto-btn {
+  background: #6C3483;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.vista-producto-btn.carrito {
+  background: #9575cd;
+}
+.vista-producto-btn:hover {
+  background: #b39ddb;
+  color: #fff;
+}
+.vista-producto-agotado {
+  background: #6C3483;
+  color: #fff;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px #6c348344;
+  letter-spacing: 1px;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -1,0 +1,119 @@
+.carrito-container {
+  max-width: 700px;
+  margin: 2.5rem auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #6c348344;
+  padding: 2.5rem 2rem;
+}
+.carrito-container h2 {
+  color: #6C3483;
+  margin-bottom: 1.5rem;
+}
+.carrito-lista {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+.carrito-item {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  background: #f3e5f5;
+  border-radius: 10px;
+  margin-bottom: 1.2rem;
+  padding: 1rem 1.2rem;
+}
+.carrito-img {
+  flex: 0 0 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.carrito-img img {
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px #6c348344;
+}
+.carrito-img-placeholder {
+  width: 70px;
+  height: 70px;
+  background: #b39ddb;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.95rem;
+}
+.carrito-info {
+  flex: 1 1 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.carrito-nombre {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #6C3483;
+}
+.carrito-precio {
+  color: #9575cd;
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+.carrito-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.carrito-cantidad input[type="number"] {
+  width: 50px;
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1.5px solid #6C3483;
+  font-size: 1rem;
+  text-align: center;
+}
+.carrito-subtotal {
+  color: #2D2D2D;
+  font-size: 0.98rem;
+}
+.carrito-btn-eliminar {
+  background: #6C3483;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+.carrito-btn-eliminar:hover {
+  background: #9575cd;
+}
+.carrito-total {
+  font-size: 1.2rem;
+  color: #6C3483;
+  margin-bottom: 1.5rem;
+  text-align: right;
+}
+.carrito-btn-finalizar {
+  background: #9575cd;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 2rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  transition: background 0.2s;
+}
+.carrito-btn-finalizar:hover {
+  background: #6C3483;
+}
