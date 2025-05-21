@@ -11,7 +11,7 @@ function CategoriaProductos() {
 
   useEffect(() => {
     // Obtener datos de la categoría
-    fetch(`http://127.0.0.1:8000/categorias/`)
+    fetch(`https://backrosaline-production.up.railway.app/categorias/`)
       .then(res => res.json())
       .then(data => {
         const cat = data.find(c => c.id_categoria === parseInt(id));
@@ -19,7 +19,7 @@ function CategoriaProductos() {
       });
 
     // Obtener productos de la categoría
-    fetch(`http://127.0.0.1:8000/categorias/${id}/productos`)
+    fetch(`https://backrosaline-production.up.railway.app/categorias/${id}/productos`)
       .then(res => res.json())
       .then(data => setProductos(data));
   }, [id]);

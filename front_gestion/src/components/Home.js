@@ -8,7 +8,7 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/productos/")
+    fetch("backrosaline-production.up.railway.app/productos/")
       .then(res => res.json())
       .then(data => {
         // Selecciona 4 productos aleatorios

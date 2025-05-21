@@ -17,7 +17,7 @@ function ClienteCuenta() {
 
   useEffect(() => {
     if (!usuario) return;
-    fetch(`http://127.0.0.1:8000/clientes/usuario/${usuario.id}`)
+    fetch(`https://backrosaline-production.up.railway.app/clientes/usuario/${usuario.id}`)
       .then(res => res.json())
       .then(cli => {
         setCliente(cli);
@@ -32,14 +32,14 @@ function ClienteCuenta() {
 
   useEffect(() => {
     if (!cliente) return;
-    fetch(`http://127.0.0.1:8000/clientes/${cliente.id_cliente}/pedidos`)
+    fetch(`https://backrosaline-production.up.railway.app/clientes/${cliente.id_cliente}/pedidos`)
       .then(res => res.json())
       .then(setPedidos);
   }, [cliente]);
 
   const handleUpdate = async e => {
     e.preventDefault();
-    const res = await fetch(`http://127.0.0.1:8000/clientes/${cliente.id_cliente}`, {
+    const res = await fetch(`https://backrosaline-production.up.railway.app/clientes/${cliente.id_cliente}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -60,7 +60,7 @@ function ClienteCuenta() {
       setVerMas(verMas === id_pedido ? null : id_pedido);
       return;
     }
-    fetch(`http://127.0.0.1:8000/pedidos/${id_pedido}/productos`)
+    fetch(`https://backrosaline-production.up.railway.app/pedidos/${id_pedido}/productos`)
       .then(res => res.json())
       .then(productos => {
         setProductosPedido(prev => ({ ...prev, [id_pedido]: productos }));

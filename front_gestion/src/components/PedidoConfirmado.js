@@ -11,21 +11,21 @@ function PedidoConfirmado() {
 
   useEffect(() => {
     // Obtener pedido
-    fetch(`http://127.0.0.1:8000/pedidos/`)
+    fetch(`https://backrosaline-production.up.railway.app/pedidos/`)
       .then(res => res.json())
       .then(data => {
         const p = data.find(p => p.id_pedido === parseInt(id));
         setPedido(p);
       });
     // Obtener detalles del pedido
-    fetch(`http://127.0.0.1:8000/detalle_pedidos/`)
+    fetch(`https://backrosaline-production.up.railway.app/detalle_pedidos/`)
       .then(res => res.json())
       .then(data => {
         const detallesPedido = data.filter(d => d.id_pedido === parseInt(id));
         setDetalles(detallesPedido);
       });
     // Obtener productos del pedido
-    fetch(`http://127.0.0.1:8000/pedidos/${id}/productos`)
+    fetch(`https://backrosaline-production.up.railway.app/pedidos/${id}/productos`)
       .then(res => res.json())
       .then(setProductos);
   }, [id]);

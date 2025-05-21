@@ -48,17 +48,17 @@ function AdminCuenta() {
 
   // Cargar datos iniciales
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/productos/").then(res => res.json()).then(setProductos);
-    fetch("http://127.0.0.1:8000/categorias/").then(res => res.json()).then(setCategorias);
-    fetch("http://127.0.0.1:8000/pedidos/").then(res => res.json()).then(setPedidos);
+    fetch("backrosaline-production.up.railway.app/productos/").then(res => res.json()).then(setProductos);
+    fetch("backrosaline-production.up.railway.app/categorias/").then(res => res.json()).then(setCategorias);
+    fetch("backrosaline-production.up.railway.app/pedidos/").then(res => res.json()).then(setPedidos);
   }, []);
 
   // Filtrar pedidos por estado
   useEffect(() => {
     if (filtroEstado) {
-      fetch(`http://127.0.0.1:8000/pedidos/estado/${filtroEstado}`).then(res => res.json()).then(setPedidos);
+      fetch(`backrosaline-production.up.railway.app/pedidos/estado/${filtroEstado}`).then(res => res.json()).then(setPedidos);
     } else {
-      fetch("http://127.0.0.1:8000/pedidos/").then(res => res.json()).then(setPedidos);
+      fetch("backrosaline-production.up.railway.app/pedidos/").then(res => res.json()).then(setPedidos);
     }
   }, [filtroEstado]);
 

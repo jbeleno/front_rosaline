@@ -13,7 +13,7 @@ function Header() {
   const [sesionIniciada, setSesionIniciada] = useState(false);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/productos/")
+    fetch("https://backrosaline-production.up.railway.app/productos/")
       .then(res => res.json())
       .then(data => setProductos(data));
   }, []);
