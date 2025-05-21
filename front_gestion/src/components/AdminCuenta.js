@@ -48,17 +48,17 @@ function AdminCuenta() {
 
   // Cargar datos iniciales
   useEffect(() => {
-    fetch("backrosaline-production.up.railway.app/productos/").then(res => res.json()).then(setProductos);
-    fetch("backrosaline-production.up.railway.app/categorias/").then(res => res.json()).then(setCategorias);
-    fetch("backrosaline-production.up.railway.app/pedidos/").then(res => res.json()).then(setPedidos);
+    fetch("https://backrosaline-production.up.railway.app/productos/").then(res => res.json()).then(setProductos);
+    fetch("https://backrosaline-production.up.railway.app/categorias/").then(res => res.json()).then(setCategorias);
+    fetch("https://backrosaline-production.up.railway.app/pedidos/").then(res => res.json()).then(setPedidos);
   }, []);
 
   // Filtrar pedidos por estado
   useEffect(() => {
     if (filtroEstado) {
-      fetch(`backrosaline-production.up.railway.app/pedidos/estado/${filtroEstado}`).then(res => res.json()).then(setPedidos);
+      fetch(`https://backrosaline-production.up.railway.app/pedidos/estado/${filtroEstado}`).then(res => res.json()).then(setPedidos);
     } else {
-      fetch("backrosaline-production.up.railway.app/pedidos/").then(res => res.json()).then(setPedidos);
+      fetch("https://backrosaline-production.up.railway.app/pedidos/").then(res => res.json()).then(setPedidos);
     }
   }, [filtroEstado]);
 
@@ -107,7 +107,7 @@ function AdminCuenta() {
     e.preventDefault();
     
     // 1. Crear el producto primero para obtener el id
-    const res = await fetch("http://127.0.0.1:8000/productos/", {
+    const res = await fetch("https://backrosaline-production.up.railway.app/productos/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...nuevoProducto, imagen_url: "" })
@@ -122,12 +122,12 @@ function AdminCuenta() {
         imagenUrl = await uploadImage(selectedFile, prod.id_producto);
         if (!imagenUrl) {
           // Si falla la subida de la imagen, eliminar el producto creado
-          await fetch(`http://127.0.0.1:8000/productos/${prod.id_producto}`, { method: "DELETE" });
+          await fetch(`https://backrosaline-production.up.railway.app/productos/${prod.id_producto}`, { method: "DELETE" });
           return;
         }
         
         // Actualizar el producto con la url de la imagen
-        const updateRes = await fetch(`http://127.0.0.1:8000/productos/${prod.id_producto}`, {
+        const updateRes = await fetch(`https://backrosaline-production.up.railway.app/productos/${prod.id_producto}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...prod, imagen_url: imagenUrl })
@@ -191,7 +191,7 @@ function AdminCuenta() {
         imagen_url: imagenUrl
       };
 
-      const res = await fetch(`http://127.0.0.1:8000/productos/${id}`, {
+      const res = await fetch(`https://backrosaline-production.up.railway.app/productos/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productoData)
@@ -206,7 +206,7 @@ function AdminCuenta() {
         setSelectedFile(null);
         
         // Recargar la lista completa de productos para asegurar que todo está actualizado
-        const productosRes = await fetch("http://127.0.0.1:8000/productos/");
+        const productosRes = await fetch("https://backrosaline-production.up.railway.app/productos/");
         if (productosRes.ok) {
           const productosActualizados = await productosRes.json();
           setProductos(productosActualizados);
@@ -261,14 +261,14 @@ function AdminCuenta() {
       }
 
       // 3. Eliminar el producto de la base de datos
-      const deleteRes = await fetch(`http://127.0.0.1:8000/productos/${id}`, { 
+      const deleteRes = await fetch(`https://backrosaline-production.up.railway.app/productos/${id}`, { 
         method: "DELETE" 
       });
       
       if (!deleteRes.ok) throw new Error('Error al eliminar el producto');
 
       // 4. Actualizar la lista de productos
-      const productosRes = await fetch("http://127.0.0.1:8000/productos/");
+      const productosRes = await fetch("https://backrosaline-production.up.railway.app/productos/");
       if (productosRes.ok) {
         const productosActualizados = await productosRes.json();
         setProductos(productosActualizados);
@@ -282,7 +282,7 @@ function AdminCuenta() {
   // CRUD Categorías
   const handleCrearCategoria = async e => {
     e.preventDefault();
-    const res = await fetch("http://127.0.0.1:8000/categorias/", {
+    const res = await fetch("https://backrosaline-production.up.railway.app/categorias/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(nuevaCategoria)
@@ -295,7 +295,7 @@ function AdminCuenta() {
   };
 
   const handleEliminarCategoria = async id => {
-    await fetch(`http://127.0.0.1:8000/categorias/${id}`, { method: "DELETE" });
+    await fetch(`https://backrosaline-production.up.railway.app/categorias/${id}`, { method: "DELETE" });
     setCategorias(categorias.filter(c => c.id_categoria !== id));
   };
 
@@ -309,7 +309,7 @@ function AdminCuenta() {
   };
 
   const handleActualizarCategoria = async id => {
-    const res = await fetch(`http://127.0.0.1:8000/categorias/${id}`, {
+    const res = await fetch(`https://backrosaline-production.up.railway.app/categorias/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(categoriaEdit)
@@ -326,7 +326,7 @@ function AdminCuenta() {
   const handleActualizarEstado = async (id_pedido, nuevoEstado) => {
     const pedido = pedidos.find(p => p.id_pedido === id_pedido);
     if (!pedido) return;
-    const res = await fetch(`http://127.0.0.1:8000/pedidos/${id_pedido}`, {
+    const res = await fetch(`https://backrosaline-production.up.railway.app/pedidos/${id_pedido}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...pedido, estado: nuevoEstado })
@@ -348,11 +348,11 @@ function AdminCuenta() {
       return;
     }
     // Obtener detalles y productos
-    const detallesRes = await fetch(`http://127.0.0.1:8000/detalle_pedidos/`);
+      const detallesRes = await fetch(`https://backrosaline-production.up.railway.app//detalle_pedidos/`);
     const detallesAll = await detallesRes.json();
     const detalles = detallesAll.filter(d => d.id_pedido === id_pedido);
     // Obtener productos
-    const productosRes = await fetch(`http://127.0.0.1:8000/pedidos/${id_pedido}/productos`);
+    const productosRes = await fetch(`https://backrosaline-production.up.railway.app/pedidos/${id_pedido}/productos`);
     const productos = await productosRes.json();
     setDetallesPedido(prev => ({
       ...prev,

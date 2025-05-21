@@ -19,7 +19,7 @@ function Carrito() {
   // Obtener cliente cuando cambia el usuario
   useEffect(() => {
     if (!usuario) return;
-    fetch(`http://127.0.0.1:8000/clientes/usuario/${usuario.id}`)
+    fetch(`https://backrosaline-production.up.railway.app/clientes/usuario/${usuario.id}`)
       .then(res => res.json())
       .then(setCliente);
   }, [usuario]);
@@ -27,7 +27,7 @@ function Carrito() {
   // Obtener carrito cuando cambia el cliente
   useEffect(() => {
     if (!cliente) return;
-    fetch(`http://127.0.0.1:8000/clientes/${cliente.id_cliente}/carritos`)
+    fetch(`https://backrosaline-production.up.railway.app/clientes/${cliente.id_cliente}/carritos`)
       .then(res => res.json())
       .then(carritos => {
         const carritoActivo = carritos.find(c => c.estado === "activo");
@@ -38,7 +38,7 @@ function Carrito() {
   // Obtener detalles cuando cambia el carrito
   useEffect(() => {
     if (!carrito) return;
-    fetch(`http://127.0.0.1:8000/detalle_carrito/`)
+    fetch(`https://backrosaline-production.up.railway.app/detalle_carrito/`)
       .then(res => res.json())
       .then(detallesAll => {
         const detallesCarrito = detallesAll.filter(d => d.id_carrito === carrito.id_carrito);
@@ -52,7 +52,7 @@ function Carrito() {
       setProductos([]);
       return;
     }
-    fetch(`http://127.0.0.1:8000/productos/`)
+    fetch(`https://backrosaline-production.up.railway.app/productos/`)
       .then(res => res.json())
       .then(productosAll => {
         const productosSeleccionados = detalles.map(d => productosAll.find(p => p.id_producto === d.id_producto));
@@ -100,9 +100,9 @@ function Carrito() {
         await actions.order.capture();
         // 1. Crear el pedido en el backend
         const usuario = JSON.parse(localStorage.getItem("usuario"));
-        const clienteRes = await fetch(`http://127.0.0.1:8000/clientes/usuario/${usuario.id}`);
+        const clienteRes = await fetch(`https://backrosaline-production.up.railway.app/clientes/usuario/${usuario.id}`);
         const cliente = await clienteRes.json();
-        const pedidoRes = await fetch("http://127.0.0.1:8000/pedidos/", {
+        const pedidoRes = await fetch("https://backrosaline-production.up.railway.app/pedidos/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -115,7 +115,7 @@ function Carrito() {
         const pedido = await pedidoRes.json();
         // 2. Crear los detalles de pedido
         for (let i = 0; i < detalles.length; i++) {
-          await fetch("http://127.0.0.1:8000/detalle_pedidos/", {
+          await fetch("https://backrosaline-production.up.railway.app/detalle_pedidos/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -128,7 +128,7 @@ function Carrito() {
         }
         // 2.5 Eliminar los detalles del carrito (vaciar carrito)
         for (let i = 0; i < detalles.length; i++) {
-          await fetch(`http://127.0.0.1:8000/detalle_carrito/${detalles[i].id_detalle_carrito}`, {
+            await fetch(`https://backrosaline-production.up.railway.app/detalle_carrito/${detalles[i].id_detalle_carrito}`, {
             method: "DELETE"
           });
         }
@@ -152,7 +152,7 @@ function Carrito() {
   // 4. Eliminar producto del carrito de forma instantánea
   const handleEliminar = async (id_detalle) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/detalle_carrito/${id_detalle}`, { method: "DELETE" });
+      const res = await fetch(`https://backrosaline-production.up.railway.app/detalle_carrito/${id_detalle}`, { method: "DELETE" });
       if (!res.ok) {
         alert("No se pudo eliminar el producto del carrito.");
         return;
