@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "../styles/VistaProducto.css";
 
 function VistaProducto() {
@@ -31,7 +33,15 @@ function VistaProducto() {
   const handleAddToCart = async (goToCart = false) => {
     try {
       if (!usuario) {
-        alert("Debes iniciar sesión para agregar productos al carrito.");
+        toast.info('Por favor inicia sesión para continuar', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         navigate("/login");
         return;
       }
@@ -95,18 +105,59 @@ function VistaProducto() {
         });
         if (!res.ok) throw new Error("Error agregando producto al carrito");
       }
-      if (goToCart) navigate("/carrito");
-      else alert("Producto añadido al carrito");
+      if (goToCart) {
+        toast.success('Redirigiendo al carrito...', {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          onClose: () => navigate("/carrito")
+        });
+      } else {
+        toast.success('¡Producto añadido al carrito!', {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     } catch (error) {
       console.error("Error en handleAddToCart:", error);
-      alert("Ocurrió un error al agregar el producto al carrito. Intenta de nuevo.");
+      toast.error('Error al agregar el producto al carrito', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
 
   if (!producto) return <div className="vista-producto-container">Cargando...</div>;
 
   return (
-    <div className="vista-producto-container">
+    <>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <div className="vista-producto-container">
       <div className="vista-producto-img">
         {producto.imagen_url ? (
           <div style={{ width: '250px', height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: '10px', backgroundColor: '#f5f5f5' }}>
@@ -158,7 +209,8 @@ function VistaProducto() {
           <div className="vista-producto-agotado">Agotado</div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

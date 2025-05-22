@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaArrowLeft, FaShoppingCart, FaLeaf, FaStar, FaRegClock, FaArrowRight } from "react-icons/fa";
+import { FaShoppingCart, FaLeaf, FaStar, FaRegClock, FaArrowRight } from "react-icons/fa";
 import "../styles/CategoriaProductos.css";
 
 function CategoriaProductos() {
@@ -188,7 +188,7 @@ function CategoriaProductos() {
                     className="producto-btn"
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Aquí iría la lógica para agregar al carrito
+                      navigate(`/producto/${producto.id_producto}`);
                     }}
                   >
                     <FaShoppingCart /> Añadir
