@@ -160,7 +160,7 @@ function VistaProducto() {
       <div className="vista-producto-container">
       <div className="vista-producto-img">
         {producto.imagen_url ? (
-          <div style={{ width: '250px', height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: '10px', backgroundColor: '#f5f5f5' }}>
+          <div style={{ width: '430px', height: '430px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: '10px', backgroundColor: '#f5f5f5' }}>
             <img
               src={producto.imagen_url}
               alt={producto.nombre}
