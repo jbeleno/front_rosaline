@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Header.css';
 
+// Import Poppins font
+const link = document.createElement('link');
+link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap';
+link.rel = 'stylesheet';
+document.head.appendChild(link);
+
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -63,10 +69,28 @@ function Header() {
     }
   };
 
+  // Add scroll effect for header
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = document.querySelector('.header');
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <header className="header">
       <div className="header-row header-main-row">
-        <div className="logo" style={{cursor: 'pointer'}} onClick={() => navigate('/')}>Rosaline Bakery</div>
+        <div className="logo-container" onClick={() => navigate('/')}>
+          <img src="/img/logo.png" alt="Rosaline Bakery Logo" className="logo-img" />
+          <span className="logo-text">Rosaline Bakery</span>
+        </div>
         <div className="header-search-container" ref={inputRef} style={{ position: 'relative' }}>
           <form onSubmit={handleSubmit}>
             <input
@@ -80,7 +104,7 @@ function Header() {
             />
           </form>
           {showDropdown && (
-            <ul className="search-dropdown">
+              <ul className={`search-dropdown ${showDropdown ? 'active' : ''}`}>
               {filtered.map(producto => (
                 <li
                   key={producto.id_producto}

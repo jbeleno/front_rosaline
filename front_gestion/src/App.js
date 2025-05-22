@@ -11,6 +11,7 @@ import ClienteCuenta from './components/ClienteCuenta';
 import AdminCuenta from './components/AdminCuenta';
 import Carrito from './components/Carrito';
 import PedidoConfirmado from './components/PedidoConfirmado';
+import SobreNosotros from './components/SobreNosotros';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/admin" element={<AdminCuenta />} />
         <Route path="/carrito" element={<Carrito />} />
         <Route path="/pedido-confirmado/:id" element={<PedidoConfirmado />} />
+        <Route path="/sobrenosotros" element={<SobreNosotros />} />
         {/* Puedes agregar más rutas aquí */}
       </Routes>
       <Footer />

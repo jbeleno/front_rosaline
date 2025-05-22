@@ -348,20 +348,41 @@ function AdminCuenta() {
       return;
     }
     // Obtener detalles y productos
-      const detallesRes = await fetch(`https://backrosaline-production.up.railway.app//detalle_pedidos/`);
-    const detallesAll = await detallesRes.json();
-    const detalles = detallesAll.filter(d => d.id_pedido === id_pedido);
-    // Obtener productos
-    const productosRes = await fetch(`https://backrosaline-production.up.railway.app/pedidos/${id_pedido}/productos`);
-    const productos = await productosRes.json();
-    setDetallesPedido(prev => ({
-      ...prev,
-      [id_pedido]: detalles.map(det => ({
-        ...det,
-        producto: productos.find(p => p.id_producto === det.id_producto)
-      }))
-    }));
-    setVerMasId(id_pedido);
+      try {
+        const detallesRes = await fetch(`https://backrosaline-production.up.railway.app/detalle_pedidos/`);
+        if (!detallesRes.ok) throw new Error('Error al cargar los detalles del pedido');
+        
+        const detallesAll = await detallesRes.json();
+        // Ensure detallesAll is an array before calling filter
+        const detalles = Array.isArray(detallesAll) 
+          ? detallesAll.filter(d => d && d.id_pedido === id_pedido)
+          : [];
+          
+        // Get products
+        const productosRes = await fetch(`https://backrosaline-production.up.railway.app/pedidos/${id_pedido}/productos`);
+        if (!productosRes.ok) throw new Error('Error al cargar los productos del pedido');
+        
+        const productos = await productosRes.json();
+        
+        setDetallesPedido(prev => ({
+          ...prev,
+          [id_pedido]: Array.isArray(productos) 
+            ? detalles.map(det => ({
+                ...det,
+                producto: productos.find(p => p && p.id_producto === det.id_producto) || {}
+              }))
+            : []
+        }));
+      } catch (error) {
+        console.error('Error al cargar los detalles del pedido:', error);
+        // Set empty array on error
+        setDetallesPedido(prev => ({
+          ...prev,
+          [id_pedido]: []
+        }));
+      } finally {
+        setVerMasId(prevId => prevId === id_pedido ? null : id_pedido);
+      }
   };
 
   return (

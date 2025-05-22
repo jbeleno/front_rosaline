@@ -1,110 +1,369 @@
+/* Variables de colores */
+:root {
+  --color-primary: #8B5FBF;
+  --color-secondary: #D4A5E5;
+  --color-accent: #FF9AA2;
+  --color-text: #4A4A4A;
+  --color-light: #FFF9FB;
+  --color-border: #F0E6F6;
+  --color-success: #A5D6A7;
+  --color-warning: #FFE082;
+  --color-error: #EF9A9A;
+  --shadow-sm: 0 4px 12px rgba(139, 95, 191, 0.1);
+  --shadow-md: 0 8px 24px rgba(139, 95, 191, 0.15);
+  --transition: all 0.3s ease;
+}
+
+/* Estilos generales */
 .vista-producto-container {
   display: flex;
-  gap: 2.5rem;
-  max-width: 900px;
-  margin: 2.5rem auto;
+  gap: 3.5rem;
+  max-width: 1100px;
+  margin: 3rem auto;
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 16px #6c348344;
-  padding: 2.5rem 2rem;
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  padding: 3rem 3.5rem;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
 }
+
+.vista-producto-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: linear-gradient(90deg, #FF9AA2, #D4A5E5, #8B5FBF);
+}
+
+/* Estilos de la imagen */
 .vista-producto-img {
-  flex: 0 0 260px;
+  flex: 0 0 450px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ede7f6;
+  background: var(--color-light);
+  border-radius: 16px;
+  min-height: 450px;
+  padding: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.vista-producto-img:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(139, 95, 191, 0.15);
+}
+
+.vista-producto-img img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   border-radius: 12px;
-  min-height: 260px;
-  min-width: 220px;
-  margin-right: 1.5rem;
+  transition: var(--transition);
+  padding: 0.5rem;
+  box-sizing: border-box;
+  transform: scale(1.1);
 }
+
 .vista-producto-img-placeholder {
-  width: 180px;
-  height: 180px;
-  background: #b39ddb;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 1.1rem;
-}
-.vista-producto-info {
-  flex: 1 1 60%;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+  border-radius: 12px;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 2rem;
+  text-align: center;
+  box-sizing: border-box;
 }
+
+/* Sección de información */
+.vista-producto-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
 .vista-producto-info h1 {
-  color: #6C3483;
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+  font-family: 'Dancing Script', cursive;
+  font-size: 2.8rem;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+  position: relative;
+  display: inline-block;
 }
+
+.vista-producto-info h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-secondary));
+  border-radius: 3px;
+}
+
 .vista-producto-desc {
-  color: #2D2D2D;
+  color: var(--color-text);
   font-size: 1.1rem;
+  line-height: 1.7;
+  margin: 1rem 0;
+  max-width: 90%;
 }
+
 .vista-producto-precio {
-  color: #9575cd;
-  font-weight: bold;
-  font-size: 1.3rem;
-  margin-bottom: 0.7rem;
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 2.2rem;
+  margin: 0.5rem 0 1.5rem;
+  display: flex;
+  align-items: center;
 }
+
+.vista-producto-precio::before {
+  content: '$';
+  font-size: 1.5rem;
+  margin-right: 4px;
+  opacity: 0.9;
+}
+
+/* Controles de cantidad */
 .vista-producto-cantidad {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  margin-bottom: 0.7rem;
+  gap: 1.2rem;
+  margin: 1.5rem 0;
+  background: var(--color-light);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  width: fit-content;
 }
+
 .vista-producto-cantidad label {
-  color: #6C3483;
-  font-weight: bold;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 1.1rem;
+  white-space: nowrap;
 }
+
 .vista-producto-cantidad input[type="number"] {
-  width: 60px;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1.5px solid #6C3483;
-  font-size: 1rem;
+  width: 70px;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  border: 2px solid var(--color-border);
+  font-size: 1.1rem;
+  font-weight: 600;
   text-align: center;
+  color: var(--color-primary);
+  background: #fff;
+  transition: var(--transition);
 }
+
+.vista-producto-cantidad input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(139, 95, 191, 0.2);
+}
+
+/* Botones */
 .vista-producto-botones {
   display: flex;
-  gap: 1rem;
-  margin-top: 0.7rem;
+  gap: 1.2rem;
+  margin: 1.5rem 0 0.5rem;
+  flex-wrap: wrap;
 }
+
 .vista-producto-btn {
-  background: #6C3483;
-  color: #fff;
+  flex: 1;
+  min-width: 180px;
+  padding: 1rem 2rem;
   border: none;
-  border-radius: 6px;
-  padding: 0.7rem 1.5rem;
-  font-weight: bold;
-  font-size: 1rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
+
+.vista-producto-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: var(--transition);
+  z-index: -1;
+}
+
+.vista-producto-btn:hover::before {
+  width: 100%;
+}
+
+.vista-producto-btn.comprar {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: white;
+  box-shadow: 0 4px 15px rgba(139, 95, 191, 0.3);
+}
+
+.vista-producto-btn.comprar:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(139, 95, 191, 0.4);
+}
+
 .vista-producto-btn.carrito {
-  background: #9575cd;
+  background: white;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  transition: all 0.3s ease;
 }
-.vista-producto-btn:hover {
-  background: #b39ddb;
-  color: #fff;
+
+.vista-producto-btn.carrito:hover {
+  background: var(--color-light);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(139, 95, 191, 0.2);
 }
+
+/* Estado agotado */
 .vista-producto-agotado {
-  background: #6C3483;
-  color: #fff;
-  border-radius: 12px;
+  background: linear-gradient(135deg, #FF9AA2, #FFB7B2);
+  color: white;
+  border-radius: 50px;
   padding: 1rem 2rem;
   font-size: 1.2rem;
-  font-weight: bold;
+  font-weight: 600;
   text-align: center;
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px #6c348344;
-  letter-spacing: 1px;
-  max-width: 350px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 2rem 0 1rem;
+  box-shadow: 0 4px 15px rgba(255, 154, 162, 0.3);
+  max-width: 100%;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+/* Etiqueta de disponibilidad */
+.producto-disponibilidad {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-success);
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.producto-disponibilidad::before {
+  content: '✓';
+  font-size: 1.1em;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .vista-producto-container {
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+  
+  .vista-producto-img {
+    width: 100%;
+    max-width: 100%;
+    min-height: 350px;
+  }
+  
+  .vista-producto-info h1 {
+    font-size: 2.4rem;
+    text-align: center;
+  }
+  
+  .vista-producto-info h1::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .vista-producto-desc {
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .vista-producto-precio {
+    justify-content: center;
+  }
+  
+  .vista-producto-cantidad {
+    margin: 1.5rem auto;
+  }
+  
+  .vista-producto-botones {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .vista-producto-btn {
+    width: 100%;
+  }
+  
+  .vista-producto-agotado {
+    margin: 2rem auto 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .vista-producto-container {
+    padding: 1.5rem 1.5rem 2.5rem;
+    margin: 1rem;
+    gap: 2rem;
+  }
+  
+  .vista-producto-img {
+    min-height: 280px;
+  }
+  
+  .vista-producto-info h1 {
+    font-size: 2rem;
+  }
+  
+  .vista-producto-precio {
+    font-size: 1.8rem;
+  }
+  
+  .vista-producto-cantidad {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

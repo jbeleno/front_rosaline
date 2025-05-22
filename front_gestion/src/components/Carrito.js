@@ -26,13 +26,28 @@ function Carrito() {
 
   // Obtener carrito cuando cambia el cliente
   useEffect(() => {
-    if (!cliente) return;
-    fetch(`https://backrosaline-production.up.railway.app/clientes/${cliente.id_cliente}/carritos`)
-      .then(res => res.json())
-      .then(carritos => {
-        const carritoActivo = carritos.find(c => c.estado === "activo");
-        setCarrito(carritoActivo);
-      });
+    if (!cliente || !cliente.id_cliente) return;
+    
+    const fetchCarrito = async () => {
+      try {
+        const response = await fetch(`https://backrosaline-production.up.railway.app/clientes/${cliente.id_cliente}/carritos`);
+        if (!response.ok) {
+          throw new Error('Error al cargar el carrito');
+        }
+        const carritos = await response.json();
+        
+        // Verificar si la respuesta es un array
+        const carritosArray = Array.isArray(carritos) ? carritos : [];
+        const carritoActivo = carritosArray.find(c => c.estado === "activo");
+        
+        setCarrito(carritoActivo || null);
+      } catch (error) {
+        console.error('Error al obtener el carrito:', error);
+        setCarrito(null);
+      }
+    };
+    
+    fetchCarrito();
   }, [cliente]);
 
   // Obtener detalles cuando cambia el carrito
@@ -164,40 +179,103 @@ function Carrito() {
     }
   };
 
-  if (!usuario) return <div className="carrito-container">Debes iniciar sesión para ver tu carrito.</div>;
-  if (!carrito) return <div className="carrito-container">Cargando carrito...</div>;
-  if (detalles.length === 0) return <div className="carrito-container">Tu carrito está vacío.</div>;
+  if (!usuario) return (
+    <div className="carrito-container">
+      <div>
+        <h2>Inicia sesión</h2>
+        <p>Debes iniciar sesión para ver tu carrito de compras.</p>
+        <button 
+          className="carrito-btn-finalizar" 
+          onClick={() => navigate('/login')}
+          style={{ marginTop: '1.5rem' }}
+        >
+          Ir al inicio de sesión
+        </button>
+      </div>
+    </div>
+  );
+
+  if (!carrito) return (
+    <div className="carrito-container">
+      <div>
+        <h2>Buscando tu carrito...</h2>
+        <p>Estamos preparando todo para ti.</p>
+        <div className="loading-spinner"></div>
+      </div>
+    </div>
+  );
+
+  if (detalles.length === 0) return (
+    <div className="carrito-container">
+      <div>
+        <h2>¡Tu carrito está vacío!</h2>
+        <p>Parece que aún no has agregado productos a tu carrito.</p>
+        <button 
+          className="carrito-btn-finalizar" 
+          onClick={() => navigate('/catalogo')}
+          style={{ marginTop: '1.5rem' }}
+        >
+          Explorar productos
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="carrito-container">
-      <h2>Mi carrito</h2>
+      <h2>Mi Pedido</h2>
       <ul className="carrito-lista">
-        {detalles.map((detalle, i) => (
-          <li key={detalle.id_detalle_carrito} className="carrito-item">
-            <div className="carrito-img">
-              {productos[i]?.imagen_url ? (
-                <img src={productos[i].imagen_url} alt={productos[i].nombre} />
-              ) : (
-                <div className="carrito-img-placeholder">Imagen</div>
-              )}
-            </div>
-            <div className="carrito-info">
-              <div className="carrito-nombre">{productos[i]?.nombre}</div>
-              <div className="carrito-precio">${productos[i]?.precio}</div>
-              <div className="carrito-cantidad">
-                <label>Cantidad: </label>
-                <span>{detalle.cantidad}</span>
+        {detalles.map((detalle, i) => {
+          const producto = productos[i];
+          const subtotal = producto ? (producto.precio * detalle.cantidad).toFixed(2) : '0.00';
+          
+          return (
+            <li key={detalle.id_detalle_carrito} className="carrito-item">
+              <div className="carrito-img">
+                {producto?.imagen_url ? (
+                  <img 
+                    src={producto.imagen_url} 
+                    alt={producto.nombre} 
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.parentElement.innerHTML = 
+                        `<div class="carrito-img-placeholder">${producto.nombre.charAt(0).toUpperCase()}</div>`;
+                    }}
+                  />
+                ) : (
+                  <div className="carrito-img-placeholder">
+                    {producto?.nombre ? producto.nombre.charAt(0).toUpperCase() : 'P'}
+                  </div>
+                )}
               </div>
-              <div className="carrito-subtotal">
-                Subtotal: ${productos[i] ? productos[i].precio * detalle.cantidad : 0}
+              <div className="carrito-info">
+                <h3 className="carrito-nombre">{producto?.nombre || 'Producto no disponible'}</h3>
+                <div className="carrito-precio">{producto?.precio?.toFixed(2) || '0.00'}</div>
+                
+                <div className="carrito-cantidad">
+                  <label>Cantidad: </label>
+                  <span>{detalle.cantidad}</span>
+                </div>
+                
+                <div className="carrito-subtotal">
+                  Subtotal: <span>${subtotal}</span>
+                </div>
+                
+                <button 
+                  className="carrito-btn-eliminar" 
+                  onClick={() => handleEliminar(detalle.id_detalle_carrito)}
+                >
+                  Eliminar
+                </button>
               </div>
-              <button className="carrito-btn-eliminar" onClick={() => handleEliminar(detalle.id_detalle_carrito)}>Eliminar</button>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
+      
       <div className="carrito-total">
-        <b>Total a pagar: ${total}</b>
+        <span>Total a pagar:</span>
+        <span>${total.toFixed(2)}</span>
       </div>
       {/* Botón de PayPal */}
       {detalles.length > 0 && <div ref={paypalRef}></div>}

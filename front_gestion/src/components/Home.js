@@ -103,10 +103,10 @@ function Home() {
               }}
             >
               {[
-                "🍰 Recetas originales y saludables",
-                "🌱 Ingredientes frescos y de calidad",
-                "🎂 Opciones para todos los gustos: tradicional y saludable",
-                "🚚 Entrega rápida y segura en tu ciudad",
+                " Recetas originales y saludables",
+                " Ingredientes frescos y de calidad",
+                " Opciones para todos los gustos: tradicional y saludable",
+                " Entrega rápida y segura en tu ciudad",
               ].map((item, idx) => (
                 <motion.li
                   key={idx}
@@ -119,11 +119,12 @@ function Home() {
               ))}
             </motion.ul>
           </div>
-          <div className="home-inspiracion-col home-inspiracion-texto">
+          <div className="home-inspiracion-col home-inspiracion-texto" onClick={() => navigate('/sobrenosotros')} style={{ cursor: 'pointer' }}>
             <h3>Sobre nosotros</h3>
             <p>
               Somos un emprendimiento que hace sus productos con amor, dedicación y pasión por la repostería. 
               Cada postre es una experiencia única, pensada para alegrar tus momentos especiales.
+              <span className="leer-mas">Conoce más sobre nosotros →</span>
             </p>
           </div>
         </div>

@@ -14,8 +14,18 @@ function VistaProducto() {
       .then(res => res.json())
       .then(data => {
         const prod = data.find(p => p.id_producto === parseInt(id));
+        console.log('Producto encontrado:', prod); // Debug log
+        if (prod && prod.imagen_url) {
+          // Asegurarse de que la URL de la imagen sea accesible
+          if (!prod.imagen_url.startsWith('http')) {
+            // Si es una ruta relativa, agregar la URL base del backend
+            prod.imagen_url = `https://backrosaline-production.up.railway.app${prod.imagen_url.startsWith('/') ? '' : '/'}${prod.imagen_url}`;
+          }
+          console.log('URL de la imagen procesada:', prod.imagen_url); // Debug log
+        }
         setProducto(prod);
-      });
+      })
+      .catch(error => console.error('Error al cargar el producto:', error));
   }, [id]);
 
   const handleAddToCart = async (goToCart = false) => {
@@ -99,11 +109,23 @@ function VistaProducto() {
     <div className="vista-producto-container">
       <div className="vista-producto-img">
         {producto.imagen_url ? (
-          <img
-            src={producto.imagen_url}
-            alt={producto.nombre}
-            style={{ maxWidth: "250px", maxHeight: "250px", borderRadius: "10px", objectFit: "cover" }}
-          />
+          <div style={{ width: '250px', height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: '10px', backgroundColor: '#f5f5f5' }}>
+            <img
+              src={producto.imagen_url}
+              alt={producto.nombre}
+              style={{ 
+                maxWidth: '100%', 
+                maxHeight: '100%', 
+                objectFit: 'contain',
+                borderRadius: '10px'
+              }}
+              onError={(e) => {
+                console.error('Error al cargar la imagen:', producto.imagen_url);
+                e.target.onerror = null;
+                e.target.src = 'https://via.placeholder.com/250?text=Imagen+no+disponible';
+              }}
+            />
+          </div>
         ) : (
           <div className="vista-producto-img-placeholder">Imagen</div>
         )}
