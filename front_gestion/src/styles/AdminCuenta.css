@@ -702,3 +702,161 @@
   position: relative;
   overflow: hidden;
 }
+
+/* Media queries para dispositivos móviles */
+@media (max-width: 992px) {
+  .admin-cuenta-container {
+    padding: 2rem;
+    margin: 1.5rem auto;
+  }
+  
+  .admin-tabs {
+    margin-bottom: 2rem;
+  }
+  
+  .admin-tabs button {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .admin-producto-item {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .admin-producto-nombre {
+    font-size: 1.3rem;
+  }
+  
+  .admin-producto-precio {
+    font-size: 1.2rem;
+  }
+  
+  .admin-producto-img {
+    flex: 0 0 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-cuenta-container {
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 12px;
+  }
+  
+  .admin-tabs {
+    gap: 0.3rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .admin-tabs button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+  
+  .admin-filtros-productos {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.2rem;
+  }
+  
+  .admin-form {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .admin-form input[type="text"],
+  .admin-form input[type="number"],
+  .admin-form select {
+    flex: 1 1 100%;
+    padding: 0.7rem 1rem;
+  }
+  
+  .admin-producto-item {
+    flex-direction: column;
+    padding: 1.2rem;
+    gap: 1.2rem;
+  }
+  
+  .admin-producto-img {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+  
+  .admin-acciones {
+    justify-content: center;
+  }
+  
+  .admin-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+  
+  .image-upload-container {
+    width: 100%;
+  }
+  
+  .upload-button {
+    width: 100%;
+  }
+  
+  .image-preview-container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-cuenta-container {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+  
+  .admin-tabs {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .admin-tabs button {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+  }
+  
+  .admin-form {
+    padding: 1rem;
+  }
+  
+  .admin-producto-nombre {
+    font-size: 1.2rem;
+  }
+  
+  .admin-producto-desc {
+    font-size: 0.9rem;
+  }
+  
+  .admin-producto-precio {
+    font-size: 1.1rem;
+  }
+  
+  .admin-acciones {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .admin-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .admin-categoria-item {
+    padding: 0.8rem 1rem;
+  }
+  
+  .admin-categoria-botones {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}

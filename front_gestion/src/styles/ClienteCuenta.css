@@ -544,15 +544,68 @@
   overflow: hidden;
 }
 
+/* Responsive */
+@media (max-width: 992px) {
+  .cliente-cuenta-container {
+    max-width: 800px;
+    padding: 2rem;
+    margin: 1.8rem auto;
+  }
+  
+  .cliente-cuenta-container h2 {
+    font-size: 2.2rem;
+  }
+  
+  .cliente-info-card,
+  .pedido-card {
+    padding: 1.8rem;
+  }
+  
+  .cliente-info-card p {
+    font-size: 1rem;
+  }
+  
+  .pedidos-lista h3 {
+    font-size: 1.4rem;
+  }
+  
+  .producto-imagen-container {
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
+  }
+  
+  .producto-precio {
+    font-size: 1rem !important;
+  }
+}
+
 @media (max-width: 768px) {
   .cliente-cuenta-container {
     padding: 1.5rem;
     margin: 1rem;
+    border-radius: 15px;
+  }
+  
+  .cliente-cuenta-container h2 {
+    font-size: 2rem;
+    width: 100%;
+    text-align: center;
   }
   
   .cliente-info-card,
   .pedido-card {
     padding: 1.5rem 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .cliente-info-card p {
+    font-size: 0.95rem;
+    padding-left: 0.8rem;
+  }
+  
+  .cliente-info-card p:hover {
+    padding-left: 1.2rem;
   }
   
   .pedido-card p {
@@ -565,6 +618,12 @@
     margin-bottom: 0.2rem;
   }
   
+  .pedido-card .estado {
+    position: static;
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+  
   .button-group {
     flex-direction: column;
     gap: 0.8rem;
@@ -573,5 +632,140 @@
   .button {
     width: 100%;
     justify-content: center;
+    padding: 0.7rem 1.5rem;
+  }
+  
+  .producto-item {
+    flex-wrap: wrap;
+  }
+  
+  .producto-imagen-container {
+    margin-right: 10px;
+  }
+  
+  .producto-precio-container {
+    margin-top: 0.8rem;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 0;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #f0e5ff;
+  }
+}
+
+@media (max-width: 576px) {
+  .cliente-cuenta-container {
+    padding: 1.2rem;
+    margin: 0.8rem;
+    border-radius: 12px;
+  }
+  
+  .cliente-cuenta-container h2 {
+    font-size: 1.8rem;
+  }
+  
+  .cliente-cuenta-container h2::after {
+    width: 50px;
+  }
+  
+  .cliente-info-card,
+  .pedido-card {
+    padding: 1.2rem 1rem;
+    border-radius: 12px;
+  }
+  
+  .cliente-info-card p {
+    font-size: 0.9rem;
+  }
+  
+  .cliente-form input {
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+  }
+  
+  .pedidos-lista h3 {
+    font-size: 1.3rem;
+  }
+  
+  .pedidos-lista h3::after {
+    width: 40px;
+  }
+  
+  .producto-item {
+    padding: 1rem 0;
+  }
+  
+  .producto-imagen-container {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+  }
+  
+  .producto-info h4 {
+    font-size: 0.95rem;
+  }
+  
+  .button {
+    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+  }
+  
+  .ver-mas-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cliente-cuenta-container {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+  
+  .cliente-cuenta-container h2 {
+    font-size: 1.6rem;
+  }
+  
+  .pedido-card .estado {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.8rem;
+  }
+  
+  .producto-item {
+    gap: 0.8rem;
+  }
+  
+  .producto-imagen-container {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    margin-right: 8px;
+  }
+  
+  .producto-info h4 {
+    font-size: 0.9rem;
+  }
+  
+  .producto-descripcion {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    font-size: 0.8rem !important;
+  }
+  
+  .producto-precio {
+    font-size: 0.95rem !important;
+  }
+  
+  .producto-subtotal,
+  .producto-cantidad {
+    font-size: 0.8rem;
+  }
+  
+  .sin-pedidos {
+    padding: 2rem 1rem;
+    font-size: 0.9rem;
   }
 }

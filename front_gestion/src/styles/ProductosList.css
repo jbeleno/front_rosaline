@@ -38,3 +38,143 @@
   font-size: 1.1rem;
   margin-top: 0.5rem;
 }
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .productos-list-container {
+    max-width: 960px;
+    padding: 0.8rem;
+  }
+  
+  .productos-grid {
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .producto-card {
+    width: 230px;
+  }
+}
+
+@media (max-width: 992px) {
+  .productos-list-container {
+    max-width: 720px;
+  }
+  
+  .productos-title {
+    font-size: 1.8rem;
+    margin-bottom: 1.3rem;
+  }
+  
+  .productos-grid {
+    gap: 16px;
+  }
+  
+  .producto-card {
+    width: 220px;
+    padding: 0.9rem;
+  }
+  
+  .producto-nombre {
+    font-size: 1.2rem;
+  }
+  
+  .producto-precio {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .productos-list-container {
+    max-width: 540px;
+    margin: 1.8rem auto;
+  }
+  
+  .productos-title {
+    font-size: 1.7rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+  
+  .productos-grid {
+    gap: 16px;
+    justify-content: center;
+  }
+  
+  .producto-card {
+    width: 200px;
+    border-radius: 10px;
+    padding: 0.8rem;
+  }
+  
+  .producto-nombre {
+    font-size: 1.15rem;
+  }
+  
+  .producto-precio {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .productos-list-container {
+    margin: 1.5rem auto;
+    padding: 0.7rem;
+  }
+  
+  .productos-title {
+    font-size: 1.6rem;
+    margin-bottom: 1.1rem;
+  }
+  
+  .productos-grid {
+    gap: 14px;
+  }
+  
+  .producto-card {
+    width: calc(50% - 7px);
+    border-radius: 8px;
+    padding: 0.7rem;
+    border-width: 1.5px;
+  }
+  
+  .producto-nombre {
+    font-size: 1.1rem;
+  }
+  
+  .producto-precio {
+    font-size: 0.95rem;
+    margin-top: 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .productos-list-container {
+    margin: 1.2rem auto;
+    padding: 0.6rem;
+  }
+  
+  .productos-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .productos-grid {
+    gap: 12px;
+  }
+  
+  .producto-card {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    padding: 0.8rem;
+  }
+  
+  .producto-nombre {
+    font-size: 1.1rem;
+  }
+  
+  .producto-precio {
+    font-size: 0.95rem;
+  }
+}

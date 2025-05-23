@@ -358,6 +358,50 @@
 }
 
 /* Responsive */
+@media (max-width: 992px) {
+  .categoria-productos-container {
+    max-width: 900px;
+    padding: 1.5rem 1.5rem 3.5rem;
+  }
+  
+  .categoria-header {
+    margin-bottom: 2.5rem;
+    padding: 1.8rem 0;
+  }
+  
+  .categoria-nombre {
+    font-size: 2.2rem;
+  }
+  
+  .categoria-descripcion {
+    font-size: 1.05rem;
+    max-width: 700px;
+  }
+  
+  .categoria-productos-title {
+    font-size: 1.8rem;
+    margin: 2.5rem auto 1.8rem;
+  }
+  
+  .productos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.8rem;
+  }
+  
+  .producto-info {
+    padding: 1.2rem;
+  }
+  
+  .producto-precio {
+    font-size: 1.3rem;
+  }
+  
+  .producto-btn {
+    padding: 0.7rem 1.3rem;
+    font-size: 0.95rem;
+  }
+}
+
 @media (max-width: 768px) {
   .categoria-productos-container {
     padding: 1rem 1rem 3rem;
@@ -381,20 +425,145 @@
   
   .categoria-descripcion {
     font-size: 1rem;
+    padding: 0 0.5rem;
+  }
+  
+  .categoria-productos-title {
+    font-size: 1.8rem;
+    margin: 2rem auto 1.5rem;
   }
   
   .productos-grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1.5rem;
   }
+  
+  .producto-card {
+    border-radius: 12px;
+  }
+  
+  .producto-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  .producto-descripcion {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  
+  .producto-meta {
+    margin-bottom: 1rem;
+  }
+  
+  .producto-btn {
+    width: 100%;
+  }
+  
+  .no-productos {
+    padding: 3rem 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .categoria-productos-container {
+    padding: 0.8rem 0.8rem 2.5rem;
+  }
+  
+  .categoria-header {
+    padding: 4.5rem 0.8rem 1.8rem;
+    margin: -0.8rem -0.8rem 1.8rem;
+  }
+  
+  .categoria-nombre {
+    font-size: 1.8rem;
+  }
+  
+  .categoria-nombre::after {
+    width: 80px;
+    bottom: -8px;
+  }
+  
+  .categoria-descripcion {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  
+  .productos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+  }
+  
+  .producto-info {
+    padding: 1rem;
+  }
+  
+  .producto-destacado, 
+  .producto-vegano {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.7rem;
+  }
+  
+  .producto-vegano {
+    top: 2.7rem;
+  }
 }
 
 @media (max-width: 480px) {
   .productos-grid {
     grid-template-columns: 1fr;
+    max-width: 320px;
+    margin: 0 auto;
   }
   
   .categoria-productos-title {
-    font-size: 1.75rem;
+    font-size: 1.6rem;
+    margin: 1.8rem auto 1.2rem;
+  }
+  
+  .back-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .producto-card {
+    max-width: 100%;
+  }
+  
+  .producto-imagen {
+    padding-top: 80%;
+  }
+  
+  .producto-info h3 {
+    font-size: 1.05rem;
+  }
+  
+  .producto-precio {
+    font-size: 1.2rem;
+  }
+  
+  .producto-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .loading-container,
+  .error-container {
+    min-height: 40vh;
+    padding: 1.5rem;
+  }
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .error-message {
+    font-size: 1rem;
+  }
+  
+  .retry-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
   }
 }

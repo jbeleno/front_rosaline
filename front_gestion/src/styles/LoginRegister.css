@@ -325,23 +325,197 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 480px) {
+@media (max-width: 992px) {
+  .login-container {
+    padding: 1.8rem;
+  }
+  
   .login-card {
+    max-width: 400px;
+    padding: 2.8rem 2.2rem;
+  }
+  
+  .login-card h2 {
+    font-size: 2rem;
+    margin: 0.5rem 0 1.4rem;
+  }
+  
+  .decoration-1 {
+    font-size: 7rem;
+  }
+  
+  .decoration-2 {
+    font-size: 5rem;
+  }
+  
+  .decoration-3 {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    padding: 1.5rem;
+  }
+  
+  .login-card {
+    max-width: 380px;
+    padding: 2.5rem 2rem;
+  }
+  
+  .login-card h2 {
+    font-size: 1.8rem;
+    margin: 0.5rem 0 1.3rem;
+  }
+  
+  .login-card h2::after {
+    width: 50px;
+    height: 3px;
+  }
+  
+  .login-card form {
+    gap: 1.1rem;
+  }
+  
+  .login-card input {
+    padding: 0.9rem 1rem 0.9rem 3rem;
+    font-size: 0.95rem;
+  }
+  
+  .login-card button {
+    padding: 0.9rem 1.8rem;
+    font-size: 0.95rem;
+  }
+  
+  .login-toggle {
+    font-size: 0.9rem;
+  }
+  
+  .login-error {
+    font-size: 0.85rem;
+    padding: 0.7rem 0.9rem;
+  }
+  
+  .decoration-1 {
+    top: 8%;
+    left: 8%;
+    font-size: 6rem;
+  }
+  
+  .decoration-2 {
+    bottom: 12%;
+    right: 8%;
+    font-size: 4.5rem;
+  }
+  
+  .decoration-3 {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-container {
+    padding: 1.2rem;
+  }
+  
+  .login-card {
+    max-width: 340px;
+    padding: 2.2rem 1.8rem;
+    border-radius: 10px;
+  }
+  
+  .login-card::before {
+    height: 5px;
+  }
+  
+  .login-card h2 {
+    font-size: 1.7rem;
+    margin: 0.5rem 0 1.2rem;
+    padding-bottom: 0.8rem;
+  }
+  
+  .login-card h2::after {
+    width: 45px;
+  }
+  
+  .login-card form {
+    gap: 1rem;
+  }
+  
+  .login-card input {
+    padding: 0.85rem 1rem 0.85rem 2.9rem;
+    border-radius: 10px;
+  }
+  
+  .input-group i {
+    left: 14px;
+    font-size: 1rem;
+  }
+  
+  .login-card button {
+    padding: 0.85rem 1.7rem;
+    border-radius: 40px;
+    margin-top: 1rem;
+  }
+  
+  .login-toggle {
+    margin-top: 1.3rem;
+    font-size: 0.85rem;
+  }
+  
+  .decoration-1, .decoration-2 {
+    opacity: 0.07;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 1rem;
+  }
+  
+  .login-card {
+    max-width: 320px;
     padding: 2rem 1.5rem;
+    border-radius: 8px;
   }
   
   .login-card h2 {
     font-size: 1.5rem;
-    margin: 0.5rem 0 1.5rem;
+    margin: 0.5rem 0 1.2rem;
+    padding-bottom: 0.7rem;
+  }
+  
+  .login-card h2::after {
+    width: 40px;
+    height: 3px;
   }
   
   .login-card input {
     padding: 0.8rem 1rem 0.8rem 2.8rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
   }
   
   .input-group i {
     left: 12px;
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .login-card button {
+    padding: 0.8rem 1.6rem;
+    font-size: 0.9rem;
+    border-radius: 30px;
+  }
+  
+  .login-toggle {
+    margin-top: 1.2rem;
+    font-size: 0.8rem;
+  }
+  
+  .login-error {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
   }
   
   .login-decoration {

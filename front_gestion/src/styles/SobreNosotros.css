@@ -324,13 +324,111 @@
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .sobre-nosotros-contenido {
+    max-width: 960px;
+  }
+  
+  .valores-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.8rem;
+  }
+  
+  .sobre-nosotros-tarjeta {
+    padding: 2.2rem;
+  }
+  
+  .sobre-nosotros-cta {
+    padding: 4.5rem 2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .sobre-nosotros-hero {
+    padding: 5rem 1.8rem 3.5rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .sobre-nosotros-hero h1 {
+    font-size: 3rem;
+  }
+  
+  .sobre-nosotros-hero h1::after {
+    width: 80px;
+  }
+  
+  .sobre-nosotros-subtitulo {
+    font-size: 1.3rem;
+  }
+  
+  .sobre-nosotros-contenido {
+    max-width: 720px;
+    padding: 0 1.8rem 3.5rem;
+  }
+  
+  .sobre-nosotros-tarjeta {
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .sobre-nosotros-tarjeta h2 {
+    font-size: 2rem;
+  }
+  
+  .valores-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .valor-item {
+    padding: 1.8rem;
+  }
+  
+  .valor-icono {
+    font-size: 2.2rem;
+  }
+  
+  .sobre-nosotros-equipo {
+    padding: 2.5rem 2rem;
+    margin: 3.5rem 0;
+  }
+  
+  .sobre-nosotros-cta {
+    padding: 4rem 1.8rem;
+    margin: 3.5rem 0;
+  }
+  
+  .cta-content h2 {
+    font-size: 2rem;
+  }
+  
+  .cta-content p {
+    font-size: 1.1rem;
+  }
+  
+  .contact-info {
+    padding: 2.2rem;
+  }
+  
+  .welcome-message h3 {
+    font-size: 1.7rem;
+  }
+}
+
 @media (max-width: 768px) {
   .sobre-nosotros-hero {
     padding: 4rem 1.5rem 3rem;
+    margin-bottom: 2rem;
   }
   
   .sobre-nosotros-hero h1 {
     font-size: 2.5rem;
+  }
+  
+  .sobre-nosotros-hero h1::after {
+    width: 70px;
+    height: 2.5px;
   }
   
   .sobre-nosotros-subtitulo {
@@ -338,18 +436,327 @@
   }
   
   .sobre-nosotros-contenido {
+    max-width: 540px;
     padding: 0 1.5rem 3rem;
   }
   
   .sobre-nosotros-tarjeta {
     padding: 1.8rem;
+    margin-bottom: 1.8rem;
+    border-radius: 12px;
+  }
+  
+  .sobre-nosotros-tarjeta h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .sobre-nosotros-tarjeta h2::after {
+    width: 50px;
+    height: 2.5px;
+  }
+  
+  .valores-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.2rem;
+    margin-top: 1.8rem;
+  }
+  
+  .valor-item {
+    padding: 1.5rem;
+    border-radius: 10px;
+  }
+  
+  .valor-icono {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .valor-item h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .sobre-nosotros-equipo {
+    padding: 2rem 1.5rem;
+    margin: 3rem 0;
+    border-radius: 12px;
   }
   
   .sobre-nosotros-cta {
     padding: 3rem 1.5rem;
+    margin: 3rem 0;
+    border-radius: 12px;
   }
   
   .cta-content h2 {
     font-size: 1.8rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .cta-content p {
+    font-size: 1rem;
+    margin-bottom: 1.8rem;
+  }
+  
+  .cta-button {
+    padding: 0.7rem 1.8rem;
+  }
+  
+  .contact-info {
+    padding: 2rem;
+    border-radius: 12px;
+    margin-top: 1.8rem;
+  }
+  
+  .welcome-message {
+    margin-bottom: 2rem;
+  }
+  
+  .welcome-message h3 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .welcome-message p {
+    font-size: 1rem;
+  }
+  
+  .business-hours {
+    margin-top: 1.2rem !important;
+    padding-top: 1rem;
+  }
+  
+  .contact-details {
+    padding: 1.5rem;
+    border-radius: 10px;
+  }
+  
+  .contact-details h4 {
+    font-size: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .contact-info-item {
+    font-size: 1rem;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .contact-icon {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .sobre-nosotros-hero {
+    padding: 3.5rem 1.2rem 2.5rem;
+    margin-bottom: 1.8rem;
+  }
+  
+  .sobre-nosotros-hero h1 {
+    font-size: 2.2rem;
+  }
+  
+  .sobre-nosotros-hero h1::after {
+    width: 60px;
+    height: 2px;
+    bottom: -8px;
+  }
+  
+  .sobre-nosotros-subtitulo {
+    font-size: 1.1rem;
+    margin-top: 0.8rem;
+  }
+  
+  .sobre-nosotros-contenido {
+    padding: 0 1.2rem 2.5rem;
+  }
+  
+  .sobre-nosotros-tarjeta {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 10px;
+  }
+  
+  .sobre-nosotros-tarjeta h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .sobre-nosotros-tarjeta h2::after {
+    width: 40px;
+    height: 2px;
+    bottom: -6px;
+  }
+  
+  .valores-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .valor-item {
+    padding: 1.3rem;
+    border-radius: 8px;
+  }
+  
+  .valor-icono {
+    font-size: 1.8rem;
+    margin-bottom: 0.7rem;
+  }
+  
+  .valor-item h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+  }
+  
+  .sobre-nosotros-equipo {
+    padding: 1.8rem 1.2rem;
+    margin: 2.5rem 0;
+    border-radius: 10px;
+  }
+  
+  .sobre-nosotros-cta {
+    padding: 2.5rem 1.2rem;
+    margin: 2.5rem 0;
+    border-radius: 10px;
+  }
+  
+  .cta-content h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .cta-content p {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .cta-button {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .contact-info {
+    padding: 1.8rem 1.2rem;
+    border-radius: 10px;
+    margin-top: 1.5rem;
+  }
+  
+  .welcome-message {
+    margin-bottom: 1.8rem;
+  }
+  
+  .welcome-message h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .welcome-message p {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+  
+  .business-hours {
+    margin-top: 1rem !important;
+    padding-top: 0.8rem;
+    font-size: 0.95rem;
+  }
+  
+  .contact-details {
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-top: 1.2rem;
+  }
+  
+  .contact-details h4 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+  }
+  
+  .contact-details h4::after {
+    width: 60px;
+  }
+  
+  .contact-info-item {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.8rem;
+    border-radius: 6px;
+  }
+  
+  .contact-icon {
+    font-size: 1.1rem;
+    margin-right: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sobre-nosotros-hero {
+    padding: 3rem 1rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .sobre-nosotros-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .sobre-nosotros-hero h1::after {
+    width: 50px;
+  }
+  
+  .sobre-nosotros-subtitulo {
+    font-size: 1rem;
+  }
+  
+  .sobre-nosotros-contenido {
+    padding: 0 1rem 2rem;
+  }
+  
+  .sobre-nosotros-tarjeta {
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .sobre-nosotros-tarjeta h2 {
+    font-size: 1.5rem;
+  }
+  
+  .sobre-nosotros-equipo {
+    padding: 1.5rem 1rem;
+    margin: 2rem 0;
+  }
+  
+  .sobre-nosotros-cta {
+    padding: 2rem 1rem;
+    margin: 2rem 0;
+  }
+  
+  .cta-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .cta-button {
+    padding: 0.5rem 1.3rem;
+    font-size: 0.9rem;
+  }
+  
+  .contact-info {
+    padding: 1.5rem 1rem;
+  }
+  
+  .welcome-message h3 {
+    font-size: 1.3rem;
+  }
+  
+  .contact-details {
+    padding: 1rem;
+  }
+  
+  .contact-info-item {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.7rem;
   }
 }
