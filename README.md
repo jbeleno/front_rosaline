@@ -1,72 +1,72 @@
 # front_gestion
 
-Tienda online desarrollada en React, conectada a Supabase y pensada para la gestión de productos, usuarios, pedidos y administración.
+Online store developed in React, connected to Supabase and designed for the management of products, users, orders, and administration.
 
-## 🚀 Instalación
+## 🚀 Installation
 
-1. **Clona el repositorio:**
+1. **Clone the repository:**
    ```bash
-   git clone <url-del-repo>
+   git clone <repo-url>
    cd front_gestion
    ```
 
-2. **Instala las dependencias:**
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-## 🧑‍💻 Scripts disponibles
+## 🧑‍💻 Available Scripts
 
-- `npm start` — Inicia la app en modo desarrollo.
-- `npm run build` — Genera la build de producción.
-- `npm test` — Ejecuta los tests.
-- `npm run eject` — Expone la configuración de Create React App.
+- `npm start` — Starts the app in development mode.
+- `npm run build` — Builds the app for production.
+- `npm test` — Runs the tests.
+- `npm run eject` — Exposes the Create React App configuration.
 
-## 🗂️ Estructura principal
+## 🗂️ Main Structure
 
-- `/src/components/` — Componentes principales (Home, Productos, Carrito, Login, Admin, etc).
-- `/src/styles/` — Archivos CSS para cada componente.
-- `/src/config/supabase.js` — Configuración de Supabase para conexión con el backend.
-- `/public/` — Archivos estáticos y HTML base.
+- `/src/components/` — Main components (Home, Products, Cart, Login, Admin, etc).
+- `/src/styles/` — CSS files for each component.
+- `/src/config/supabase.js` — Supabase configuration for backend connection.
+- `/public/` — Static files and base HTML.
 
-## 🛠️ Tecnologías y dependencias
+## 🛠️ Technologies and Dependencies
 
 - **React 19**
-- **React Router DOM 7** — Ruteo de páginas.
-- **Supabase JS** — Conexión a base de datos y autenticación.
-- **Framer Motion** — Animaciones.
-- **JWT Decode** — Decodificación de tokens de usuario.
-- **Testing Library** — Pruebas unitarias y de integración.
+- **React Router DOM 7** — Page routing.
+- **Supabase JS** — Database connection and authentication.
+- **Framer Motion** — Animations.
+- **JWT Decode** — User token decoding.
+- **Testing Library** — Unit and integration testing.
 
-## 🌐 Rutas principales
+## 🌐 Main Routes
 
-- `/` — Página de inicio.
-- `/productos` — Listado de productos.
-- `/categoria/:id` — Productos por categoría.
-- `/producto/:id` — Detalle de producto.
-- `/login` — Login y registro de usuario.
-- `/micuenta` — Panel de usuario.
-- `/admin` — Panel de administración.
-- `/carrito` — Carrito de compras.
-- `/pedido-confirmado/:id` — Confirmación de pedido.
+- `/` — Home page.
+- `/productos` — Product listing.
+- `/categoria/:id` — Products by category.
+- `/producto/:id` — Product details.
+- `/login` — User login and registration.
+- `/micuenta` — User panel.
+- `/admin` — Admin panel.
+- `/carrito` — Shopping cart.
+- `/pedido-confirmado/:id` — Order confirmation.
 
-## 🔒 Autenticación
+## 🔒 Authentication
 
-El login y registro se gestionan con Supabase y JWT. El token se almacena en localStorage y se decodifica para obtener los datos del usuario.
+Login and registration are managed with Supabase and JWT. The token is stored in localStorage and decoded to obtain user data.
 
-## 🛒 Funcionalidades destacadas
+## 🛒 Key Features
 
-- Gestión de productos y categorías (admin).
-- Carrito de compras y confirmación de pedidos.
-- Panel de usuario y panel de administración.
-- Filtros por categoría y búsqueda de productos.
-- Animaciones y diseño responsive.
+- Product and category management (admin).
+- Shopping cart and order confirmation.
+- User panel and admin panel.
+- Category filters and product search.
+- Animations and responsive design.
 
-## ⚙️ Despliegue en Vercel
+## ⚙️ Deployment on Vercel
 
-1. Sube el proyecto a un repositorio (GitHub, GitLab, etc).
-2. Conecta el repo a Vercel.
-3. Vercel detectará automáticamente el uso de React y ejecutará `npm run build`.
+1. Upload the project to a repository (GitHub, GitLab, etc).
+2. Connect the repo to Vercel.
+3. Vercel will automatically detect the use of React and run `npm run build`.
 
-**Importante:**  
-No subas la carpeta `node_modules` al repositorio. Asegúrate de que esté en tu `.gitignore`. 
+**Important:**  
+Do not upload the `node_modules` folder to the repository. Make sure it is in your `.gitignore`. 
