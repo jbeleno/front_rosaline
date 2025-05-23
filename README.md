@@ -1,4 +1,4 @@
-# front_gestion
+# front_rosaline
 
 Online store developed in React, connected to Supabase and designed for the management of products, users, orders, and administration.
 
