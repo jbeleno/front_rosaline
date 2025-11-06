@@ -42,7 +42,7 @@ const ProductoItem = ({ producto }) => {
       console.log('Usando imagen_url:', producto.imagen_url);
       return producto.imagen_url.startsWith('http') 
         ? producto.imagen_url 
-        : `https://backrosaline-production.up.railway.app${producto.imagen_url}`;
+        : `https://back-rosaline.onrender.com${producto.imagen_url}`;
     }
     
     // Si hay un campo 'imagen' con la URL
@@ -50,12 +50,12 @@ const ProductoItem = ({ producto }) => {
       console.log('Usando imagen:', producto.imagen);
       return producto.imagen.startsWith('http') 
         ? producto.imagen 
-        : `https://backrosaline-production.up.railway.app${producto.imagen}`;
+        : `https://back-rosaline.onrender.com${producto.imagen}`;
     }
     
     // Si hay un ID de producto, construimos la URL
     if (producto.id_producto) {
-      const url = `https://backrosaline-production.up.railway.app/productos/${producto.id_producto}/imagen`;
+      const url = `https://back-rosaline.onrender.com/productos/${producto.id_producto}/imagen`;
       console.log('Construyendo URL con id_producto:', url);
       return url;
     }
@@ -114,7 +114,7 @@ function ClienteCuenta() {
     
     const fetchCliente = async () => {
       try {
-        const response = await fetch(`https://backrosaline-production.up.railway.app/clientes/usuario/${usuario.id}`);
+        const response = await fetch(`https://back-rosaline.onrender.com/clientes/usuario/${usuario.id}`);
         const cli = await response.json();
         setCliente(cli);
         setForm({
@@ -140,14 +140,14 @@ function ClienteCuenta() {
 
   useEffect(() => {
     if (!cliente) return;
-    fetch(`https://backrosaline-production.up.railway.app/clientes/${cliente.id_cliente}/pedidos`)
+    fetch(`https://back-rosaline.onrender.com/clientes/${cliente.id_cliente}/pedidos`)
       .then(res => res.json())
       .then(setPedidos);
   }, [cliente]);
 
   const handleUpdate = async e => {
     e.preventDefault();
-    const res = await fetch(`https://backrosaline-production.up.railway.app/clientes/${cliente.id_cliente}`, {
+    const res = await fetch(`https://back-rosaline.onrender.com/clientes/${cliente.id_cliente}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -168,7 +168,7 @@ function ClienteCuenta() {
       setVerMas(verMas === id_pedido ? null : id_pedido);
       return;
     }
-    fetch(`https://backrosaline-production.up.railway.app/pedidos/${id_pedido}/productos`)
+    fetch(`https://back-rosaline.onrender.com/pedidos/${id_pedido}/productos`)
       .then(res => res.json())
       .then(productos => {
         console.log('Productos del pedido:', productos); // Depuración

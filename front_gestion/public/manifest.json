@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Rosaline Bakery",
+  "name": "Rosaline Bakery - Pastelería y Galletas Artesanales en Neiva",
+  "description": "Pastelería y galletaría artesanal en Neiva especializada en productos saludables y caseros",
   "icons": [
     {
       "src": "img/logo.png",
@@ -20,6 +21,8 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#8B4513",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "categories": ["food", "shopping"]
 }

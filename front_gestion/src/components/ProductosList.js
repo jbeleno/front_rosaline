@@ -1,14 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React from 'react';
+import { useProducts } from '../features/products/hooks/useProducts';
+import { LoadingSpinner } from '../shared/components/UI/LoadingSpinner';
+import { ErrorMessage } from '../shared/components/UI/ErrorMessage';
 import '../styles/ProductosList.css';
 
-function ProductosList() {
-  const [productos, setProductos] = useState([]);
+export default function ProductosList() {
+  const { productos, loading, error, refetch } = useProducts();
 
-  useEffect(() => {
-    fetch("https://backrosaline-production.up.railway.app/productos/")
-      .then(res => res.json())
-      .then(data => setProductos(data));
-  }, []);
+  if (loading) {
+    return (
+      <div className="productos-list-container">
+        <LoadingSpinner message="Cargando productos..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="productos-list-container">
+        <ErrorMessage 
+          message="Error al cargar productos" 
+          error={error}
+          onRetry={refetch}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="productos-list-container">
@@ -22,8 +39,11 @@ function ProductosList() {
           </div>
         ))}
       </div>
+      {productos.length === 0 && (
+        <p style={{ textAlign: 'center', marginTop: '2rem', color: '#666' }}>
+          No hay productos disponibles
+        </p>
+      )}
     </div>
   );
 }
-
-export default ProductosList;

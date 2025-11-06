@@ -1,35 +1,97 @@
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './App.css';
+import { ProtectedRoute } from './shared/components/Layout/ProtectedRoute';
+import { LoadingSpinner } from './shared/components/UI/LoadingSpinner';
+import { SchemaMarkup } from './shared/components/SEO/SchemaMarkup';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import Home from './components/Home';
-import ProductosList from './components/ProductosList';
-import CategoriaProductos from './components/CategoriaProductos';
-import VistaProducto from './components/VistaProducto';
-import LoginRegister from './components/LoginRegister';
-import ClienteCuenta from './components/ClienteCuenta';
-import AdminCuenta from './components/AdminCuenta';
-import Carrito from './components/Carrito';
-import PedidoConfirmado from './components/PedidoConfirmado';
-import SobreNosotros from './components/SobreNosotros';
+import './App.css';
+
+// ============================================
+// LAZY LOADING DE COMPONENTES
+// ============================================
+
+// Páginas públicas (carga ligera)
+const Home = React.lazy(() => import('./components/Home'));
+const ProductosList = React.lazy(() => import('./components/ProductosList'));
+const CategoriaProductos = React.lazy(() => import('./components/CategoriaProductos'));
+const VistaProducto = React.lazy(() => import('./components/VistaProducto'));
+const LoginRegister = React.lazy(() => import('./components/LoginRegister'));
+const SobreNosotros = React.lazy(() => import('./components/SobreNosotros'));
+
+// Páginas protegidas (carga solo cuando se necesita)
+const ClienteCuenta = React.lazy(() => import('./components/ClienteCuenta'));
+const Carrito = React.lazy(() => import('./components/Carrito'));
+const PedidoConfirmado = React.lazy(() => import('./components/PedidoConfirmado'));
+
+// Página de admin (carga solo para administradores)
+const AdminCuenta = React.lazy(() => import('./components/AdminCuenta'));
+
+// Componente de fallback mejorado
+const PageLoader = () => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '60vh',
+    flexDirection: 'column'
+  }}>
+    <LoadingSpinner message="Cargando página..." />
+  </div>
+);
 
 function App() {
   return (
     <BrowserRouter>
+      <SchemaMarkup />
       <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/productos" element={<ProductosList />} />
-        <Route path="/categoria/:id" element={<CategoriaProductos />} />
-        <Route path="/producto/:id" element={<VistaProducto />} />
-        <Route path="/login" element={<LoginRegister />} />
-        <Route path="/micuenta" element={<ClienteCuenta />} />
-        <Route path="/admin" element={<AdminCuenta />} />
-        <Route path="/carrito" element={<Carrito />} />
-        <Route path="/pedido-confirmado/:id" element={<PedidoConfirmado />} />
-        <Route path="/sobrenosotros" element={<SobreNosotros />} />
-        {/* Puedes agregar más rutas aquí */}
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Rutas públicas */}
+          <Route path="/" element={<Home />} />
+          <Route path="/productos" element={<ProductosList />} />
+          <Route path="/categoria/:id" element={<CategoriaProductos />} />
+          <Route path="/producto/:id" element={<VistaProducto />} />
+          <Route path="/login" element={<LoginRegister />} />
+          <Route path="/sobrenosotros" element={<SobreNosotros />} />
+
+          {/* Rutas protegidas */}
+          <Route 
+            path="/micuenta" 
+            element={
+              <ProtectedRoute>
+                <ClienteCuenta />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/carrito" 
+            element={
+              <ProtectedRoute>
+                <Carrito />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pedido-confirmado/:id" 
+            element={
+              <ProtectedRoute>
+                <PedidoConfirmado />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Ruta protegida para admin */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminCuenta />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </Suspense>
       <Footer />
     </BrowserRouter>
   );

@@ -1,5 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useProducts } from '../features/products/hooks/useProducts';
+import { useAuth } from '../features/auth/hooks/useAuth';
+import { useCart } from '../features/cart/hooks/useCart';
+import { debounce } from '../shared/utils/helpers';
 import '../styles/Header.css';
 
 // Import Poppins font
@@ -12,30 +16,26 @@ function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const [search, setSearch] = useState('');
-  const [productos, setProductos] = useState([]);
-  const [filtered, setFiltered] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const inputRef = useRef();
-  const [sesionIniciada, setSesionIniciada] = useState(false);
+  const { productos } = useProducts();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { itemCount } = useCart();
 
-  useEffect(() => {
-    fetch("https://backrosaline-production.up.railway.app/productos/")
-      .then(res => res.json())
-      .then(data => setProductos(data));
-  }, []);
-
-  useEffect(() => {
+  // Filtrar productos según búsqueda
+  const filtered = useMemo(() => {
     if (search.trim() === '') {
-      setFiltered([]);
-      setShowDropdown(false);
-      return;
+      return [];
     }
-    const results = productos.filter(p =>
-      p.nombre.toLowerCase().includes(search.toLowerCase())
-    );
-    setFiltered(results.slice(0, 5)); // máximo 5 sugerencias
-    setShowDropdown(results.length > 0);
+    return productos
+      .filter(p => p.nombre.toLowerCase().includes(search.toLowerCase()))
+      .slice(0, 5); // máximo 5 sugerencias
   }, [search, productos]);
+
+  // Mostrar dropdown cuando hay resultados
+  useEffect(() => {
+    setShowDropdown(filtered.length > 0 && search.trim() !== '');
+  }, [filtered, search]);
 
   // Cierra el dropdown si se hace click fuera
   useEffect(() => {
@@ -47,14 +47,6 @@ function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    setSesionIniciada(!!localStorage.getItem("usuario"));
-    // Escuchar cambios en localStorage (por ejemplo, logout en otra pestaña)
-    const handleStorage = () => setSesionIniciada(!!localStorage.getItem("usuario"));
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, [location]);
 
   const handleSelect = (id) => {
     setSearch('');
@@ -118,22 +110,37 @@ function Header() {
           )}
         </div>
         <div className="header-buttons">
-          <button className="header-btn" onClick={() => navigate('/carrito')}>Carrito</button>
+          {isAuthenticated && (
+            <button className="header-btn" onClick={() => navigate('/carrito')}>
+              Carrito {itemCount > 0 && `(${itemCount})`}
+            </button>
+          )}
           <button
             className="header-btn primary"
             onClick={() => {
-              const usuario = JSON.parse(localStorage.getItem("usuario"));
-              if (!usuario) {
+              if (!isAuthenticated) {
                 navigate('/login');
-              } else if (usuario.rol === 'admin') {
+              } else if (isAdmin) {
                 navigate('/admin');
               } else {
                 navigate('/micuenta');
               }
             }}
           >
-            {sesionIniciada ? 'Mi cuenta' : 'Iniciar sesión'}
+            {isAuthenticated ? 'Mi cuenta' : 'Iniciar sesión'}
           </button>
+          {isAuthenticated && (
+            <button
+              className="header-btn"
+              onClick={() => {
+                logout();
+                navigate('/');
+              }}
+              style={{ marginLeft: '0.5rem' }}
+            >
+              Salir
+            </button>
+          )}
         </div>
       </div>
       <div className="header-row header-categories-row">

@@ -1,21 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useProducts } from "../features/products/hooks/useProducts";
+import { LoadingSpinner } from "../shared/components/UI/LoadingSpinner";
 import "../styles/Home.css";
 
 function Home() {
-  const [productos, setProductos] = useState([]);
   const navigate = useNavigate();
+  const { productos: allProducts, loading } = useProducts();
 
-  useEffect(() => {
-    fetch("https://backrosaline-production.up.railway.app/productos/")
-      .then(res => res.json())
-      .then(data => {
-        // Selecciona 4 productos aleatorios
-        const shuffled = data.sort(() => 0.5 - Math.random());
-        setProductos(shuffled.slice(0, 4));
-      });
-  }, []);
+  // Selecciona 4 productos aleatorios
+  const productos = useMemo(() => {
+    if (!allProducts || allProducts.length === 0) return [];
+    const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 4);
+  }, [allProducts]);
+
+  if (loading) {
+    return (
+      <div className="home-container">
+        <LoadingSpinner message="Cargando productos destacados..." />
+      </div>
+    );
+  }
 
   return (
     <div className="home-container">

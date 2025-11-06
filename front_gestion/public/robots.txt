@@ -1,3 +1,19 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# Permitir todas las páginas públicas
+Allow: /productos
+Allow: /categoria/
+Allow: /producto/
+Allow: /sobrenosotros
+Allow: /login
+
+# Bloquear páginas privadas
+Disallow: /admin
+Disallow: /micuenta
+Disallow: /carrito
+Disallow: /pedido-confirmado/
+
+# Sitemap
+Sitemap: https://tu-dominio.com/sitemap.xml

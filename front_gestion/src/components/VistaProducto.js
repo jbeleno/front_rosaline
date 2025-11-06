@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useProduct } from "../features/products/hooks/useProduct";
+import { useCart } from "../features/cart/hooks/useCart";
+import { useAuth } from "../features/auth/hooks/useAuth";
+import { LoadingSpinner } from "../shared/components/UI/LoadingSpinner";
+import { ErrorMessage } from "../shared/components/UI/ErrorMessage";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../styles/VistaProducto.css";
@@ -7,141 +12,66 @@ import "../styles/VistaProducto.css";
 function VistaProducto() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [producto, setProducto] = useState(null);
+  const { product, loading, error } = useProduct(id);
+  const { addToCart, loading: cartLoading } = useCart();
+  const { isAuthenticated, cliente } = useAuth();
   const [cantidad, setCantidad] = useState(1);
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
-
-  useEffect(() => {
-    fetch(`https://backrosaline-production.up.railway.app/productos/`)
-      .then(res => res.json())
-      .then(data => {
-        const prod = data.find(p => p.id_producto === parseInt(id));
-        console.log('Producto encontrado:', prod); // Debug log
-        if (prod && prod.imagen_url) {
-          // Asegurarse de que la URL de la imagen sea accesible
-          if (!prod.imagen_url.startsWith('http')) {
-            // Si es una ruta relativa, agregar la URL base del backend
-            prod.imagen_url = `https://backrosaline-production.up.railway.app${prod.imagen_url.startsWith('/') ? '' : '/'}${prod.imagen_url}`;
-          }
-          console.log('URL de la imagen procesada:', prod.imagen_url); // Debug log
-        }
-        setProducto(prod);
-      })
-      .catch(error => console.error('Error al cargar el producto:', error));
-  }, [id]);
 
   const handleAddToCart = async (goToCart = false) => {
+    if (!isAuthenticated) {
+      toast.info('Por favor inicia sesión para continuar', {
+        position: "top-center",
+        autoClose: 3000,
+      });
+      navigate('/login');
+      return;
+    }
+
+    if (!cliente?.id_cliente) {
+      toast.error('Error: No se pudo obtener la información del cliente');
+      return;
+    }
+
     try {
-      if (!usuario) {
-        toast.info('Por favor inicia sesión para continuar', {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        navigate("/login");
-        return;
-      }
-      // 1. Obtener cliente
-      const clienteRes = await fetch(`https://backrosaline-production.up.railway.app/clientes/usuario/${usuario.id}`);
-      if (!clienteRes.ok) throw new Error("Error obteniendo cliente");
-      const cliente = await clienteRes.json();
-      // 2. Obtener carrito activo
-      const carritosRes = await fetch(`https://backrosaline-production.up.railway.app/clientes/${cliente.id_cliente}/carritos`);
-      if (!carritosRes.ok) throw new Error("Error obteniendo carritos");
-      const carritos = await carritosRes.json();
-      let carrito = carritos.find(c => c.estado === "activo");
-      // 3. Si no hay carrito activo, crearlo
-      if (!carrito) {
-        const bodyCarrito = { id_cliente: cliente.id_cliente, estado: "activo" };
-        console.log("Creando carrito con:", bodyCarrito);
-        const nuevoCarritoRes = await fetch(`https://backrosaline-production.up.railway.app/carritos/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bodyCarrito)
-        });
-        if (!nuevoCarritoRes.ok) throw new Error("Error creando carrito");
-        carrito = await nuevoCarritoRes.json();
-      }
-      // 4. Buscar si ya existe el producto en el carrito
-      const detallesRes = await fetch(`https://backrosaline-production.up.railway.app/detalle_carrito/`);
-      if (!detallesRes.ok) throw new Error("Error obteniendo detalles de carrito");
-      const detalles = await detallesRes.json();
-      const detalleExistente = detalles.find(d => d.id_carrito === carrito.id_carrito && d.id_producto === producto.id_producto);
-      if (detalleExistente) {
-        // Actualizar cantidad
-        const nuevaCantidad = detalleExistente.cantidad + Number(cantidad);
-        const bodyDetalle = {
-          id_carrito: carrito.id_carrito,
-          id_producto: producto.id_producto,
-          cantidad: nuevaCantidad,
-          precio_unitario: producto.precio,
-          subtotal: nuevaCantidad * producto.precio
-        };
-        console.log("Actualizando detalle_carrito con:", bodyDetalle);
-        const res = await fetch(`https://backrosaline-production.up.railway.app/detalle_carrito/${detalleExistente.id_detalle_carrito}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bodyDetalle)
-        });
-        if (!res.ok) throw new Error("Error actualizando detalle del carrito");
-      } else {
-        // Crear nuevo detalle
-        const bodyDetalle = {
-          id_carrito: carrito.id_carrito,
-          id_producto: producto.id_producto,
-          cantidad: Number(cantidad),
-          precio_unitario: producto.precio,
-          subtotal: Number(cantidad) * producto.precio
-        };
-        console.log("Creando detalle_carrito con:", bodyDetalle);
-        const res = await fetch(`https://backrosaline-production.up.railway.app/detalle_carrito/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bodyDetalle)
-        });
-        if (!res.ok) throw new Error("Error agregando producto al carrito");
-      }
+      await addToCart(product, cantidad, cliente.id_cliente);
+      
       if (goToCart) {
         toast.success('Redirigiendo al carrito...', {
           position: "top-center",
           autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          onClose: () => navigate("/carrito")
+          onClose: () => navigate('/carrito')
         });
       } else {
         toast.success('¡Producto añadido al carrito!', {
           position: "top-center",
           autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
         });
       }
     } catch (error) {
-      console.error("Error en handleAddToCart:", error);
       toast.error('Error al agregar el producto al carrito', {
         position: "top-center",
         autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
       });
     }
   };
 
-  if (!producto) return <div className="vista-producto-container">Cargando...</div>;
+  if (loading) {
+    return (
+      <div className="vista-producto-container">
+        <LoadingSpinner message="Cargando producto..." />
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="vista-producto-container">
+        <ErrorMessage 
+          message={error || 'Producto no encontrado'}
+        />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -159,11 +89,11 @@ function VistaProducto() {
       />
       <div className="vista-producto-container">
       <div className="vista-producto-img">
-        {producto.imagen_url ? (
+        {product.imagen_url ? (
           <div style={{ width: '430px', height: '430px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: '10px', backgroundColor: '#f5f5f5' }}>
             <img
-              src={producto.imagen_url}
-              alt={producto.nombre}
+              src={product.imagen_url}
+              alt={product.nombre}
               style={{ 
                 maxWidth: '100%', 
                 maxHeight: '100%', 
@@ -171,7 +101,7 @@ function VistaProducto() {
                 borderRadius: '10px'
               }}
               onError={(e) => {
-                console.error('Error al cargar la imagen:', producto.imagen_url);
+                console.error('Error al cargar la imagen:', product.imagen_url);
                 e.target.onerror = null;
                 e.target.src = 'https://via.placeholder.com/250?text=Imagen+no+disponible';
               }}
@@ -182,27 +112,40 @@ function VistaProducto() {
         )}
       </div>
       <div className="vista-producto-info">
-        <h1>{producto.nombre}</h1>
-        <p className="vista-producto-desc">{producto.descripcion}</p>
-        <p className="vista-producto-precio">${producto.precio}</p>
-        {producto.cantidad > 0 ? (
+        <h1>{product.nombre}</h1>
+        <p className="vista-producto-desc">{product.descripcion}</p>
+        <p className="vista-producto-precio">${product.precio}</p>
+        {product.cantidad > 0 ? (
           <>
             <div className="vista-producto-cantidad">
               <label>Cantidad: </label>
               <input
                 type="number"
                 min="1"
-                max={producto.cantidad}
+                max={product.cantidad}
                 value={cantidad}
                 onChange={e => {
-                  const val = Math.max(1, Math.min(producto.cantidad, Number(e.target.value)));
+                  const val = Math.max(1, Math.min(product.cantidad, Number(e.target.value)));
                   setCantidad(val);
                 }}
+                disabled={cartLoading}
               />
             </div>
             <div className="vista-producto-botones">
-              <button className="vista-producto-btn comprar" onClick={() => handleAddToCart(true)}>Comprar</button>
-              <button className="vista-producto-btn carrito" onClick={() => handleAddToCart(false)}>Agregar al carrito</button>
+              <button 
+                className="vista-producto-btn comprar" 
+                onClick={() => handleAddToCart(true)}
+                disabled={cartLoading}
+              >
+                {cartLoading ? 'Procesando...' : 'Comprar'}
+              </button>
+              <button 
+                className="vista-producto-btn carrito" 
+                onClick={() => handleAddToCart(false)}
+                disabled={cartLoading}
+              >
+                {cartLoading ? 'Agregando...' : 'Agregar al carrito'}
+              </button>
             </div>
           </>
         ) : (

@@ -2,72 +2,65 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaShoppingCart, FaLeaf, FaStar, FaRegClock, FaArrowRight } from "react-icons/fa";
+import { useProducts } from "../features/products/hooks/useProducts";
+import { categoriaService } from "../shared/services/api/categoriaService";
+import { LoadingSpinner } from "../shared/components/UI/LoadingSpinner";
+import { ErrorMessage } from "../shared/components/UI/ErrorMessage";
 import "../styles/CategoriaProductos.css";
 
 function CategoriaProductos() {
   const { id } = useParams();
-  const [categoria, setCategoria] = useState(null);
-  const [productos, setProductos] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [categoria, setCategoria] = useState(null);
+  const [isLoadingCategoria, setIsLoadingCategoria] = useState(true);
+  const [errorCategoria, setErrorCategoria] = useState(null);
+  
+  // Obtener productos filtrados por categoría
+  const { productos, loading: loadingProductos, error: errorProductos } = useProducts({ categoria: id });
 
+  // Obtener información de la categoría
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCategoria = async () => {
       try {
-        setIsLoading(true);
-        setError(null);
-        
-        // Obtener datos de la categoría
-        const [categoriasRes, productosRes] = await Promise.all([
-          fetch(`https://backrosaline-production.up.railway.app/categorias/`),
-          fetch(`https://backrosaline-production.up.railway.app/categorias/${id}/productos`)
-        ]);
-
-        if (!categoriasRes.ok || !productosRes.ok) {
-          throw new Error('Error al cargar los datos');
-        }
-
-        const categoriasData = await categoriasRes.json();
-        const productosData = await productosRes.json();
-
-        const cat = categoriasData.find(c => c.id_categoria === parseInt(id));
+        setIsLoadingCategoria(true);
+        setErrorCategoria(null);
+        const cat = await categoriaService.getById(id);
         if (!cat) {
           throw new Error('Categoría no encontrada');
         }
-
         setCategoria(cat);
-        setProductos(productosData);
       } catch (err) {
         console.error('Error:', err);
-        setError('No se pudieron cargar los productos. Por favor, intente de nuevo más tarde.');
+        setErrorCategoria(err.message || 'Error al cargar la categoría');
       } finally {
-        setIsLoading(false);
+        setIsLoadingCategoria(false);
       }
     };
 
-    fetchData();
+    if (id) {
+      fetchCategoria();
+    }
   }, [id]);
+
+  const isLoading = isLoadingCategoria || loadingProductos;
+  const error = errorCategoria || errorProductos;
 
   if (isLoading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Cargando productos...</p>
+      <div className="categoria-productos-container">
+        <LoadingSpinner message="Cargando productos..." />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="error-container">
-        <p className="error-message">{error}</p>
-        <button 
-          className="retry-button"
-          onClick={() => window.location.reload()}
-        >
-          Reintentar
-        </button>
+      <div className="categoria-productos-container">
+        <ErrorMessage 
+          message="Error al cargar los productos" 
+          error={error}
+          onRetry={() => window.location.reload()}
+        />
       </div>
     );
   }

@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../features/auth/hooks/useAuth";
 import "../styles/LoginRegister.css";
 
 function LoginRegister() {
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState({ correo: "", contraseña: "", nombre: "", apellido: "", telefono: "", direccion: "" });
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, login, register, loading } = useAuth();
 
-  // Si ya hay sesión, redirige a home
+  // Si ya hay sesión, redirige a home o a la página desde donde vino
   useEffect(() => {
-    if (localStorage.getItem("usuario")) {
-      navigate("/");
+    if (isAuthenticated) {
+      const from = location.state?.from?.pathname || "/";
+      navigate(from, { replace: true });
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate, location]);
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -23,88 +25,25 @@ function LoginRegister() {
 
   const handleLogin = async e => {
     e.preventDefault();
-    setLoading(true);
     setError("");
-    try {
-      const res = await fetch("https://backrosaline-production.up.railway.app/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          correo: form.correo,
-          contraseña: form.contraseña
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("token", data.access_token);
-        // Decodificar el token para obtener datos del usuario
-        const decoded = jwtDecode(data.access_token);
-        localStorage.setItem("usuario", JSON.stringify({
-          id: decoded.id_usuario,
-          correo: decoded.sub,
-          rol: decoded.rol
-        }));
-        navigate("/");
-      } else if (res.status === 401) {
-        setError("Correo o contraseña incorrectos.");
-      } else {
-        setError("Error al iniciar sesión.");
-      }
-    } catch {
-      setError("Error al iniciar sesión.");
+    const result = await login(form.correo, form.contraseña);
+    if (!result.success) {
+      setError(result.error || "Correo o contraseña incorrectos.");
     }
-    setLoading(false);
   };
 
   const handleRegister = async e => {
     e.preventDefault();
-    setLoading(true);
     setError("");
-    try {
-      // 1. Crear usuario
-      const usuarioRes = await fetch("https://backrosaline-production.up.railway.app/usuarios/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          correo: form.correo,
-          contraseña: form.contraseña,
-          rol: "cliente"
-        })
-      });
-      if (!usuarioRes.ok) {
-        setError("El correo ya está registrado.");
-        setLoading(false);
-        return;
-      }
-      const usuario = await usuarioRes.json();
-
-      // 2. Crear cliente
-      const clienteRes = await fetch("https://backrosaline-production.up.railway.app/clientes/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id_usuario: usuario.id_usuario,
-          nombre: form.nombre,
-          apellido: form.apellido,
-          telefono: form.telefono,
-          direccion: form.direccion
-        })
-      });
-      if (!clienteRes.ok) {
-        setError("Error al crear el cliente.");
-        setLoading(false);
-        return;
-      }
-      await clienteRes.json();
-      localStorage.setItem("usuario", JSON.stringify({
-        id: usuario.id_usuario,
-        rol: usuario.rol
-      }));
-      navigate("/");
-    } catch {
-      setError("Error al registrarse.");
+    const result = await register(form.correo, form.contraseña, {
+      nombre: form.nombre,
+      apellido: form.apellido,
+      telefono: form.telefono,
+      direccion: form.direccion
+    });
+    if (!result.success) {
+      setError(result.error || "Error al registrarse.");
     }
-    setLoading(false);
   };
 
   return (
@@ -166,6 +105,7 @@ function LoginRegister() {
           <button type="submit" disabled={loading}>
             {loading ? "Cargando..." : isLogin ? "Iniciar sesión" : "Registrarse"}
           </button>
+          {loading && <div className="login-loading">Procesando...</div>}
         </form>
         <div className="login-toggle">
           {isLogin ? (
