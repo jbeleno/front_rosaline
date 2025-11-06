@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/ErrorMessage.css';
+import './ErrorMessage.css';
 
 export function ErrorMessage({ message = 'Ha ocurrido un error', error, onRetry }) {
   return (
