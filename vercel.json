@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd front_gestion && npm run build",
+  "outputDirectory": "front_gestion/build",
+  "installCommand": "cd front_gestion && npm install",
+  "framework": "create-react-app",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
