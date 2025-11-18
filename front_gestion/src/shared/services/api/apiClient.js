@@ -3,7 +3,7 @@
  * Maneja errores, headers y configuración común
  */
 
-const API_BASE_URL = 'https://back-rosaline.onrender.com';
+const API_BASE_URL = 'http://3.137.201.203';
 
 class ApiClient {
   constructor(baseURL = API_BASE_URL) {
@@ -31,6 +31,8 @@ class ApiClient {
    * Manejar respuesta de la API
    */
   async handleResponse(response) {
+    console.log(`[API Client] Response status: ${response.status}`, response.url);
+    
     if (!response.ok) {
       let errorMessage = 'Error en la petición';
       
@@ -38,34 +40,69 @@ class ApiClient {
         const errorData = await response.json();
         errorMessage = errorData.message || errorData.error || errorMessage;
       } catch {
-        errorMessage = `Error ${response.status}: ${response.statusText}`;
+        const text = await response.text();
+        errorMessage = `Error ${response.status}: ${response.statusText}. ${text}`;
       }
 
+      console.error(`[API Client] Error:`, errorMessage);
       throw new Error(errorMessage);
     }
 
+    // Verificar content-type
+    const contentType = response.headers.get('content-type') || '';
+    
     // Si la respuesta está vacía, retornar null
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
+    if (!contentType.includes('application/json')) {
+      const text = await response.text();
+      console.warn(`[API Client] Response is not JSON, content-type: ${contentType}`);
+      
+      // Si hay texto, intentar parsearlo como JSON
+      if (text.trim()) {
+        try {
+          return JSON.parse(text);
+        } catch {
+          return null;
+        }
+      }
       return null;
     }
 
-    return response.json();
+    try {
+      const data = await response.json();
+      console.log(`[API Client] Success:`, data?.length || 'Data received');
+      return data;
+    } catch (error) {
+      console.error(`[API Client] Error parsing JSON:`, error);
+      throw new Error('Error al parsear la respuesta del servidor');
+    }
   }
 
   /**
    * Realizar petición GET
    */
   async get(endpoint) {
+    const fullUrl = `${this.baseURL}${endpoint}`;
+    console.log(`[API Client] GET request to:`, fullUrl);
+    
     try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
+      // Agregar timeout para evitar esperas infinitas
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
+      
+      const response = await fetch(fullUrl, {
         method: 'GET',
         headers: this.getHeaders(),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
       return await this.handleResponse(response);
     } catch (error) {
-      console.error(`Error en GET ${endpoint}:`, error);
+      if (error.name === 'AbortError') {
+        console.error(`[API Client] Timeout en GET ${endpoint} después de 30 segundos`);
+        throw new Error('La petición tardó demasiado. El servidor puede estar inactivo.');
+      }
+      console.error(`[API Client] Error en GET ${endpoint}:`, error);
       throw error;
     }
   }

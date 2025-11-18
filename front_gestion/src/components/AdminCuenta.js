@@ -48,17 +48,17 @@ function AdminCuenta() {
 
   // Cargar datos iniciales
   useEffect(() => {
-    fetch("https://back-rosaline.onrender.com/productos/").then(res => res.json()).then(setProductos);
-    fetch("https://back-rosaline.onrender.com/categorias/").then(res => res.json()).then(setCategorias);
-    fetch("https://back-rosaline.onrender.com/pedidos/").then(res => res.json()).then(setPedidos);
+    fetch("http://3.137.201.203/productos/").then(res => res.json()).then(setProductos);
+    fetch("http://3.137.201.203/categorias/").then(res => res.json()).then(setCategorias);
+    fetch("http://3.137.201.203/pedidos/").then(res => res.json()).then(setPedidos);
   }, []);
 
   // Filtrar pedidos por estado
   useEffect(() => {
     if (filtroEstado) {
-      fetch(`https://back-rosaline.onrender.com/pedidos/estado/${filtroEstado}`).then(res => res.json()).then(setPedidos);
+      fetch(`http://3.137.201.203/pedidos/estado/${filtroEstado}`).then(res => res.json()).then(setPedidos);
     } else {
-      fetch("https://back-rosaline.onrender.com/pedidos/").then(res => res.json()).then(setPedidos);
+      fetch("http://3.137.201.203/pedidos/").then(res => res.json()).then(setPedidos);
     }
   }, [filtroEstado]);
 
@@ -107,7 +107,7 @@ function AdminCuenta() {
     e.preventDefault();
     
     // 1. Crear el producto primero para obtener el id
-    const res = await fetch("https://back-rosaline.onrender.com/productos/", {
+    const res = await fetch("http://3.137.201.203/productos/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...nuevoProducto, imagen_url: "" })
@@ -122,12 +122,12 @@ function AdminCuenta() {
         imagenUrl = await uploadImage(selectedFile, prod.id_producto);
         if (!imagenUrl) {
           // Si falla la subida de la imagen, eliminar el producto creado
-          await fetch(`https://back-rosaline.onrender.com/productos/${prod.id_producto}`, { method: "DELETE" });
+          await fetch(`http://3.137.201.203/productos/${prod.id_producto}`, { method: "DELETE" });
           return;
         }
         
         // Actualizar el producto con la url de la imagen
-        const updateRes = await fetch(`https://back-rosaline.onrender.com/productos/${prod.id_producto}`, {
+        const updateRes = await fetch(`http://3.137.201.203/productos/${prod.id_producto}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...prod, imagen_url: imagenUrl })
@@ -191,7 +191,7 @@ function AdminCuenta() {
         imagen_url: imagenUrl
       };
 
-      const res = await fetch(`https://back-rosaline.onrender.com/productos/${id}`, {
+      const res = await fetch(`http://3.137.201.203/productos/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productoData)
@@ -206,7 +206,7 @@ function AdminCuenta() {
         setSelectedFile(null);
         
         // Recargar la lista completa de productos para asegurar que todo está actualizado
-        const productosRes = await fetch("https://back-rosaline.onrender.com/productos/");
+        const productosRes = await fetch("http://3.137.201.203/productos/");
         if (productosRes.ok) {
           const productosActualizados = await productosRes.json();
           setProductos(productosActualizados);
@@ -261,14 +261,14 @@ function AdminCuenta() {
       }
 
       // 3. Eliminar el producto de la base de datos
-      const deleteRes = await fetch(`https://back-rosaline.onrender.com/productos/${id}`, { 
+      const deleteRes = await fetch(`http://3.137.201.203/productos/${id}`, { 
         method: "DELETE" 
       });
       
       if (!deleteRes.ok) throw new Error('Error al eliminar el producto');
 
       // 4. Actualizar la lista de productos
-      const productosRes = await fetch("https://back-rosaline.onrender.com/productos/");
+      const productosRes = await fetch("http://3.137.201.203/productos/");
       if (productosRes.ok) {
         const productosActualizados = await productosRes.json();
         setProductos(productosActualizados);
@@ -282,7 +282,7 @@ function AdminCuenta() {
   // CRUD Categorías
   const handleCrearCategoria = async e => {
     e.preventDefault();
-    const res = await fetch("https://back-rosaline.onrender.com/categorias/", {
+    const res = await fetch("http://3.137.201.203/categorias/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(nuevaCategoria)
@@ -295,7 +295,7 @@ function AdminCuenta() {
   };
 
   const handleEliminarCategoria = async id => {
-    await fetch(`https://back-rosaline.onrender.com/categorias/${id}`, { method: "DELETE" });
+    await fetch(`http://3.137.201.203/categorias/${id}`, { method: "DELETE" });
     setCategorias(categorias.filter(c => c.id_categoria !== id));
   };
 
@@ -309,7 +309,7 @@ function AdminCuenta() {
   };
 
   const handleActualizarCategoria = async id => {
-    const res = await fetch(`https://back-rosaline.onrender.com/categorias/${id}`, {
+    const res = await fetch(`http://3.137.201.203/categorias/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(categoriaEdit)
@@ -326,7 +326,7 @@ function AdminCuenta() {
   const handleActualizarEstado = async (id_pedido, nuevoEstado) => {
     const pedido = pedidos.find(p => p.id_pedido === id_pedido);
     if (!pedido) return;
-    const res = await fetch(`https://back-rosaline.onrender.com/pedidos/${id_pedido}`, {
+    const res = await fetch(`http://3.137.201.203/pedidos/${id_pedido}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...pedido, estado: nuevoEstado })
@@ -349,7 +349,7 @@ function AdminCuenta() {
     }
     // Obtener detalles y productos
       try {
-        const detallesRes = await fetch(`https://back-rosaline.onrender.com/detalle_pedidos/`);
+        const detallesRes = await fetch(`http://3.137.201.203/detalle_pedidos/`);
         if (!detallesRes.ok) throw new Error('Error al cargar los detalles del pedido');
         
         const detallesAll = await detallesRes.json();
@@ -359,7 +359,7 @@ function AdminCuenta() {
           : [];
           
         // Get products
-        const productosRes = await fetch(`https://back-rosaline.onrender.com/pedidos/${id_pedido}/productos`);
+        const productosRes = await fetch(`http://3.137.201.203/pedidos/${id_pedido}/productos`);
         if (!productosRes.ok) throw new Error('Error al cargar los productos del pedido');
         
         const productos = await productosRes.json();

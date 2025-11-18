@@ -3,7 +3,7 @@
  */
 
 export const APP_CONFIG = {
-  API_BASE_URL: 'https://back-rosaline.onrender.com',
+  API_BASE_URL: 'http://3.137.201.203',
   APP_NAME: 'Rosaline Bakery',
 };
 

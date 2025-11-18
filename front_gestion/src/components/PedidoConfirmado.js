@@ -11,21 +11,21 @@ function PedidoConfirmado() {
 
   useEffect(() => {
     // Obtener pedido
-    fetch(`https://back-rosaline.onrender.com/pedidos/`)
+    fetch(`http://3.137.201.203/pedidos/`)
       .then(res => res.json())
       .then(data => {
         const p = data.find(p => p.id_pedido === parseInt(id));
         setPedido(p);
       });
     // Obtener detalles del pedido
-    fetch(`https://back-rosaline.onrender.com/detalle_pedidos/`)
+    fetch(`http://3.137.201.203/detalle_pedidos/`)
       .then(res => res.json())
       .then(data => {
         const detallesPedido = data.filter(d => d.id_pedido === parseInt(id));
         setDetalles(detallesPedido);
       });
     // Obtener productos del pedido
-    fetch(`https://back-rosaline.onrender.com/pedidos/${id}/productos`)
+    fetch(`http://3.137.201.203/pedidos/${id}/productos`)
       .then(res => res.json())
       .then(setProductos);
   }, [id]);

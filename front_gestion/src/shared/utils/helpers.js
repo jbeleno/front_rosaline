@@ -15,7 +15,7 @@ export function formatPrice(price) {
 /**
  * Normalizar URL de imagen
  */
-export function normalizeImageUrl(url, baseUrl = 'https://back-rosaline.onrender.com') {
+export function normalizeImageUrl(url, baseUrl = 'http://3.137.201.203') {
   if (!url) return null;
   
   if (url.startsWith('http')) {
