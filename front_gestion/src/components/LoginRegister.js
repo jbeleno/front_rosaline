@@ -5,8 +5,9 @@ import "../styles/LoginRegister.css";
 
 function LoginRegister() {
   const [isLogin, setIsLogin] = useState(true);
-  const [form, setForm] = useState({ correo: "", contraseña: "", nombre: "", apellido: "", telefono: "", direccion: "" });
+  const [form, setForm] = useState({ correo: "", contraseña: "" });
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, login, register, loading } = useAuth();
@@ -21,11 +22,15 @@ function LoginRegister() {
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    // Limpiar mensajes al cambiar campos
+    setError("");
+    setSuccessMessage("");
   };
 
   const handleLogin = async e => {
     e.preventDefault();
     setError("");
+    setSuccessMessage("");
     const result = await login(form.correo, form.contraseña);
     if (!result.success) {
       setError(result.error || "Correo o contraseña incorrectos.");
@@ -35,13 +40,18 @@ function LoginRegister() {
   const handleRegister = async e => {
     e.preventDefault();
     setError("");
-    const result = await register(form.correo, form.contraseña, {
-      nombre: form.nombre,
-      apellido: form.apellido,
-      telefono: form.telefono,
-      direccion: form.direccion
-    });
-    if (!result.success) {
+    setSuccessMessage("");
+    const result = await register(form.correo, form.contraseña);
+    if (result.success) {
+      setSuccessMessage("¡Registro exitoso! Se ha enviado un email de confirmación a tu correo. Por favor, revisa tu bandeja de entrada y confirma tu cuenta antes de iniciar sesión.");
+      // Limpiar formulario
+      setForm({ correo: "", contraseña: "" });
+      // Cambiar a login después de 5 segundos
+      setTimeout(() => {
+        setIsLogin(true);
+        setSuccessMessage("");
+      }, 5000);
+    } else {
       setError(result.error || "Error al registrarse.");
     }
   };
@@ -66,42 +76,16 @@ function LoginRegister() {
             value={form.contraseña}
             onChange={handleChange}
             required
+            minLength={8}
           />
-          {!isLogin && (
-            <>
-              <input
-                type="text"
-                name="nombre"
-                placeholder="Nombre"
-                value={form.nombre}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="apellido"
-                placeholder="Apellido"
-                value={form.apellido}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="telefono"
-                placeholder="Teléfono"
-                value={form.telefono}
-                onChange={handleChange}
-              />
-              <input
-                type="text"
-                name="direccion"
-                placeholder="Dirección"
-                value={form.direccion}
-                onChange={handleChange}
-              />
-            </>
-          )}
           {error && <div className="login-error">{error}</div>}
+          {successMessage && <div className="login-success">{successMessage}</div>}
+          {!isLogin && (
+            <div className="login-info">
+              <p>Al registrarte, recibirás un email de confirmación. Debes confirmar tu cuenta antes de iniciar sesión.</p>
+              <p>Puedes completar tu perfil (nombre, apellido, teléfono, dirección) después de confirmar tu cuenta en "Mi Cuenta".</p>
+            </div>
+          )}
           <button type="submit" disabled={loading}>
             {loading ? "Cargando..." : isLogin ? "Iniciar sesión" : "Registrarse"}
           </button>
@@ -111,12 +95,16 @@ function LoginRegister() {
           {isLogin ? (
             <>
               ¿No tienes cuenta?{" "}
-              <span onClick={() => setIsLogin(false)}>Regístrate</span>
+              <span onClick={() => { setIsLogin(false); setError(""); setSuccessMessage(""); }}>Regístrate</span>
+              {" | "}
+              <span onClick={() => navigate("/recuperar-contraseña")} style={{ cursor: "pointer", color: "#d4a574" }}>
+                ¿Olvidaste tu contraseña?
+              </span>
             </>
           ) : (
             <>
               ¿Ya tienes cuenta?{" "}
-              <span onClick={() => setIsLogin(true)}>Inicia sesión</span>
+              <span onClick={() => { setIsLogin(true); setError(""); setSuccessMessage(""); }}>Inicia sesión</span>
             </>
           )}
         </div>

@@ -18,11 +18,14 @@ const CategoriaProductos = React.lazy(() => import('./components/CategoriaProduc
 const VistaProducto = React.lazy(() => import('./components/VistaProducto'));
 const LoginRegister = React.lazy(() => import('./components/LoginRegister'));
 const SobreNosotros = React.lazy(() => import('./components/SobreNosotros'));
+const ConfirmarCuenta = React.lazy(() => import('./components/ConfirmarCuenta'));
+const RecuperarContraseña = React.lazy(() => import('./components/RecuperarContraseña'));
 
 // Páginas protegidas (carga solo cuando se necesita)
 const ClienteCuenta = React.lazy(() => import('./components/ClienteCuenta'));
 const Carrito = React.lazy(() => import('./components/Carrito'));
 const PedidoConfirmado = React.lazy(() => import('./components/PedidoConfirmado'));
+const CambiarContraseña = React.lazy(() => import('./components/CambiarContraseña'));
 
 // Página de admin (carga solo para administradores)
 const AdminCuenta = React.lazy(() => import('./components/AdminCuenta'));
@@ -54,6 +57,8 @@ function App() {
           <Route path="/producto/:id" element={<VistaProducto />} />
           <Route path="/login" element={<LoginRegister />} />
           <Route path="/sobrenosotros" element={<SobreNosotros />} />
+          <Route path="/confirmar-cuenta" element={<ConfirmarCuenta />} />
+          <Route path="/recuperar-contraseña" element={<RecuperarContraseña />} />
 
           {/* Rutas protegidas */}
           <Route 
@@ -77,6 +82,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <PedidoConfirmado />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cambiar-contraseña" 
+            element={
+              <ProtectedRoute>
+                <CambiarContraseña />
               </ProtectedRoute>
             } 
           />

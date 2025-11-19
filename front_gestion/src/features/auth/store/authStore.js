@@ -164,35 +164,20 @@ const useAuthStore = create(
       },
 
       // Registro
-      register: async (email, password, userData) => {
+      register: async (email, password) => {
         set({ loading: true, error: null });
         try {
-          // Crear usuario en backend
+          // Crear usuario en backend (el backend envía email de confirmación automáticamente)
           const usuario = await apiClient.post(API_ENDPOINTS.USUARIOS, {
             correo: email,
             contraseña: password,
             rol: 'cliente',
           });
 
-          // Crear cliente (solo si se proporcionaron datos del cliente)
-          if (userData && (userData.nombre || userData.apellido || userData.telefono || userData.direccion)) {
-            try {
-              await apiClient.post(API_ENDPOINTS.CLIENTES, {
-                id_usuario: usuario.id_usuario,
-                nombre: userData.nombre || '',
-                apellido: userData.apellido || '',
-                telefono: userData.telefono || '',
-                direccion: userData.direccion || '',
-              });
-            } catch (clienteError) {
-              // Si falla la creación del cliente, continuar con el login
-              // El cliente puede completar su perfil después
-              console.warn('No se pudo crear el perfil de cliente:', clienteError);
-            }
-          }
-
-          // Login automático después del registro
-          return await get().login(email, password);
+          // NO hacer login automático - el usuario debe confirmar su email primero
+          // El usuario puede completar su perfil después de confirmar su cuenta
+          set({ loading: false, isAuthenticated: false });
+          return { success: true, usuario };
         } catch (error) {
           const errorMessage = error.message || 'Error al registrarse';
           set({ error: errorMessage, loading: false, isAuthenticated: false });

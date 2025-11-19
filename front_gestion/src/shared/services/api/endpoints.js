@@ -13,6 +13,16 @@ export const API_ENDPOINTS = {
   USUARIOS: '/usuarios/',
   USUARIO_BY_ID: (id) => `/usuarios/${id}`,
   
+  // Confirmación de cuenta
+  CONFIRMAR_CUENTA: '/usuarios/confirmar-cuenta',
+  REENVIAR_CONFIRMACION: '/usuarios/reenviar-confirmacion',
+  
+  // Recuperación de contraseña
+  SOLICITAR_RECUPERACION: '/usuarios/solicitar-recuperacion',
+  VALIDAR_PIN: '/usuarios/validar-pin',
+  CAMBIAR_CONTRASEÑA: '/usuarios/cambiar-contraseña',
+  CAMBIAR_CONTRASEÑA_AUTENTICADO: '/usuarios/cambiar-contraseña-autenticado',
+  
   // Clientes
   CLIENTES: '/clientes/',
   CLIENTE_BY_ID: (id) => `/clientes/${id}`,

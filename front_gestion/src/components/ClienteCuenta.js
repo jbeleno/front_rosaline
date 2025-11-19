@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/ClienteCuenta.css";
 import { useNavigate } from "react-router-dom";
-import { FaUserEdit, FaSignOutAlt, FaChevronDown, FaChevronUp, FaBoxOpen, FaEdit, FaTimes, FaCheck, FaBox, FaTruck, FaHome, FaCreditCard, FaCalendarAlt } from "react-icons/fa";
+import { FaUserEdit, FaSignOutAlt, FaChevronDown, FaChevronUp, FaBoxOpen, FaEdit, FaTimes, FaCheck, FaBox, FaTruck, FaHome, FaCreditCard, FaCalendarAlt, FaKey } from "react-icons/fa";
 import { apiClient } from '../shared/services/api/apiClient';
 import { API_ENDPOINTS } from '../shared/services/api/endpoints';
 import useAuthStore from '../features/auth/store/authStore';
@@ -405,6 +405,12 @@ function ClienteCuenta() {
                 className="button button-primary"
               >
                 <FaEdit /> Editar información
+              </button>
+              <button 
+                onClick={() => navigate("/cambiar-contraseña")} 
+                className="button button-outline"
+              >
+                <FaKey /> Cambiar contraseña
               </button>
             </div>
           </>

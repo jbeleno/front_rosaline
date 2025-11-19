@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.recuperar-contraseña-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f9f2ff 0%, #ffffff 100%);
+  padding: 2rem;
+}
+
+.recuperar-contraseña-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(139, 95, 191, 0.15);
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 500px;
+  border: 1px solid #F0E6F6;
+  animation: fadeInUp 0.6s ease-out;
+  position: relative;
+}
+
+.recuperar-contraseña-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #D4A5E5, #8B5FBF);
+  border-radius: 12px 12px 0 0;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recuperar-contraseña-card h2 {
+  color: #4A4A4A;
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.recuperar-contraseña-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-icon {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.form-icon svg {
+  font-size: 3rem;
+  color: #8B5FBF;
+}
+
+.recuperar-contraseña-card p {
+  color: #4A4A4A;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.recuperar-contraseña-card input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid #F0E6F6;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.recuperar-contraseña-card input:focus {
+  outline: none;
+  border-color: #8B5FBF;
+  box-shadow: 0 0 0 3px rgba(139, 95, 191, 0.1);
+}
+
+.error-message {
+  background: #FFEBEE;
+  color: #C62828;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #EF9A9A;
+  font-size: 0.9rem;
+}
+
+.success-message {
+  background: #E8F5E9;
+  color: #2E7D32;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #A5D6A7;
+  font-size: 0.9rem;
+}
+
+.button {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.button-primary {
+  background: linear-gradient(135deg, #8B5FBF 0%, #D4A5E5 100%);
+  color: white;
+}
+
+.button-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 95, 191, 0.3);
+}
+
+.button-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-outline {
+  background: transparent;
+  color: #8B5FBF;
+  border: 2px solid #8B5FBF;
+}
+
+.button-outline:hover {
+  background: #8B5FBF;
+  color: white;
+}
+
