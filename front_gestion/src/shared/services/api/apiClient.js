@@ -35,17 +35,24 @@ class ApiClient {
     
     if (!response.ok) {
       let errorMessage = 'Error en la petición';
+      let errorDetail = null;
       
       try {
         const errorData = await response.json();
-        errorMessage = errorData.message || errorData.error || errorMessage;
+        errorMessage = errorData.detail || errorData.message || errorData.error || errorMessage;
+        errorDetail = errorData;
       } catch {
         const text = await response.text();
-        errorMessage = `Error ${response.status}: ${response.statusText}. ${text}`;
+        errorMessage = `Error ${response.status}: ${response.statusText}. ${text || ''}`;
       }
 
-      console.error(`[API Client] Error:`, errorMessage);
-      throw new Error(errorMessage);
+      // Crear error con información del status
+      const error = new Error(errorMessage);
+      error.status = response.status;
+      error.detail = errorDetail;
+      
+      console.error(`[API Client] Error ${response.status}:`, errorMessage);
+      throw error;
     }
 
     // Verificar content-type

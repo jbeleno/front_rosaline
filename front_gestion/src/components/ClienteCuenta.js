@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import "../styles/ClienteCuenta.css";
 import { useNavigate } from "react-router-dom";
 import { FaUserEdit, FaSignOutAlt, FaChevronDown, FaChevronUp, FaBoxOpen, FaEdit, FaTimes, FaCheck, FaBox, FaTruck, FaHome, FaCreditCard, FaCalendarAlt } from "react-icons/fa";
+import { apiClient } from '../shared/services/api/apiClient';
+import { API_ENDPOINTS } from '../shared/services/api/endpoints';
+import useAuthStore from '../features/auth/store/authStore';
 
 // Componente para mostrar el estado del pedido con un ícono y color según el estado
 const EstadoPedido = ({ estado }) => {
@@ -108,14 +111,17 @@ function ClienteCuenta() {
     return u ? JSON.parse(u) : null;
   });
   const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
 
   useEffect(() => {
-    if (!usuario) return;
+    if (!usuario) {
+      setIsLoading(false);
+      return;
+    }
     
     const fetchCliente = async () => {
       try {
-        const response = await fetch(`https://api.rosalinebakery.me/clientes/usuario/${usuario.id}`);
-        const cli = await response.json();
+        const cli = await apiClient.get(API_ENDPOINTS.CLIENTE_BY_USUARIO(usuario.id));
         setCliente(cli);
         setForm({
           nombre: cli.nombre,
@@ -124,7 +130,19 @@ function ClienteCuenta() {
           direccion: cli.direccion || ''
         });
       } catch (error) {
-        console.error('Error al cargar los datos del cliente:', error);
+        // Si el cliente no existe (404), mostrar mensaje pero no fallar
+        if (error.status === 404) {
+          console.log('Cliente no encontrado - el usuario puede completar su perfil');
+          setCliente(null);
+          setForm({
+            nombre: '',
+            apellido: '',
+            telefono: '',
+            direccion: ''
+          });
+        } else {
+          console.error('Error al cargar los datos del cliente:', error);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -139,51 +157,151 @@ function ClienteCuenta() {
   }, []);
 
   useEffect(() => {
-    if (!cliente) return;
-    fetch(`https://api.rosalinebakery.me/clientes/${cliente.id_cliente}/pedidos`)
-      .then(res => res.json())
-      .then(setPedidos);
+    if (!cliente || !cliente.id_cliente) return;
+    
+    const fetchPedidos = async () => {
+      try {
+        const pedidosData = await apiClient.get(`${API_ENDPOINTS.CLIENTES}/${cliente.id_cliente}/pedidos`);
+        // Asegurar que siempre sea un array
+        setPedidos(Array.isArray(pedidosData) ? pedidosData : []);
+      } catch (error) {
+        console.error('Error al cargar los pedidos:', error);
+        setPedidos([]); // Asegurar que siempre sea un array
+      }
+    };
+    
+    fetchPedidos();
   }, [cliente]);
 
   const handleUpdate = async e => {
     e.preventDefault();
-    const res = await fetch(`https://api.rosalinebakery.me/clientes/${cliente.id_cliente}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    
+    if (!cliente || !cliente.id_cliente) {
+      // Si no hay cliente, crear uno nuevo
+      try {
+        const nuevoCliente = await apiClient.post(API_ENDPOINTS.CLIENTES, {
+          id_usuario: usuario.id,
+          ...form
+        });
+        setCliente(nuevoCliente);
+        setEdit(false);
+        alert('Perfil creado exitosamente');
+      } catch (error) {
+        console.error('Error al crear el perfil:', error);
+        alert('Error al crear el perfil. Por favor, intenta de nuevo.');
+      }
+      return;
+    }
+    
+    try {
+      const updated = await apiClient.put(API_ENDPOINTS.CLIENTE_BY_ID(cliente.id_cliente), {
         id_usuario: usuario.id,
         ...form
-      })
-    });
-    if (res.ok) {
-      const updated = await res.json();
+      });
       setCliente(updated);
       setEdit(false);
-      alert("Información actualizada");
+      alert('Perfil actualizado exitosamente');
+    } catch (error) {
+      console.error('Error al actualizar el perfil:', error);
+      alert('Error al actualizar el perfil. Por favor, intenta de nuevo.');
     }
   };
 
-  const handleVerMas = id_pedido => {
+  const handleVerMas = async id_pedido => {
     if (productosPedido[id_pedido]) {
       setVerMas(verMas === id_pedido ? null : id_pedido);
       return;
     }
-    fetch(`https://api.rosalinebakery.me/pedidos/${id_pedido}/productos`)
-      .then(res => res.json())
-      .then(productos => {
-        console.log('Productos del pedido:', productos); // Depuración
-        setProductosPedido(prev => ({ ...prev, [id_pedido]: productos }));
-        setVerMas(id_pedido);
-      })
-      .catch(error => console.error('Error al obtener productos del pedido:', error));
+    
+    try {
+      const productos = await apiClient.get(`${API_ENDPOINTS.PEDIDO_BY_ID(id_pedido)}/productos`);
+      console.log('Productos del pedido:', productos); // Depuración
+      setProductosPedido(prev => ({ ...prev, [id_pedido]: productos }));
+      setVerMas(id_pedido);
+    } catch (error) {
+      console.error('Error al obtener productos del pedido:', error);
+    }
   };
 
-  if (!cliente) {
+  if (isLoading) {
     return (
       <div className="cliente-cuenta-container">
         <div className="loading">
           <div className="spinner"></div>
           <p>Cargando tu información...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si no hay cliente después de cargar, mostrar formulario para crear perfil
+  if (!cliente) {
+    return (
+      <div className="cliente-cuenta-container">
+        <h2>Mi Cuenta</h2>
+        
+        <button 
+          onClick={() => {
+            localStorage.removeItem("usuario");
+            localStorage.removeItem("token");
+            navigate("/");
+          }} 
+          className="button button-danger"
+          style={{ position: 'absolute', top: '2.5rem', right: '2.5rem' }}
+        >
+          <FaSignOutAlt /> Cerrar sesión
+        </button>
+        
+        <div className="cliente-info-card">
+          <h3>Completa tu perfil</h3>
+          <p>Para continuar, necesitamos que completes tu información personal.</p>
+          
+          <form onSubmit={handleUpdate} className="cliente-form">
+            <div className="form-group">
+              <label>Nombre</label>
+              <input 
+                value={form.nombre || ''} 
+                onChange={e => setForm({ ...form, nombre: e.target.value })} 
+                placeholder="Tu nombre" 
+                required 
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Apellido</label>
+              <input 
+                value={form.apellido || ''} 
+                onChange={e => setForm({ ...form, apellido: e.target.value })} 
+                placeholder="Tu apellido" 
+                required 
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Teléfono</label>
+              <input 
+                type="tel"
+                value={form.telefono || ''} 
+                onChange={e => setForm({ ...form, telefono: e.target.value })} 
+                placeholder="Tu teléfono" 
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Dirección de envío</label>
+              <input 
+                value={form.direccion || ''} 
+                onChange={e => setForm({ ...form, direccion: e.target.value })} 
+                placeholder="Tu dirección" 
+              />
+            </div>
+            
+            <div className="button-group">
+              <button type="submit" className="button button-primary">
+                <FaCheck /> Crear perfil
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     );
@@ -200,8 +318,8 @@ function ClienteCuenta() {
     return new Date(fechaString).toLocaleDateString('es-ES', options);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("usuario");
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
 
@@ -309,7 +427,7 @@ function ClienteCuenta() {
             </button>
           </div>
         ) : (
-          pedidos.map(pedido => (
+          Array.isArray(pedidos) && pedidos.map(pedido => (
             <div key={pedido.id_pedido} className="pedido-card">
               <div className="pedido-header">
                 <p><b>Pedido #</b> {pedido.id_pedido}</p>
