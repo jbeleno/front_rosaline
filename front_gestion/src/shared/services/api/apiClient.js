@@ -36,10 +36,40 @@ class ApiClient {
     if (!response.ok) {
       let errorMessage = 'Error en la petición';
       let errorDetail = null;
+      let validationErrors = null;
       
       try {
         const errorData = await response.json();
-        errorMessage = errorData.detail || errorData.message || errorData.error || errorMessage;
+        
+        // Manejar errores de validación (422) con formato mejorado
+        if (response.status === 422 && errorData.errors) {
+          validationErrors = errorData.errors;
+          // Crear mensaje legible con todos los errores de validación
+          const fieldErrors = errorData.errors.map(e => {
+            const fieldName = e.field.split(' -> ').pop(); // Obtener solo el nombre del campo
+            return `${fieldName}: ${e.message}`;
+          }).join(', ');
+          errorMessage = errorData.message || `Error de validación: ${fieldErrors}`;
+        } else if (response.status === 400) {
+          // Errores de negocio (400)
+          errorMessage = errorData.detail || errorData.message || errorMessage;
+        } else if (response.status === 401) {
+          // No autorizado
+          errorMessage = errorData.detail || 'No autorizado. Por favor, inicia sesión.';
+        } else if (response.status === 403) {
+          // Prohibido
+          errorMessage = errorData.detail || 'No tienes permisos para realizar esta acción.';
+        } else if (response.status === 404) {
+          // No encontrado
+          errorMessage = errorData.detail || 'Recurso no encontrado.';
+        } else if (response.status === 500) {
+          // Error del servidor
+          errorMessage = errorData.message || errorData.detail || 'Error interno del servidor. Por favor, intenta más tarde.';
+        } else {
+          // Otros errores
+          errorMessage = errorData.detail || errorData.message || errorData.error || errorMessage;
+        }
+        
         errorDetail = errorData;
       } catch {
         const text = await response.text();
@@ -50,8 +80,12 @@ class ApiClient {
       const error = new Error(errorMessage);
       error.status = response.status;
       error.detail = errorDetail;
+      error.validationErrors = validationErrors; // Agregar errores de validación para uso en formularios
       
       console.error(`[API Client] Error ${response.status}:`, errorMessage);
+      if (validationErrors) {
+        console.error('[API Client] Errores de validación:', validationErrors);
+      }
       throw error;
     }
 
