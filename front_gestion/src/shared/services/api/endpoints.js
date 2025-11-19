@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
   // Autenticación
   LOGIN: '/login',
   LOGOUT: '/logout',
+  USUARIO_ME: '/usuarios/me',
   
   // Usuarios
   USUARIOS: '/usuarios/',
@@ -17,10 +18,12 @@ export const API_ENDPOINTS = {
   CLIENTE_BY_ID: (id) => `/clientes/${id}`,
   CLIENTE_BY_USUARIO: (userId) => `/clientes/usuario/${userId}`,
   CARRITOS_BY_CLIENTE: (clienteId) => `/clientes/${clienteId}/carritos`,
+  PEDIDOS_BY_CLIENTE: (clienteId) => `/clientes/${clienteId}/pedidos`,
   
   // Carritos
   CARRITOS: '/carritos/',
   CARRITO_BY_ID: (id) => `/carritos/${id}`,
+  PRODUCTOS_BY_CARRITO: (carritoId) => `/carritos/${carritoId}/productos`,
   
   // Detalles de Carrito
   DETALLE_CARRITO: '/detalle_carrito/',
@@ -33,11 +36,13 @@ export const API_ENDPOINTS = {
   // Categorías
   CATEGORIAS: '/categorias/',
   CATEGORIA_BY_ID: (id) => `/categorias/${id}`,
+  PRODUCTOS_BY_CATEGORIA: (categoriaId) => `/categorias/${categoriaId}/productos`,
   
   // Pedidos
   PEDIDOS: '/pedidos/',
   PEDIDO_BY_ID: (id) => `/pedidos/${id}`,
   PEDIDOS_BY_ESTADO: (estado) => `/pedidos/estado/${estado}`,
+  PRODUCTOS_BY_PEDIDO: (pedidoId) => `/pedidos/${pedidoId}/productos`,
   
   // Detalles de Pedido
   DETALLE_PEDIDOS: '/detalle_pedidos/',

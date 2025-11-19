@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import "../styles/AdminCuenta.css";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../config/supabase";
+import { apiClient } from '../shared/services/api/apiClient';
+import { API_ENDPOINTS } from '../shared/services/api/endpoints';
+import useAuthStore from '../features/auth/store/authStore';
 
 const ESTADOS = [
   "Pago confirmado",
@@ -41,25 +44,49 @@ function AdminCuenta() {
   const [filtroNombre, setFiltroNombre] = useState("");
 
   // Cerrar sesión
-  const handleLogout = () => {
-    localStorage.removeItem("usuario");
+  const logout = useAuthStore((state) => state.logout);
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
 
   // Cargar datos iniciales
   useEffect(() => {
-    fetch("https://api.rosalinebakery.me/productos/").then(res => res.json()).then(setProductos);
-    fetch("https://api.rosalinebakery.me/categorias/").then(res => res.json()).then(setCategorias);
-    fetch("https://api.rosalinebakery.me/pedidos/").then(res => res.json()).then(setPedidos);
+    const fetchData = async () => {
+      try {
+        const [productosData, categoriasData, pedidosData] = await Promise.all([
+          apiClient.get(API_ENDPOINTS.PRODUCTOS),
+          apiClient.get(API_ENDPOINTS.CATEGORIAS),
+          apiClient.get(API_ENDPOINTS.PEDIDOS)
+        ]);
+        setProductos(Array.isArray(productosData) ? productosData : []);
+        setCategorias(Array.isArray(categoriasData) ? categoriasData : []);
+        setPedidos(Array.isArray(pedidosData) ? pedidosData : []);
+      } catch (error) {
+        console.error('Error al cargar datos iniciales:', error);
+        setPedidos([]); // Asegurar que siempre sea un array
+      }
+    };
+    fetchData();
   }, []);
 
   // Filtrar pedidos por estado
   useEffect(() => {
-    if (filtroEstado) {
-      fetch(`https://api.rosalinebakery.me/pedidos/estado/${filtroEstado}`).then(res => res.json()).then(setPedidos);
-    } else {
-      fetch("https://api.rosalinebakery.me/pedidos/").then(res => res.json()).then(setPedidos);
-    }
+    const fetchPedidos = async () => {
+      try {
+        let pedidosData;
+        if (filtroEstado) {
+          pedidosData = await apiClient.get(API_ENDPOINTS.PEDIDOS_BY_ESTADO(filtroEstado));
+        } else {
+          pedidosData = await apiClient.get(API_ENDPOINTS.PEDIDOS);
+        }
+        setPedidos(Array.isArray(pedidosData) ? pedidosData : []);
+      } catch (error) {
+        console.error('Error al cargar pedidos:', error);
+        setPedidos([]); // Asegurar que siempre sea un array
+      }
+    };
+    fetchPedidos();
   }, [filtroEstado]);
 
   // Función para subir imagen a Supabase
@@ -106,15 +133,9 @@ function AdminCuenta() {
   const handleCrearProducto = async e => {
     e.preventDefault();
     
-    // 1. Crear el producto primero para obtener el id
-    const res = await fetch("https://api.rosalinebakery.me/productos/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...nuevoProducto, imagen_url: "" })
-    });
-
-    if (res.ok) {
-      const prod = await res.json();
+    try {
+      // 1. Crear el producto primero para obtener el id
+      const prod = await apiClient.post(API_ENDPOINTS.PRODUCTOS, { ...nuevoProducto, imagen_url: "" });
       
       // 2. Si hay archivo, subirlo con el id del producto
       let imagenUrl = "";
@@ -122,21 +143,17 @@ function AdminCuenta() {
         imagenUrl = await uploadImage(selectedFile, prod.id_producto);
         if (!imagenUrl) {
           // Si falla la subida de la imagen, eliminar el producto creado
-          await fetch(`https://api.rosalinebakery.me/productos/${prod.id_producto}`, { method: "DELETE" });
+          await apiClient.delete(API_ENDPOINTS.PRODUCTO_BY_ID(prod.id_producto));
           return;
         }
         
         // Actualizar el producto con la url de la imagen
-        const updateRes = await fetch(`https://api.rosalinebakery.me/productos/${prod.id_producto}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...prod, imagen_url: imagenUrl })
+        const updatedProd = await apiClient.put(API_ENDPOINTS.PRODUCTO_BY_ID(prod.id_producto), {
+          ...prod,
+          imagen_url: imagenUrl
         });
         
-        if (updateRes.ok) {
-          const updatedProd = await updateRes.json();
-          setProductos([...productos, updatedProd]);
-        }
+        setProductos([...productos, updatedProd]);
       } else {
         setProductos([...productos, prod]);
       }
@@ -150,6 +167,9 @@ function AdminCuenta() {
         imagen_url: "" 
       });
       setSelectedFile(null);
+    } catch (error) {
+      console.error('Error al crear el producto:', error);
+      alert('Error al crear el producto');
     }
   };
 
@@ -191,29 +211,17 @@ function AdminCuenta() {
         imagen_url: imagenUrl
       };
 
-      const res = await fetch(`https://api.rosalinebakery.me/productos/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productoData)
-      });
-
-      if (res.ok) {
-        const actualizado = await res.json();
-        // Actualizar la lista de productos
-        setProductos(productos.map(p => p.id_producto === id ? actualizado : p));
-        setEditandoProducto(null);
-        setProductoEdit({});
-        setSelectedFile(null);
-        
-        // Recargar la lista completa de productos para asegurar que todo está actualizado
-        const productosRes = await fetch("https://api.rosalinebakery.me/productos/");
-        if (productosRes.ok) {
-          const productosActualizados = await productosRes.json();
-          setProductos(productosActualizados);
-        }
-      } else {
-        alert('Error al actualizar el producto');
-      }
+      const actualizado = await apiClient.put(API_ENDPOINTS.PRODUCTO_BY_ID(id), productoData);
+      
+      // Actualizar la lista de productos
+      setProductos(productos.map(p => p.id_producto === id ? actualizado : p));
+      setEditandoProducto(null);
+      setProductoEdit({});
+      setSelectedFile(null);
+      
+      // Recargar la lista completa de productos para asegurar que todo está actualizado
+      const productosActualizados = await apiClient.get(API_ENDPOINTS.PRODUCTOS);
+      setProductos(productosActualizados);
     } catch (error) {
       console.error('Error al actualizar el producto:', error);
       alert('Error al actualizar el producto');
@@ -261,18 +269,11 @@ function AdminCuenta() {
       }
 
       // 3. Eliminar el producto de la base de datos
-      const deleteRes = await fetch(`https://api.rosalinebakery.me/productos/${id}`, { 
-        method: "DELETE" 
-      });
-      
-      if (!deleteRes.ok) throw new Error('Error al eliminar el producto');
+      await apiClient.delete(API_ENDPOINTS.PRODUCTO_BY_ID(id));
 
       // 4. Actualizar la lista de productos
-      const productosRes = await fetch("https://api.rosalinebakery.me/productos/");
-      if (productosRes.ok) {
-        const productosActualizados = await productosRes.json();
-        setProductos(productosActualizados);
-      }
+      const productosActualizados = await apiClient.get(API_ENDPOINTS.PRODUCTOS);
+      setProductos(productosActualizados);
     } catch (error) {
       console.error('Error al eliminar el producto:', error);
       alert('Error al eliminar el producto: ' + error.message);
@@ -282,21 +283,24 @@ function AdminCuenta() {
   // CRUD Categorías
   const handleCrearCategoria = async e => {
     e.preventDefault();
-    const res = await fetch("https://api.rosalinebakery.me/categorias/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(nuevaCategoria)
-    });
-    if (res.ok) {
-      const cat = await res.json();
+    try {
+      const cat = await apiClient.post(API_ENDPOINTS.CATEGORIAS, nuevaCategoria);
       setCategorias([...categorias, cat]);
       setNuevaCategoria({ nombre: "", descripcion_corta: "", descripcion_larga: "" });
+    } catch (error) {
+      console.error('Error al crear la categoría:', error);
+      alert('Error al crear la categoría');
     }
   };
 
   const handleEliminarCategoria = async id => {
-    await fetch(`https://api.rosalinebakery.me/categorias/${id}`, { method: "DELETE" });
-    setCategorias(categorias.filter(c => c.id_categoria !== id));
+    try {
+      await apiClient.delete(API_ENDPOINTS.CATEGORIA_BY_ID(id));
+      setCategorias(categorias.filter(c => c.id_categoria !== id));
+    } catch (error) {
+      console.error('Error al eliminar la categoría:', error);
+      alert('Error al eliminar la categoría');
+    }
   };
 
   const handleEditarCategoriaClick = cat => {
@@ -309,16 +313,14 @@ function AdminCuenta() {
   };
 
   const handleActualizarCategoria = async id => {
-    const res = await fetch(`https://api.rosalinebakery.me/categorias/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(categoriaEdit)
-    });
-    if (res.ok) {
-      const actualizada = await res.json();
+    try {
+      const actualizada = await apiClient.put(API_ENDPOINTS.CATEGORIA_BY_ID(id), categoriaEdit);
       setCategorias(categorias.map(c => c.id_categoria === id ? actualizada : c));
       setEditandoCategoria(null);
       setCategoriaEdit({});
+    } catch (error) {
+      console.error('Error al actualizar la categoría:', error);
+      alert('Error al actualizar la categoría');
     }
   };
 
@@ -326,13 +328,16 @@ function AdminCuenta() {
   const handleActualizarEstado = async (id_pedido, nuevoEstado) => {
     const pedido = pedidos.find(p => p.id_pedido === id_pedido);
     if (!pedido) return;
-    const res = await fetch(`https://api.rosalinebakery.me/pedidos/${id_pedido}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...pedido, estado: nuevoEstado })
-    });
-    if (res.ok) {
+    
+    try {
+      const updated = await apiClient.put(API_ENDPOINTS.PEDIDO_BY_ID(id_pedido), {
+        ...pedido,
+        estado: nuevoEstado
+      });
       setPedidos(pedidos.map(p => p.id_pedido === id_pedido ? { ...p, estado: nuevoEstado } : p));
+    } catch (error) {
+      console.error('Error al actualizar el estado del pedido:', error);
+      alert('Error al actualizar el estado del pedido');
     }
   };
 
@@ -347,42 +352,22 @@ function AdminCuenta() {
       setVerMasId(id_pedido);
       return;
     }
-    // Obtener detalles y productos
-      try {
-        const detallesRes = await fetch(`https://api.rosalinebakery.me/detalle_pedidos/`);
-        if (!detallesRes.ok) throw new Error('Error al cargar los detalles del pedido');
-        
-        const detallesAll = await detallesRes.json();
-        // Ensure detallesAll is an array before calling filter
-        const detalles = Array.isArray(detallesAll) 
-          ? detallesAll.filter(d => d && d.id_pedido === id_pedido)
-          : [];
-          
-        // Get products
-        const productosRes = await fetch(`https://api.rosalinebakery.me/pedidos/${id_pedido}/productos`);
-        if (!productosRes.ok) throw new Error('Error al cargar los productos del pedido');
-        
-        const productos = await productosRes.json();
-        
-        setDetallesPedido(prev => ({
-          ...prev,
-          [id_pedido]: Array.isArray(productos) 
-            ? detalles.map(det => ({
-                ...det,
-                producto: productos.find(p => p && p.id_producto === det.id_producto) || {}
-              }))
-            : []
-        }));
-      } catch (error) {
-        console.error('Error al cargar los detalles del pedido:', error);
-        // Set empty array on error
-        setDetallesPedido(prev => ({
-          ...prev,
-          [id_pedido]: []
-        }));
-      } finally {
-        setVerMasId(prevId => prevId === id_pedido ? null : id_pedido);
-      }
+    // Obtener productos del pedido
+    try {
+      const productos = await apiClient.get(`${API_ENDPOINTS.PEDIDO_BY_ID(id_pedido)}/productos`);
+      
+      setDetallesPedido(prev => ({
+        ...prev,
+        [id_pedido]: Array.isArray(productos) ? productos : []
+      }));
+      setVerMasId(id_pedido);
+    } catch (error) {
+      console.error('Error al cargar los productos del pedido:', error);
+      setDetallesPedido(prev => ({
+        ...prev,
+        [id_pedido]: []
+      }));
+    }
   };
 
   return (
@@ -588,7 +573,7 @@ function AdminCuenta() {
             ))}
           </select>
           <ul>
-            {pedidos.map(pedido => (
+            {Array.isArray(pedidos) && pedidos.map(pedido => (
               <li key={pedido.id_pedido} style={{marginBottom: '1.5rem'}}>
                 <b>Pedido #{pedido.id_pedido}</b> - Estado: {pedido.estado}
                 <button className="admin-btn-morado" style={{marginLeft: '1rem'}} onClick={() => setEditandoEstadoId(editandoEstadoId === pedido.id_pedido ? null : pedido.id_pedido)}>Actualizar</button>

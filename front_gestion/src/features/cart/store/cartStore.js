@@ -44,29 +44,27 @@ const useCartStore = create((set, get) => ({
   fetchCartItems: async (cartId) => {
     set({ loading: true });
     try {
-      const detallesAll = await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO);
-      const detallesCarrito = detallesAll.filter(d => d.id_carrito === cartId);
+      // Usar el endpoint específico que devuelve los productos del carrito
+      const productosCarrito = await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_CARRITO(cartId));
       
-      if (detallesCarrito.length === 0) {
+      if (!productosCarrito || productosCarrito.length === 0) {
         set({ cartItems: [], products: [], total: 0, loading: false });
         return;
       }
 
-      // Obtener productos en paralelo
-      const productosAll = await apiClient.get(API_ENDPOINTS.PRODUCTOS);
-      const productosSeleccionados = detallesCarrito.map(d => 
-        productosAll.find(p => p.id_producto === d.id_producto)
-      ).filter(Boolean);
+      // Obtener los detalles del carrito para tener la cantidad
+      const detallesAll = await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO);
+      const detallesCarrito = detallesAll.filter(d => d.id_carrito === cartId);
 
-      // Calcular total
-      const total = detallesCarrito.reduce((sum, item, index) => {
-        const product = productosSeleccionados[index];
+      // Calcular total usando los detalles del carrito
+      const total = detallesCarrito.reduce((sum, item) => {
+        const product = productosCarrito.find(p => p.id_producto === item.id_producto);
         return sum + (product?.precio || 0) * item.cantidad;
       }, 0);
 
       set({ 
         cartItems: detallesCarrito, 
-        products: productosSeleccionados,
+        products: Array.isArray(productosCarrito) ? productosCarrito : [],
         total,
         loading: false 
       });

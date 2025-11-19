@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../styles/PedidoConfirmado.css";
+import { apiClient } from '../shared/services/api/apiClient';
+import { API_ENDPOINTS } from '../shared/services/api/endpoints';
 
 function PedidoConfirmado() {
   const { id } = useParams();
@@ -10,24 +12,26 @@ function PedidoConfirmado() {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    // Obtener pedido
-    fetch(`https://api.rosalinebakery.me/pedidos/`)
-      .then(res => res.json())
-      .then(data => {
-        const p = data.find(p => p.id_pedido === parseInt(id));
-        setPedido(p);
-      });
-    // Obtener detalles del pedido
-    fetch(`https://api.rosalinebakery.me/detalle_pedidos/`)
-      .then(res => res.json())
-      .then(data => {
-        const detallesPedido = data.filter(d => d.id_pedido === parseInt(id));
+    const fetchPedidoData = async () => {
+      try {
+        // Obtener pedido específico
+        const pedidoData = await apiClient.get(API_ENDPOINTS.PEDIDO_BY_ID(id));
+        setPedido(pedidoData);
+        
+        // Obtener productos del pedido usando el endpoint específico
+        const productosData = await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_PEDIDO(id));
+        setProductos(Array.isArray(productosData) ? productosData : []);
+        
+        // Obtener detalles del pedido para tener la cantidad
+        const detallesAll = await apiClient.get(API_ENDPOINTS.DETALLE_PEDIDOS);
+        const detallesPedido = detallesAll.filter(d => d.id_pedido === parseInt(id));
         setDetalles(detallesPedido);
-      });
-    // Obtener productos del pedido
-    fetch(`https://api.rosalinebakery.me/pedidos/${id}/productos`)
-      .then(res => res.json())
-      .then(setProductos);
+      } catch (error) {
+        console.error('Error al cargar los datos del pedido:', error);
+      }
+    };
+    
+    fetchPedidoData();
   }, [id]);
 
   useEffect(() => {

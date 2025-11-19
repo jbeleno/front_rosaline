@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/Carrito.css";
 import { useNavigate } from "react-router-dom";
+import { apiClient } from '../shared/services/api/apiClient';
+import { API_ENDPOINTS } from '../shared/services/api/endpoints';
 
 function Carrito() {
   const [usuario] = useState(() => {
@@ -19,9 +21,16 @@ function Carrito() {
   // Obtener cliente cuando cambia el usuario
   useEffect(() => {
     if (!usuario) return;
-    fetch(`https://api.rosalinebakery.me/clientes/usuario/${usuario.id}`)
-      .then(res => res.json())
-      .then(setCliente);
+    const fetchCliente = async () => {
+      try {
+        const clienteData = await apiClient.get(API_ENDPOINTS.CLIENTE_BY_USUARIO(usuario.id));
+        setCliente(clienteData);
+      } catch (error) {
+        console.error('Error al obtener el cliente:', error);
+        setCliente(null);
+      }
+    };
+    fetchCliente();
   }, [usuario]);
 
   // Obtener carrito cuando cambia el cliente
@@ -30,11 +39,7 @@ function Carrito() {
     
     const fetchCarrito = async () => {
       try {
-        const response = await fetch(`https://api.rosalinebakery.me/clientes/${cliente.id_cliente}/carritos`);
-        if (!response.ok) {
-          throw new Error('Error al cargar el carrito');
-        }
-        const carritos = await response.json();
+        const carritos = await apiClient.get(API_ENDPOINTS.CARRITOS_BY_CLIENTE(cliente.id_cliente));
         
         // Verificar si la respuesta es un array
         const carritosArray = Array.isArray(carritos) ? carritos : [];
@@ -50,30 +55,34 @@ function Carrito() {
     fetchCarrito();
   }, [cliente]);
 
-  // Obtener detalles cuando cambia el carrito
+  // Obtener productos del carrito cuando cambia el carrito
   useEffect(() => {
-    if (!carrito) return;
-    fetch(`https://api.rosalinebakery.me/detalle_carrito/`)
-      .then(res => res.json())
-      .then(detallesAll => {
-        const detallesCarrito = detallesAll.filter(d => d.id_carrito === carrito.id_carrito);
-        setDetalles(detallesCarrito);
-      });
-  }, [carrito]);
-
-  // Obtener productos cuando cambian los detalles
-  useEffect(() => {
-    if (detalles.length === 0) {
+    if (!carrito) {
+      setDetalles([]);
       setProductos([]);
       return;
     }
-    fetch(`https://api.rosalinebakery.me/productos/`)
-      .then(res => res.json())
-      .then(productosAll => {
-        const productosSeleccionados = detalles.map(d => productosAll.find(p => p.id_producto === d.id_producto));
-        setProductos(productosSeleccionados);
-      });
-  }, [detalles]);
+    
+    const fetchProductosCarrito = async () => {
+      try {
+        // Usar el endpoint específico que devuelve los productos del carrito
+        const productosCarrito = await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_CARRITO(carrito.id_carrito));
+        
+        // Obtener los detalles del carrito para tener la cantidad
+        const detallesAll = await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO);
+        const detallesCarrito = detallesAll.filter(d => d.id_carrito === carrito.id_carrito);
+        
+        setProductos(Array.isArray(productosCarrito) ? productosCarrito : []);
+        setDetalles(detallesCarrito);
+      } catch (error) {
+        console.error('Error al obtener productos del carrito:', error);
+        setDetalles([]);
+        setProductos([]);
+      }
+    };
+    
+    fetchProductosCarrito();
+  }, [carrito]);
 
   // 3. Calcular total
   useEffect(() => {
@@ -112,43 +121,41 @@ function Carrito() {
         });
       },
       onApprove: async (data, actions) => {
-        await actions.order.capture();
-        // 1. Crear el pedido en el backend
-        const usuario = JSON.parse(localStorage.getItem("usuario"));
-        const clienteRes = await fetch(`https://api.rosalinebakery.me/clientes/usuario/${usuario.id}`);
-        const cliente = await clienteRes.json();
-        const pedidoRes = await fetch("https://api.rosalinebakery.me/pedidos/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id_cliente: cliente.id_cliente,
+        try {
+          await actions.order.capture();
+          // 1. Obtener cliente
+          const usuario = JSON.parse(localStorage.getItem("usuario"));
+          const clienteData = await apiClient.get(API_ENDPOINTS.CLIENTE_BY_USUARIO(usuario.id));
+          
+          // 2. Crear el pedido en el backend
+          const pedido = await apiClient.post(API_ENDPOINTS.PEDIDOS, {
+            id_cliente: clienteData.id_cliente,
             estado: "Pago confirmado",
-            direccion_envio: cliente.direccion,
+            direccion_envio: clienteData.direccion,
             metodo_pago: "PayPal"
-          })
-        });
-        const pedido = await pedidoRes.json();
-        // 2. Crear los detalles de pedido
-        for (let i = 0; i < detalles.length; i++) {
-          await fetch("https://api.rosalinebakery.me/detalle_pedidos/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+          });
+          
+          // 3. Crear los detalles de pedido
+          for (let i = 0; i < detalles.length; i++) {
+            await apiClient.post(API_ENDPOINTS.DETALLE_PEDIDOS, {
               id_pedido: pedido.id_pedido,
               id_producto: detalles[i].id_producto,
               cantidad: detalles[i].cantidad,
               precio_unitario: productos[i].precio
-            })
-          });
+            });
+          }
+          
+          // 4. Eliminar los detalles del carrito (vaciar carrito)
+          for (let i = 0; i < detalles.length; i++) {
+            await apiClient.delete(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(detalles[i].id_detalle_carrito));
+          }
+          
+          // 5. Redirigir a la vista de confirmación
+          navigate(`/pedido-confirmado/${pedido.id_pedido}`);
+        } catch (error) {
+          console.error('Error al procesar el pago:', error);
+          alert('Error al procesar el pago. Por favor, intenta de nuevo.');
         }
-        // 2.5 Eliminar los detalles del carrito (vaciar carrito)
-        for (let i = 0; i < detalles.length; i++) {
-            await fetch(`https://api.rosalinebakery.me/detalle_carrito/${detalles[i].id_detalle_carrito}`, {
-            method: "DELETE"
-          });
-        }
-        // 3. Redirigir a la vista de confirmación
-        navigate(`/pedido-confirmado/${pedido.id_pedido}`);
       }
     });
     paypalButtons.render(currentPaypalRef);
@@ -167,15 +174,23 @@ function Carrito() {
   // 4. Eliminar producto del carrito de forma instantánea
   const handleEliminar = async (id_detalle) => {
     try {
-      const res = await fetch(`https://api.rosalinebakery.me/detalle_carrito/${id_detalle}`, { method: "DELETE" });
-      if (!res.ok) {
-        alert("No se pudo eliminar el producto del carrito.");
-        return;
+      await apiClient.delete(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(id_detalle));
+      
+      // Actualizar el estado local en lugar de recargar la página
+      setDetalles(detalles.filter(d => d.id_detalle_carrito !== id_detalle));
+      
+      // Si no quedan detalles, limpiar productos también
+      const nuevosDetalles = detalles.filter(d => d.id_detalle_carrito !== id_detalle);
+      if (nuevosDetalles.length === 0) {
+        setProductos([]);
+      } else {
+        // Actualizar productos para reflejar los cambios
+        const productosCarrito = await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_CARRITO(carrito.id_carrito));
+        setProductos(Array.isArray(productosCarrito) ? productosCarrito : []);
       }
-      // Recargar la página para actualizar el carrito visualmente
-      window.location.reload();
     } catch (error) {
       console.error("Error al eliminar producto del carrito:", error);
+      alert("No se pudo eliminar el producto del carrito.");
     }
   };
 
