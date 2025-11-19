@@ -36,25 +36,73 @@ const useAuthStore = create(
           const isAdmin = userData.rol === 'admin';
           set({ isAdmin, userProfile: { ...usuario, rol: userData.rol } });
         } catch (error) {
-          console.error('Error obteniendo perfil:', error);
+          // Si el cliente no existe (404), no es un error crítico
+          // Puede ser un admin o un usuario que aún no ha completado su perfil
+          if (error.message && (error.message.includes('404') || error.message.includes('no encontrado'))) {
+            console.log('Cliente no encontrado para este usuario - puede ser admin o perfil incompleto');
+            const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
+            const isAdmin = userData.rol === 'admin';
+            set({ 
+              cliente: null, 
+              isAdmin, 
+              userProfile: { rol: userData.rol } 
+            });
+          } else {
+            console.error('Error obteniendo perfil:', error);
+          }
         }
       },
 
-      // Inicializar autenticación desde Supabase
+      // Inicializar autenticación desde token almacenado
       initializeAuth: async () => {
         set({ loading: true });
         try {
-          const { data: { session }, error } = await supabase.auth.getSession();
+          // Verificar si hay token y usuario en localStorage
+          const token = localStorage.getItem('token');
+          const usuarioStr = localStorage.getItem('usuario');
           
-          if (error) throw error;
-
-          if (session?.user) {
-            set({ 
-              user: session.user, 
-              isAuthenticated: true,
-              loading: false 
-            });
-            await get().fetchUserProfile(session.user.id);
+          if (token && usuarioStr) {
+            try {
+              const usuario = JSON.parse(usuarioStr);
+              const { jwtDecode } = await import('jwt-decode');
+              
+              // Verificar que el token no haya expirado
+              const decoded = jwtDecode(token);
+              const currentTime = Date.now() / 1000;
+              
+              if (decoded.exp && decoded.exp < currentTime) {
+                // Token expirado, limpiar
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                set({ 
+                  user: null, 
+                  isAuthenticated: false,
+                  loading: false 
+                });
+                return;
+              }
+              
+              set({ 
+                user: { id: usuario.id, email: usuario.correo },
+                userProfile: usuario,
+                isAuthenticated: true,
+                isAdmin: usuario.rol === 'admin',
+                loading: false 
+              });
+              
+              // Intentar obtener perfil del cliente
+              await get().fetchUserProfile(usuario.id);
+            } catch (error) {
+              console.error('Error al inicializar autenticación:', error);
+              // Limpiar datos inválidos
+              localStorage.removeItem('token');
+              localStorage.removeItem('usuario');
+              set({ 
+                user: null, 
+                isAuthenticated: false,
+                loading: false 
+              });
+            }
           } else {
             set({ 
               user: null, 
@@ -67,7 +115,7 @@ const useAuthStore = create(
         }
       },
 
-      // Login con backend (mantener compatibilidad)
+      // Login con backend
       login: async (email, password) => {
         set({ loading: true, error: null });
         try {
@@ -92,26 +140,25 @@ const useAuthStore = create(
 
           localStorage.setItem('usuario', JSON.stringify(userData));
 
-          // También hacer login en Supabase si es necesario
-          const { data: supabaseUser } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
+          // NO hacer login en Supabase - ya no se usa para autenticación
+          // Si es necesario para otras funcionalidades, se puede hacer de forma opcional
+          // pero no debe fallar el login si Supabase no está disponible
 
           set({ 
-            user: supabaseUser?.user || { id: decoded.id_usuario, email: decoded.sub },
+            user: { id: decoded.id_usuario, email: decoded.sub },
             userProfile: userData,
             isAuthenticated: true,
             isAdmin: decoded.rol === 'admin',
             loading: false 
           });
 
+          // Intentar obtener perfil del cliente (puede no existir si es admin o usuario nuevo)
           await get().fetchUserProfile(decoded.id_usuario);
 
           return { success: true };
         } catch (error) {
           const errorMessage = error.message || 'Error al iniciar sesión';
-          set({ error: errorMessage, loading: false });
+          set({ error: errorMessage, loading: false, isAuthenticated: false });
           return { success: false, error: errorMessage };
         }
       },
@@ -127,26 +174,28 @@ const useAuthStore = create(
             rol: 'cliente',
           });
 
-          // Crear cliente
-          await apiClient.post(API_ENDPOINTS.CLIENTES, {
-            id_usuario: usuario.id_usuario,
-            nombre: userData.nombre,
-            apellido: userData.apellido,
-            telefono: userData.telefono,
-            direccion: userData.direccion,
-          });
-
-          // Guardar usuario básico
-          localStorage.setItem('usuario', JSON.stringify({
-            id: usuario.id_usuario,
-            rol: usuario.rol,
-          }));
+          // Crear cliente (solo si se proporcionaron datos del cliente)
+          if (userData && (userData.nombre || userData.apellido || userData.telefono || userData.direccion)) {
+            try {
+              await apiClient.post(API_ENDPOINTS.CLIENTES, {
+                id_usuario: usuario.id_usuario,
+                nombre: userData.nombre || '',
+                apellido: userData.apellido || '',
+                telefono: userData.telefono || '',
+                direccion: userData.direccion || '',
+              });
+            } catch (clienteError) {
+              // Si falla la creación del cliente, continuar con el login
+              // El cliente puede completar su perfil después
+              console.warn('No se pudo crear el perfil de cliente:', clienteError);
+            }
+          }
 
           // Login automático después del registro
           return await get().login(email, password);
         } catch (error) {
           const errorMessage = error.message || 'Error al registrarse';
-          set({ error: errorMessage, loading: false });
+          set({ error: errorMessage, loading: false, isAuthenticated: false });
           return { success: false, error: errorMessage };
         }
       },
@@ -155,7 +204,16 @@ const useAuthStore = create(
       logout: async () => {
         set({ loading: true });
         try {
-          await supabase.auth.signOut();
+          // Intentar logout de Supabase si está disponible (opcional)
+          // No debe fallar si Supabase no está disponible
+          try {
+            await supabase.auth.signOut();
+          } catch (e) {
+            // Ignorar errores de Supabase - no es crítico
+            console.log('Supabase no disponible o ya cerrado');
+          }
+          
+          // Limpiar datos de autenticación
           localStorage.removeItem('token');
           localStorage.removeItem('usuario');
           
@@ -165,10 +223,22 @@ const useAuthStore = create(
             cliente: null,
             isAuthenticated: false,
             isAdmin: false,
-            loading: false 
+            loading: false,
+            error: null
           });
         } catch (error) {
-          set({ error: error.message, loading: false });
+          // Asegurar que se limpien los datos incluso si hay error
+          localStorage.removeItem('token');
+          localStorage.removeItem('usuario');
+          set({ 
+            user: null,
+            userProfile: null,
+            cliente: null,
+            isAuthenticated: false,
+            isAdmin: false,
+            loading: false,
+            error: error.message 
+          });
         }
       },
     }),
