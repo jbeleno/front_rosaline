@@ -11,21 +11,21 @@ function PedidoConfirmado() {
 
   useEffect(() => {
     // Obtener pedido
-    fetch(`http://3.137.201.203/pedidos/`)
+    fetch(`https://api.rosalinebakery.me/pedidos/`)
       .then(res => res.json())
       .then(data => {
         const p = data.find(p => p.id_pedido === parseInt(id));
         setPedido(p);
       });
     // Obtener detalles del pedido
-    fetch(`http://3.137.201.203/detalle_pedidos/`)
+    fetch(`https://api.rosalinebakery.me/detalle_pedidos/`)
       .then(res => res.json())
       .then(data => {
         const detallesPedido = data.filter(d => d.id_pedido === parseInt(id));
         setDetalles(detallesPedido);
       });
     // Obtener productos del pedido
-    fetch(`http://3.137.201.203/pedidos/${id}/productos`)
+    fetch(`https://api.rosalinebakery.me/pedidos/${id}/productos`)
       .then(res => res.json())
       .then(setProductos);
   }, [id]);

@@ -15,7 +15,7 @@ export function formatPrice(price) {
 /**
  * Normalizar URL de imagen
  */
-export function normalizeImageUrl(url, baseUrl = 'http://3.137.201.203') {
+export function normalizeImageUrl(url, baseUrl = 'https://api.rosalinebakery.me') {
   if (!url) return null;
   
   if (url.startsWith('http')) {

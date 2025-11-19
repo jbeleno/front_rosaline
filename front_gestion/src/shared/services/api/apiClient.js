@@ -3,7 +3,7 @@
  * Maneja errores, headers y configuración común
  */
 
-const API_BASE_URL = 'http://3.137.201.203';
+const API_BASE_URL = 'https://api.rosalinebakery.me';
 
 class ApiClient {
   constructor(baseURL = API_BASE_URL) {
