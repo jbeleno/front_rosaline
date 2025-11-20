@@ -39,6 +39,17 @@ function AdminCuenta() {
   const [detallesPedido, setDetallesPedido] = useState({});
   const [editandoEstadoId, setEditandoEstadoId] = useState(null);
 
+  // Usuarios
+  const [usuarioData, setUsuarioData] = useState({ id: "", correo: "", contraseña: "", rol: "cliente" });
+  const [deleteUsuarioId, setDeleteUsuarioId] = useState("");
+  const [usuarioActual, setUsuarioActual] = useState(null);
+  const [loadingUsuarioActual, setLoadingUsuarioActual] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
   // Filtros
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [filtroNombre, setFiltroNombre] = useState("");
@@ -341,6 +352,90 @@ function AdminCuenta() {
     }
   };
 
+  // CRUD Usuarios
+  const handleObtenerUsuarioActual = async () => {
+    setLoadingUsuarioActual(true);
+    try {
+      const data = await apiClient.get(API_ENDPOINTS.USUARIO_ME);
+      setUsuarioActual(data);
+    } catch (error) {
+      console.error('Error al obtener usuario actual:', error);
+      alert('Error al obtener usuario actual: ' + (error.message || 'Error desconocido'));
+    } finally {
+      setLoadingUsuarioActual(false);
+    }
+  };
+
+  const handleActualizarUsuario = async (e) => {
+    e.preventDefault();
+    if (!usuarioData.id) {
+      setErrorMessage('Por favor ingresa el ID del usuario');
+      setShowErrorModal(true);
+      return;
+    }
+    try {
+      const dataToSend = {
+        correo: usuarioData.correo,
+        rol: usuarioData.rol
+      };
+      // Solo incluir contraseña si se proporcionó
+      if (usuarioData.contraseña) {
+        dataToSend.contraseña = usuarioData.contraseña;
+      }
+      await apiClient.put(API_ENDPOINTS.USUARIO_BY_ID(usuarioData.id), dataToSend);
+      setSuccessMessage('Usuario actualizado exitosamente');
+      setShowSuccessModal(true);
+      setUsuarioData({ id: "", correo: "", contraseña: "", rol: "cliente" });
+    } catch (error) {
+      console.error('Error al actualizar el usuario:', error);
+      
+      // Verificar si es un error de usuario no encontrado (404 o 500)
+      if (error.status === 404 || error.status === 500) {
+        setErrorMessage(`El usuario con ID ${usuarioData.id} no existe o ya fue eliminado.`);
+      } else if (error.message && error.message.toLowerCase().includes('fetch')) {
+        // Error de red o CORS
+        setErrorMessage(`No se pudo conectar con el servidor. Verifica que el usuario con ID ${usuarioData.id} exista.`);
+      } else {
+        setErrorMessage(error.message || 'Error desconocido al actualizar el usuario');
+      }
+      setShowErrorModal(true);
+    }
+  };
+
+  const handleEliminarUsuario = async (e) => {
+    e.preventDefault();
+    if (!deleteUsuarioId) {
+      setErrorMessage('Por favor ingresa el ID del usuario');
+      setShowErrorModal(true);
+      return;
+    }
+    setShowDeleteModal(true);
+  };
+
+  const confirmarEliminarUsuario = async () => {
+    try {
+      await apiClient.delete(API_ENDPOINTS.USUARIO_BY_ID(deleteUsuarioId));
+      setShowDeleteModal(false);
+      setSuccessMessage('Usuario eliminado exitosamente');
+      setShowSuccessModal(true);
+      setDeleteUsuarioId("");
+    } catch (error) {
+      console.error('Error al eliminar el usuario:', error);
+      setShowDeleteModal(false);
+      
+      // Verificar si es un error de usuario no encontrado (404 o 500)
+      if (error.status === 404 || error.status === 500) {
+        setErrorMessage(`El usuario con ID ${deleteUsuarioId} no existe o ya fue eliminado.`);
+      } else if (error.message && error.message.toLowerCase().includes('fetch')) {
+        // Error de red o CORS
+        setErrorMessage(`No se pudo conectar con el servidor. Verifica que el usuario con ID ${deleteUsuarioId} exista.`);
+      } else {
+        setErrorMessage(error.message || 'Error desconocido al eliminar el usuario');
+      }
+      setShowErrorModal(true);
+    }
+  };
+
   // Ver productos del pedido
   const handleVerMas = async (id_pedido) => {
     if (verMasId === id_pedido) {
@@ -378,6 +473,7 @@ function AdminCuenta() {
         <button onClick={() => setTab("productos")} className={tab === "productos" ? "active" : ""}>Productos</button>
         <button onClick={() => setTab("categorias")} className={tab === "categorias" ? "active" : ""}>Categorías</button>
         <button onClick={() => setTab("pedidos")} className={tab === "pedidos" ? "active" : ""}>Pedidos</button>
+        <button onClick={() => setTab("usuarios")} className={tab === "usuarios" ? "active" : ""}>Usuarios</button>
       </div>
 
       {/* CRUD Productos */}
@@ -607,6 +703,268 @@ function AdminCuenta() {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Gestión de Usuarios */}
+      {tab === "usuarios" && (
+        <div>
+          <h3>Gestión de Usuarios</h3>
+          <p style={{color: '#666', marginBottom: '1.5rem'}}>Solo administradores pueden actualizar o eliminar usuarios.</p>
+          
+          <div style={{marginBottom: '3rem', padding: '1.5rem', background: '#f3e5f5', borderRadius: '8px'}}>
+            <h4>Mi Información (Usuario Actual)</h4>
+            <button 
+              onClick={handleObtenerUsuarioActual} 
+              disabled={loadingUsuarioActual}
+              style={{
+                padding: '0.7rem 1.5rem',
+                background: 'linear-gradient(45deg, #8B5FBF, #FF9AA2)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: '600',
+                fontSize: '0.9rem',
+                cursor: loadingUsuarioActual ? 'not-allowed' : 'pointer',
+                opacity: loadingUsuarioActual ? 0.7 : 1,
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 12px rgba(139, 95, 191, 0.2)'
+              }}
+              onMouseOver={(e) => {
+                if (!loadingUsuarioActual) {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 6px 16px rgba(139, 95, 191, 0.3)';
+                }
+              }}
+              onMouseOut={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 12px rgba(139, 95, 191, 0.2)';
+              }}
+            >
+              {loadingUsuarioActual ? 'Cargando...' : 'Obtener mi información'}
+            </button>
+            {usuarioActual && (
+              <div style={{marginTop: '1rem', padding: '1rem', background: 'white', borderRadius: '6px'}}>
+                <p><strong>ID Usuario:</strong> {usuarioActual.id_usuario}</p>
+                <p><strong>Correo:</strong> {usuarioActual.sub}</p>
+                <p><strong>Rol:</strong> {usuarioActual.rol}</p>
+              </div>
+            )}
+          </div>
+
+          <div style={{marginBottom: '3rem'}}>
+            <h4>Actualizar Usuario</h4>
+            <form onSubmit={handleActualizarUsuario} className="admin-form">
+              <input 
+                type="text"
+                value={usuarioData.id} 
+                onChange={e => setUsuarioData({ ...usuarioData, id: e.target.value })} 
+                placeholder="ID del usuario" 
+                required 
+              />
+              <input 
+                type="email"
+                value={usuarioData.correo} 
+                onChange={e => setUsuarioData({ ...usuarioData, correo: e.target.value })} 
+                placeholder="Correo electrónico" 
+                required 
+              />
+              <input 
+                type="password"
+                value={usuarioData.contraseña} 
+                onChange={e => setUsuarioData({ ...usuarioData, contraseña: e.target.value })} 
+                placeholder="Nueva contraseña (opcional)" 
+              />
+              <select 
+                value={usuarioData.rol} 
+                onChange={e => setUsuarioData({ ...usuarioData, rol: e.target.value })} 
+                required
+              >
+                <option value="cliente">Cliente</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button type="submit" className="admin-btn-morado">Actualizar Usuario</button>
+            </form>
+          </div>
+
+          <div>
+            <h4>Eliminar Usuario</h4>
+            <form onSubmit={handleEliminarUsuario} className="admin-form">
+              <input 
+                type="text"
+                value={deleteUsuarioId} 
+                onChange={e => setDeleteUsuarioId(e.target.value)} 
+                placeholder="ID del usuario a eliminar" 
+                required 
+              />
+              <button type="submit" style={{background: '#d32f2f'}}>Eliminar Usuario</button>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal de confirmación para eliminar usuario */}
+      {showDeleteModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '2rem',
+            maxWidth: '500px',
+            width: '90%',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 style={{color: '#d32f2f', marginBottom: '1rem'}}>⚠️ Advertencia: Acción Irreversible</h3>
+            <p style={{marginBottom: '1rem', lineHeight: '1.6'}}>
+              Estás a punto de <strong>eliminar permanentemente</strong> el usuario con ID <strong>{deleteUsuarioId}</strong>.
+            </p>
+            <div style={{background: '#fff3cd', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid #ffc107'}}>
+              <p style={{margin: '0.5rem 0', fontSize: '0.95rem'}}><strong>Esto eliminará:</strong></p>
+              <ul style={{margin: '0.5rem 0', paddingLeft: '1.5rem', fontSize: '0.95rem'}}>
+                <li>La cuenta del usuario</li>
+                <li>Su perfil de cliente (si existe)</li>
+                <li>Posiblemente sus pedidos y carritos</li>
+              </ul>
+              <p style={{margin: '0.5rem 0', fontSize: '0.95rem', color: '#d32f2f'}}>
+                <strong>El usuario tendrá que registrarse nuevamente para volver a acceder.</strong>
+              </p>
+            </div>
+            <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
+              <button 
+                onClick={() => setShowDeleteModal(false)}
+                style={{
+                  padding: '0.7rem 1.5rem',
+                  background: '#f0f0f0',
+                  color: '#333',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={confirmarEliminarUsuario}
+                style={{
+                  padding: '0.7rem 1.5rem',
+                  background: '#d32f2f',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Sí, eliminar usuario
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de error */}
+      {showErrorModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '2rem',
+            maxWidth: '400px',
+            width: '90%',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+            textAlign: 'center'
+          }}>
+            <div style={{fontSize: '3rem', marginBottom: '1rem'}}>❌</div>
+            <h3 style={{color: '#d32f2f', marginBottom: '1rem'}}>Error</h3>
+            <p style={{marginBottom: '1.5rem', lineHeight: '1.6', color: '#666'}}>
+              {errorMessage}
+            </p>
+            <button 
+              onClick={() => setShowErrorModal(false)}
+              style={{
+                padding: '0.7rem 2rem',
+                background: 'linear-gradient(45deg, #8B5FBF, #FF9AA2)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(139, 95, 191, 0.2)'
+              }}
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de éxito */}
+      {showSuccessModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '2rem',
+            maxWidth: '400px',
+            width: '90%',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+            textAlign: 'center'
+          }}>
+            <div style={{fontSize: '3rem', marginBottom: '1rem'}}>✅</div>
+            <h3 style={{color: '#06a37c', marginBottom: '1rem'}}>Éxito</h3>
+            <p style={{marginBottom: '1.5rem', lineHeight: '1.6', color: '#666'}}>
+              {successMessage}
+            </p>
+            <button 
+              onClick={() => setShowSuccessModal(false)}
+              style={{
+                padding: '0.7rem 2rem',
+                background: 'linear-gradient(45deg, #8B5FBF, #FF9AA2)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(139, 95, 191, 0.2)'
+              }}
+            >
+              Aceptar
+            </button>
+          </div>
         </div>
       )}
     </div>

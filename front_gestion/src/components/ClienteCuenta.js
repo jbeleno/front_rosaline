@@ -106,6 +106,8 @@ function ClienteCuenta() {
   const [productosPedido, setProductosPedido] = useState({});
   const [verMas, setVerMas] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [usuarioActual, setUsuarioActual] = useState(null);
+  const [loadingUsuarioActual, setLoadingUsuarioActual] = useState(false);
   const [usuario] = useState(() => {
     const u = localStorage.getItem("usuario");
     return u ? JSON.parse(u) : null;
@@ -204,6 +206,19 @@ function ClienteCuenta() {
     } catch (error) {
       console.error('Error al actualizar el perfil:', error);
       alert('Error al actualizar el perfil. Por favor, intenta de nuevo.');
+    }
+  };
+
+  const handleObtenerUsuarioActual = async () => {
+    setLoadingUsuarioActual(true);
+    try {
+      const data = await apiClient.get(API_ENDPOINTS.USUARIO_ME);
+      setUsuarioActual(data);
+    } catch (error) {
+      console.error('Error al obtener usuario actual:', error);
+      alert('Error al obtener usuario actual: ' + (error.message || 'Error desconocido'));
+    } finally {
+      setLoadingUsuarioActual(false);
     }
   };
 
@@ -337,6 +352,25 @@ function ClienteCuenta() {
       
       <div className="cliente-info-card">
         <h3>Información Personal</h3>
+        
+        <div style={{marginBottom: '2rem', padding: '1.5rem', background: '#f3e5f5', borderRadius: '8px'}}>
+          <h4 style={{marginBottom: '1rem', color: '#6C3483'}}>Mi Información de Usuario</h4>
+          <button 
+            onClick={handleObtenerUsuarioActual} 
+            disabled={loadingUsuarioActual}
+            className="button button-primary"
+            style={{marginBottom: usuarioActual ? '1rem' : '0'}}
+          >
+            {loadingUsuarioActual ? 'Cargando...' : 'Ver mi información de usuario'}
+          </button>
+          {usuarioActual && (
+            <div style={{padding: '1rem', background: 'white', borderRadius: '6px', marginTop: '1rem'}}>
+              <p style={{margin: '0.5rem 0'}}><strong>ID Usuario:</strong> {usuarioActual.id_usuario}</p>
+              <p style={{margin: '0.5rem 0'}}><strong>Correo:</strong> {usuarioActual.sub}</p>
+              <p style={{margin: '0.5rem 0'}}><strong>Rol:</strong> {usuarioActual.rol}</p>
+            </div>
+          )}
+        </div>
         
         {edit ? (
           <form onSubmit={handleUpdate} className="cliente-form">

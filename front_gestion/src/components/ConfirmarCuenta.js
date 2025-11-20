@@ -11,6 +11,9 @@ function ConfirmarCuenta() {
   const [status, setStatus] = useState("loading"); // loading, success, error
   const [message, setMessage] = useState("");
   const [token, setToken] = useState(null);
+  const [mostrarReenvio, setMostrarReenvio] = useState(false);
+  const [correo, setCorreo] = useState("");
+  const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
     const tokenParam = searchParams.get("token");
@@ -41,9 +44,24 @@ function ConfirmarCuenta() {
   };
 
   const reenviarConfirmacion = async () => {
-    // Necesitamos el correo del usuario, pero no lo tenemos aquí
-    // Podríamos pedirlo o redirigir a una página donde lo soliciten
-    navigate("/login");
+    if (!correo || !correo.includes("@")) {
+      setMessage("Por favor ingresa un correo válido.");
+      return;
+    }
+    
+    setEnviando(true);
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.REENVIAR_CONFIRMACION, {
+        correo: correo
+      });
+      // Redirigir al login después de reenviar exitosamente
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (error) {
+      setMessage(error.message || "Error al reenviar la confirmación. Verifica que el correo sea correcto.");
+      setEnviando(false);
+    }
   };
 
   return (
@@ -74,14 +92,63 @@ function ConfirmarCuenta() {
             <FaTimesCircle className="error-icon" />
             <h2>Error al confirmar cuenta</h2>
             <p>{message}</p>
-            <div className="error-actions">
-              <button onClick={() => navigate("/login")} className="button button-primary">
-                Ir al login
-              </button>
-              <p className="help-text">
-                Si no recibiste el email de confirmación, puedes solicitar uno nuevo desde la página de login.
-              </p>
-            </div>
+            
+            {!mostrarReenvio ? (
+              <div className="error-actions">
+                <button onClick={() => navigate("/login")} className="button button-primary">
+                  Ir al login
+                </button>
+                <button 
+                  onClick={() => setMostrarReenvio(true)} 
+                  className="button button-secondary"
+                  style={{ marginLeft: "10px" }}
+                >
+                  Reenviar confirmación
+                </button>
+                <p className="help-text">
+                  Si el token expiró o es inválido, puedes solicitar un nuevo email de confirmación.
+                </p>
+              </div>
+            ) : (
+              <div className="reenvio-form">
+                <p className="help-text">
+                  {enviando && status !== "success" 
+                    ? "Email de confirmación reenviado. Revisa tu bandeja de entrada." 
+                    : "Ingresa tu correo electrónico para recibir un nuevo link de confirmación:"}
+                </p>
+                {!enviando && (
+                  <>
+                    <input
+                      type="email"
+                      placeholder="tu@email.com"
+                      value={correo}
+                      onChange={(e) => setCorreo(e.target.value)}
+                      className="input-correo"
+                    />
+                    <div className="button-group">
+                      <button 
+                        onClick={reenviarConfirmacion} 
+                        className="button button-primary"
+                      >
+                        Enviar
+                      </button>
+                      <button 
+                        onClick={() => setMostrarReenvio(false)} 
+                        className="button button-secondary"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </>
+                )}
+                {enviando && (
+                  <div style={{ marginTop: "1rem" }}>
+                    <FaSpinner className="spinner-icon" style={{ fontSize: "2rem" }} />
+                    <p>Redirigiendo al login...</p>
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
       </div>
