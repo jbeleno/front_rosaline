@@ -31,17 +31,17 @@ const useAuthStore = create(
           const usuario = await apiClient.get(API_ENDPOINTS.CLIENTE_BY_USUARIO(userId));
           set({ cliente: usuario });
 
-          // Determinar si es admin
+          // Determinar si es super_admin
           const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
-          const isAdmin = userData.rol === 'admin';
+          const isAdmin = userData.rol === 'super_admin';
           set({ isAdmin, userProfile: { ...usuario, rol: userData.rol } });
         } catch (error) {
           // Si el cliente no existe (404), no es un error crítico
           // Puede ser un admin o un usuario que aún no ha completado su perfil
           if (error.message && (error.message.includes('404') || error.message.includes('no encontrado'))) {
-            console.log('Cliente no encontrado para este usuario - puede ser admin o perfil incompleto');
+            console.log('Cliente no encontrado para este usuario - puede ser super_admin o perfil incompleto');
             const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
-            const isAdmin = userData.rol === 'admin';
+            const isAdmin = userData.rol === 'super_admin';
             set({ 
               cliente: null, 
               isAdmin, 
@@ -86,7 +86,7 @@ const useAuthStore = create(
                 user: { id: usuario.id, email: usuario.correo },
                 userProfile: usuario,
                 isAuthenticated: true,
-                isAdmin: usuario.rol === 'admin',
+                isAdmin: usuario.rol === 'super_admin',
                 loading: false 
               });
               
@@ -148,7 +148,7 @@ const useAuthStore = create(
             user: { id: decoded.id_usuario, email: decoded.sub },
             userProfile: userData,
             isAuthenticated: true,
-            isAdmin: decoded.rol === 'admin',
+            isAdmin: decoded.rol === 'super_admin',
             loading: false 
           });
 

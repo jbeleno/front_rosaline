@@ -781,7 +781,7 @@ function AdminCuenta() {
                 required
               >
                 <option value="cliente">Cliente</option>
-                <option value="admin">Admin</option>
+                <option value="super_admin">Super Admin</option>
               </select>
               <button type="submit" className="admin-btn-morado">Actualizar Usuario</button>
             </form>
