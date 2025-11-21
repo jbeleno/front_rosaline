@@ -2,8 +2,7 @@
  * Hook personalizado para obtener un producto específico
  */
 import { useState, useEffect } from 'react';
-import { apiClient } from '../../../shared/services/api/apiClient';
-import { API_ENDPOINTS } from '../../../shared/services/api/endpoints';
+import { productoService } from '../../../shared/services/api/productoService';
 import { normalizeImageUrl } from '../../../shared/utils/helpers';
 
 export function useProduct(productId) {
@@ -24,8 +23,8 @@ export function useProduct(productId) {
       setError(null);
 
       try {
-        const productos = await apiClient.get(API_ENDPOINTS.PRODUCTOS);
-        const productData = productos.find(p => p.id_producto === parseInt(productId));
+        // Usar el endpoint directo GET /productos/{id}
+        const productData = await productoService.getById(productId);
 
         if (!productData) {
           throw new Error('Producto no encontrado');
@@ -58,8 +57,7 @@ export function useProduct(productId) {
   const refetch = async () => {
     setLoading(true);
     try {
-      const productos = await apiClient.get(API_ENDPOINTS.PRODUCTOS);
-      const productData = productos.find(p => p.id_producto === parseInt(productId));
+      const productData = await productoService.getById(productId);
       
       if (productData?.imagen_url) {
         productData.imagen_url = normalizeImageUrl(productData.imagen_url);

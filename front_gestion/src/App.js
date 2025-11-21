@@ -29,6 +29,7 @@ const CambiarContraseña = React.lazy(() => import('./components/CambiarContrase
 
 // Página de admin (carga solo para administradores)
 const AdminCuenta = React.lazy(() => import('./components/AdminCuenta'));
+const Auditoria = React.lazy(() => import('./components/Auditoria'));
 
 // Componente de fallback mejorado
 const PageLoader = () => (
@@ -100,6 +101,14 @@ function App() {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <AdminCuenta />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/auditoria" 
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <Auditoria />
               </ProtectedRoute>
             } 
           />

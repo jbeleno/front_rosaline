@@ -57,5 +57,9 @@ export const API_ENDPOINTS = {
   // Detalles de Pedido
   DETALLE_PEDIDOS: '/detalle_pedidos/',
   DETALLE_PEDIDO_BY_ID: (id) => `/detalle_pedidos/${id}`,
+  
+  // Auditoría
+  AUDIT: '/audit/',
+  AUDIT_BY_TABLA_REGISTRO: (tablaNombre, registroId) => `/audit/${tablaNombre}/${registroId}`,
 };
 

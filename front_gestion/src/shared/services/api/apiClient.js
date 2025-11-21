@@ -121,8 +121,23 @@ class ApiClient {
   /**
    * Realizar petición GET
    */
-  async get(endpoint) {
-    const fullUrl = `${this.baseURL}${endpoint}`;
+  async get(endpoint, options = {}) {
+    let fullUrl = `${this.baseURL}${endpoint}`;
+    
+    // Agregar query params si existen
+    if (options.params) {
+      const queryString = new URLSearchParams();
+      Object.entries(options.params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          queryString.append(key, value);
+        }
+      });
+      const queryStr = queryString.toString();
+      if (queryStr) {
+        fullUrl += `?${queryStr}`;
+      }
+    }
+    
     console.log(`[API Client] GET request to:`, fullUrl);
     
     try {

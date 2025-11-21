@@ -3,8 +3,8 @@
  * Gestiona el estado del carrito de compras
  */
 import { create } from 'zustand';
-import { apiClient } from '../../../shared/services/api/apiClient';
-import { API_ENDPOINTS } from '../../../shared/services/api/endpoints';
+import carritoService from '../../../shared/services/api/carritoService';
+import detalleCarritoService from '../../../shared/services/api/detalleCarritoService';
 
 const useCartStore = create((set, get) => ({
   // Estado
@@ -24,7 +24,7 @@ const useCartStore = create((set, get) => ({
   fetchCart: async (clienteId) => {
     set({ loading: true, error: null });
     try {
-      const carritos = await apiClient.get(API_ENDPOINTS.CARRITOS_BY_CLIENTE(clienteId));
+      const carritos = await carritoService.obtenerCarritosPorCliente(clienteId);
       const carritosArray = Array.isArray(carritos) ? carritos : [];
       const carritoActivo = carritosArray.find(c => c.estado === 'activo');
       
@@ -45,7 +45,7 @@ const useCartStore = create((set, get) => ({
     set({ loading: true });
     try {
       // Usar el endpoint específico que devuelve los productos del carrito
-      const productosCarrito = await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_CARRITO(cartId));
+      const productosCarrito = await carritoService.obtenerProductosDeCarrito(cartId);
       
       if (!productosCarrito || productosCarrito.length === 0) {
         set({ cartItems: [], products: [], total: 0, loading: false });
@@ -53,7 +53,7 @@ const useCartStore = create((set, get) => ({
       }
 
       // Obtener los detalles del carrito para tener la cantidad
-      const detallesAll = await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO);
+      const detallesAll = await detalleCarritoService.obtenerDetallesCarrito();
       const detallesCarrito = detallesAll.filter(d => d.id_carrito === cartId);
 
       // Calcular total usando los detalles del carrito
@@ -80,7 +80,7 @@ const useCartStore = create((set, get) => ({
       // Obtener o crear carrito activo
       let cart = get().cart;
       if (!cart && clienteId) {
-        const nuevoCarrito = await apiClient.post(API_ENDPOINTS.CARRITOS, {
+        const nuevoCarrito = await carritoService.crearCarrito({
           id_cliente: clienteId,
           estado: 'activo'
         });
@@ -93,7 +93,7 @@ const useCartStore = create((set, get) => ({
       }
 
       // Verificar si el producto ya existe en el carrito
-      const detallesAll = await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO);
+      const detallesAll = await detalleCarritoService.obtenerDetallesCarrito();
       const detalleExistente = detallesAll.find(
         d => d.id_carrito === cart.id_carrito && d.id_producto === producto.id_producto
       );
@@ -101,8 +101,8 @@ const useCartStore = create((set, get) => ({
       if (detalleExistente) {
         // Actualizar cantidad
         const nuevaCantidad = detalleExistente.cantidad + Number(cantidad);
-        await apiClient.put(
-          API_ENDPOINTS.DETALLE_CARRITO_BY_ID(detalleExistente.id_detalle_carrito),
+        await detalleCarritoService.actualizarDetalleCarrito(
+          detalleExistente.id_detalle_carrito,
           {
             id_carrito: cart.id_carrito,
             id_producto: producto.id_producto,
@@ -113,7 +113,7 @@ const useCartStore = create((set, get) => ({
         );
       } else {
         // Crear nuevo detalle
-        await apiClient.post(API_ENDPOINTS.DETALLE_CARRITO, {
+        await detalleCarritoService.agregarProductoAlCarrito({
           id_carrito: cart.id_carrito,
           id_producto: producto.id_producto,
           cantidad: Number(cantidad),
@@ -140,14 +140,11 @@ const useCartStore = create((set, get) => ({
       const product = get().products.find(p => p.id_producto === item.id_producto);
       if (!product) throw new Error('Producto no encontrado');
 
-      await apiClient.put(
-        API_ENDPOINTS.DETALLE_CARRITO_BY_ID(itemId),
-        {
-          ...item,
-          cantidad: nuevaCantidad,
-          subtotal: nuevaCantidad * product.precio
-        }
-      );
+      await detalleCarritoService.actualizarDetalleCarrito(itemId, {
+        ...item,
+        cantidad: nuevaCantidad,
+        subtotal: nuevaCantidad * product.precio
+      });
 
       await get().fetchCartItems(get().cart?.id_carrito);
     } catch (error) {
@@ -160,7 +157,7 @@ const useCartStore = create((set, get) => ({
   removeFromCart: async (itemId) => {
     set({ loading: true });
     try {
-      await apiClient.delete(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(itemId));
+      await detalleCarritoService.eliminarProductoDelCarrito(itemId);
       await get().fetchCartItems(get().cart?.id_carrito);
     } catch (error) {
       set({ error: error.message, loading: false });
@@ -175,7 +172,7 @@ const useCartStore = create((set, get) => ({
     set({ loading: true });
     try {
       for (const item of get().cartItems) {
-        await apiClient.delete(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(item.id_detalle_carrito));
+        await detalleCarritoService.eliminarProductoDelCarrito(item.id_detalle_carrito);
       }
       set({ 
         cart: null, 
@@ -196,4 +193,3 @@ const useCartStore = create((set, get) => ({
 }));
 
 export default useCartStore;
-
