@@ -42,8 +42,10 @@ function AdminCuenta() {
   // Usuarios
   const [usuarioData, setUsuarioData] = useState({ id: "", correo: "", contraseña: "", rol: "", email_verificado: "" });
   const [deleteUsuarioId, setDeleteUsuarioId] = useState("");
-  const [usuarioActual, setUsuarioActual] = useState(null);
+  const [usuarioActual, setUsuarioActual] = useState(null); // Usuario autenticado (super_admin)
+  const [usuarioParaEditar, setUsuarioParaEditar] = useState(null); // Usuario que se va a editar
   const [loadingUsuarioActual, setLoadingUsuarioActual] = useState(false);
+  const [loadingUsuarioParaEditar, setLoadingUsuarioParaEditar] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -462,6 +464,53 @@ function AdminCuenta() {
         setErrorMessage(error.message || 'Error desconocido al eliminar el cliente');
       }
       setShowErrorModal(true);
+    }
+  };
+
+  const handleCargarUsuario = async () => {
+    if (!usuarioData.id) {
+      setErrorMessage('Por favor ingresa el ID del usuario');
+      setShowErrorModal(true);
+      return;
+    }
+    
+    // Validar que el ID sea un número y no sea "me"
+    const userId = String(usuarioData.id).trim();
+    if (userId.toLowerCase() === 'me' || isNaN(userId)) {
+      setErrorMessage('El ID del usuario debe ser un número válido');
+      setShowErrorModal(true);
+      return;
+    }
+    
+    setLoadingUsuarioParaEditar(true);
+    try {
+      const usuario = await apiClient.get(API_ENDPOINTS.USUARIO_BY_ID(userId));
+      
+      // Cargar los datos del usuario en el formulario
+      setUsuarioData({
+        id: usuario.id_usuario,
+        correo: usuario.correo || '',
+        contraseña: '', // No cargar contraseña por seguridad
+        rol: usuario.rol || '',
+        email_verificado: usuario.email_verificado || ''
+      });
+      
+      setUsuarioParaEditar(usuario);
+      setSuccessMessage(`Usuario cargado: ${usuario.correo} (${usuario.rol})`);
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error('Error al cargar el usuario:', error);
+      if (error.status === 404) {
+        setErrorMessage(`El usuario con ID ${userId} no existe.`);
+      } else if (error.status === 403) {
+        setErrorMessage('No tienes permisos para ver este usuario.');
+      } else {
+        setErrorMessage(error.message || 'Error al cargar el usuario');
+      }
+      setShowErrorModal(true);
+      setUsuarioParaEditar(null);
+    } finally {
+      setLoadingUsuarioParaEditar(false);
     }
   };
 
@@ -1021,16 +1070,39 @@ function AdminCuenta() {
           <div style={{marginBottom: '3rem'}}>
             <h4>Actualizar Usuario</h4>
             <p style={{color: '#666', fontSize: '0.9rem', marginBottom: '1rem'}}>
-              Todos los campos son opcionales excepto el ID. Solo se actualizarán los campos que completes.
+              Ingresa el ID del usuario y haz clic en "Cargar" para ver sus datos actuales.
             </p>
             <form onSubmit={handleActualizarUsuario} className="admin-form">
-              <input 
-                type="text"
-                value={usuarioData.id} 
-                onChange={e => setUsuarioData({ ...usuarioData, id: e.target.value })} 
-                placeholder="ID del usuario (requerido)" 
-                required 
-              />
+              <div style={{display: 'flex', gap: '0.5rem', alignItems: 'flex-start'}}>
+                <input 
+                  type="text"
+                  value={usuarioData.id} 
+                  onChange={e => setUsuarioData({ ...usuarioData, id: e.target.value })} 
+                  placeholder="ID del usuario (requerido)" 
+                  required
+                  style={{flex: 1}}
+                />
+                <button 
+                  type="button"
+                  onClick={handleCargarUsuario}
+                  disabled={loadingUsuarioParaEditar || !usuarioData.id}
+                  style={{
+                    padding: '0.7rem 1rem',
+                    background: 'linear-gradient(135deg, #6C3483 0%, #8B5FBF 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: '600',
+                    cursor: (loadingUsuarioParaEditar || !usuarioData.id) ? 'not-allowed' : 'pointer',
+                    opacity: (loadingUsuarioParaEditar || !usuarioData.id) ? 0.6 : 1,
+                    whiteSpace: 'nowrap',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  {loadingUsuarioParaEditar ? '⏳' : '🔍 Cargar'}
+                </button>
+              </div>
+              
               <input 
                 type="email"
                 value={usuarioData.correo} 
