@@ -38,6 +38,7 @@ export const API_ENDPOINTS = {
   // Detalles de Carrito
   DETALLE_CARRITO: '/detalle_carrito/',
   DETALLE_CARRITO_BY_ID: (id) => `/detalle_carrito/${id}`,
+  DETALLE_CARRITO_BY_CARRITO: (carritoId) => `/carritos/${carritoId}/detalles`,
   
   // Productos
   PRODUCTOS: '/productos/',

@@ -3,6 +3,7 @@ import "../styles/Carrito.css";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from '../shared/services/api/apiClient';
 import { API_ENDPOINTS } from '../shared/services/api/endpoints';
+import { useCart } from '../features/cart/hooks/useCart';
 
 function Carrito() {
   const [usuario] = useState(() => {
@@ -17,6 +18,7 @@ function Carrito() {
   const navigate = useNavigate();
   const paypalRef = useRef();
   const [paypalLoaded, setPaypalLoaded] = useState(false);
+  const { fetchCart } = useCart(); // Agregar useCart para actualizar el contador
 
   // Obtener cliente cuando cambia el usuario
   useEffect(() => {
@@ -65,14 +67,14 @@ function Carrito() {
     
     const fetchProductosCarrito = async () => {
       try {
-        // Usar el endpoint específico que devuelve los productos del carrito
-        const productosCarrito = await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_CARRITO(carrito.id_carrito));
-        
-        // Obtener los detalles del carrito para tener la cantidad
+        // Obtener los detalles del carrito (ya incluyen el objeto producto completo)
         const detallesAll = await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO);
         const detallesCarrito = detallesAll.filter(d => d.id_carrito === carrito.id_carrito);
         
-        setProductos(Array.isArray(productosCarrito) ? productosCarrito : []);
+        // Extraer los productos de los detalles (el backend ya los incluye)
+        const productosCarrito = detallesCarrito.map(d => d.producto);
+        
+        setProductos(productosCarrito);
         setDetalles(detallesCarrito);
       } catch (error) {
         console.error('Error al obtener productos del carrito:', error);
@@ -86,12 +88,9 @@ function Carrito() {
 
   // 3. Calcular total
   useEffect(() => {
-    let t = 0;
-    detalles.forEach((d, i) => {
-      if (productos[i]) t += productos[i].precio * d.cantidad;
-    });
-    setTotal(t);
-  }, [detalles, productos]);
+    const total = detalles.reduce((sum, detalle) => sum + detalle.subtotal, 0);
+    setTotal(total);
+  }, [detalles]);
 
   // Cargar el SDK de PayPal solo una vez
   useEffect(() => {
@@ -179,14 +178,14 @@ function Carrito() {
       // Actualizar el estado local en lugar de recargar la página
       setDetalles(detalles.filter(d => d.id_detalle_carrito !== id_detalle));
       
-      // Si no quedan detalles, limpiar productos también
+      // Actualizar productos basándose en los nuevos detalles
       const nuevosDetalles = detalles.filter(d => d.id_detalle_carrito !== id_detalle);
-      if (nuevosDetalles.length === 0) {
-        setProductos([]);
-      } else {
-        // Actualizar productos para reflejar los cambios
-        const productosCarrito = await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_CARRITO(carrito.id_carrito));
-        setProductos(Array.isArray(productosCarrito) ? productosCarrito : []);
+      const nuevosProductos = nuevosDetalles.map(d => d.producto);
+      setProductos(nuevosProductos);
+      
+      // Actualizar el carrito global para que el Header se actualice
+      if (cliente?.id_cliente) {
+        fetchCart(cliente.id_cliente);
       }
     } catch (error) {
       console.error("Error al eliminar producto del carrito:", error);
@@ -227,7 +226,7 @@ function Carrito() {
         <p>Parece que aún no has agregado productos a tu carrito.</p>
         <button 
           className="carrito-btn-finalizar" 
-          onClick={() => navigate('/catalogo')}
+          onClick={() => navigate('/productos')}
           style={{ marginTop: '1.5rem' }}
         >
           Explorar productos
@@ -240,9 +239,9 @@ function Carrito() {
     <div className="carrito-container">
       <h2>Mi Pedido</h2>
       <ul className="carrito-lista">
-        {detalles.map((detalle, i) => {
-          const producto = productos[i];
-          const subtotal = producto ? (producto.precio * detalle.cantidad).toFixed(2) : '0.00';
+        {detalles.map((detalle) => {
+          const producto = detalle.producto;
+          const subtotal = detalle.subtotal.toFixed(2);
           
           return (
             <li key={detalle.id_detalle_carrito} className="carrito-item">

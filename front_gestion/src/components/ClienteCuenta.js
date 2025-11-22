@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { FaUserEdit, FaSignOutAlt, FaChevronDown, FaChevronUp, FaBoxOpen, FaEdit, FaTimes, FaCheck, FaBox, FaTruck, FaHome, FaCreditCard, FaCalendarAlt, FaKey } from "react-icons/fa";
 import { apiClient } from '../shared/services/api/apiClient';
 import { API_ENDPOINTS } from '../shared/services/api/endpoints';
+import clienteService from '../shared/services/api/clienteService';
 import useAuthStore from '../features/auth/store/authStore';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Componente para mostrar el estado del pedido con un ícono y color según el estado
 const EstadoPedido = ({ estado }) => {
@@ -123,7 +126,7 @@ function ClienteCuenta() {
     
     const fetchCliente = async () => {
       try {
-        const cli = await apiClient.get(API_ENDPOINTS.CLIENTE_BY_USUARIO(usuario.id));
+        const cli = await clienteService.obtenerClientePorUsuario(usuario.id);
         setCliente(cli);
         setForm({
           nombre: cli.nombre,
@@ -163,7 +166,7 @@ function ClienteCuenta() {
     
     const fetchPedidos = async () => {
       try {
-        const pedidosData = await apiClient.get(`${API_ENDPOINTS.CLIENTES}/${cliente.id_cliente}/pedidos`);
+        const pedidosData = await clienteService.obtenerPedidosCliente(cliente.id_cliente);
         // Asegurar que siempre sea un array
         setPedidos(Array.isArray(pedidosData) ? pedidosData : []);
       } catch (error) {
@@ -181,31 +184,51 @@ function ClienteCuenta() {
     if (!cliente || !cliente.id_cliente) {
       // Si no hay cliente, crear uno nuevo
       try {
-        const nuevoCliente = await apiClient.post(API_ENDPOINTS.CLIENTES, {
+        const nuevoCliente = await clienteService.crearCliente({
           id_usuario: usuario.id,
           ...form
         });
         setCliente(nuevoCliente);
         setEdit(false);
-        alert('Perfil creado exitosamente');
+        toast.success('✅ Perfil creado exitosamente', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        });
       } catch (error) {
         console.error('Error al crear el perfil:', error);
-        alert('Error al crear el perfil. Por favor, intenta de nuevo.');
+        toast.error('❌ Error al crear el perfil. Por favor, intenta de nuevo.', {
+          position: "top-right",
+          autoClose: 3000
+        });
       }
       return;
     }
     
     try {
-      const updated = await apiClient.put(API_ENDPOINTS.CLIENTE_BY_ID(cliente.id_cliente), {
+      const updated = await clienteService.actualizarCliente(cliente.id_cliente, {
         id_usuario: usuario.id,
         ...form
       });
       setCliente(updated);
       setEdit(false);
-      alert('Perfil actualizado exitosamente');
+      toast.success('✅ Perfil actualizado exitosamente', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+      });
     } catch (error) {
       console.error('Error al actualizar el perfil:', error);
-      alert('Error al actualizar el perfil. Por favor, intenta de nuevo.');
+      toast.error('❌ Error al actualizar el perfil. Por favor, intenta de nuevo.', {
+        position: "top-right",
+        autoClose: 3000
+      });
     }
   };
 
@@ -340,6 +363,7 @@ function ClienteCuenta() {
 
   return (
     <div className="cliente-cuenta-container">
+      <ToastContainer />
       <h2>Mi Cuenta</h2>
       
       <button 

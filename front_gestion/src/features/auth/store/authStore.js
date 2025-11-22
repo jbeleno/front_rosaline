@@ -198,6 +198,10 @@ const useAuthStore = create(
             console.log('Supabase no disponible o ya cerrado');
           }
           
+          // Limpiar el carrito antes de cerrar sesión
+          const { default: useCartStore } = await import('../../../features/cart/store/cartStore');
+          useCartStore.getState().resetCart();
+          
           // Limpiar datos de autenticación
           localStorage.removeItem('token');
           localStorage.removeItem('usuario');
@@ -213,6 +217,13 @@ const useAuthStore = create(
           });
         } catch (error) {
           // Asegurar que se limpien los datos incluso si hay error
+          try {
+            const { default: useCartStore } = await import('../../../features/cart/store/cartStore');
+            useCartStore.getState().resetCart();
+          } catch (e) {
+            console.log('Error limpiando carrito:', e);
+          }
+          
           localStorage.removeItem('token');
           localStorage.removeItem('usuario');
           set({ 

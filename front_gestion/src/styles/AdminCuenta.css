@@ -189,6 +189,116 @@
   border: 1px solid rgba(139, 95, 191, 0.1);
 }
 
+/* Formulario compacto inline */
+.admin-form-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.admin-form-compact input,
+.admin-form-compact select {
+  height: 50px;
+  padding: 0.6rem 0.9rem;
+  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  color: #333;
+  flex: 1 1 auto;
+  min-width: 150px;
+  line-height: 1.5;
+}
+
+.admin-form-compact select {
+  cursor: pointer;
+  padding-right: 2.5rem;
+  padding-left: 0.9rem;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%238B5FBF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.2rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.admin-form-compact select option {
+  padding: 0.5rem;
+  background-color: #fff;
+  color: #333;
+}
+
+.admin-form-compact .input-small {
+  flex: 0 1 120px;
+  max-width: 120px;
+  min-width: 100px;
+}
+
+.input-with-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.inline-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.admin-form-compact input:focus,
+.admin-form-compact select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(139, 95, 191, 0.1);
+}
+
+.admin-form-compact .image-upload-container {
+  flex: 0 0 auto;
+}
+
+.admin-form-compact button {
+  height: 42px;
+  flex: 0 0 auto;
+  padding: 0 1.5rem !important;
+  margin: 0 !important;
+}
+
+/* Nuevo diseño de formulario con grid */
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1.8rem;
+}
+
+.admin-form-grid .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-form-grid .form-group label {
+  font-weight: 600;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.admin-form-grid .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
 .admin-form input[type="text"],
 .admin-form input[type="number"],
 .admin-form select {
@@ -203,6 +313,18 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
+.admin-form-grid input,
+.admin-form-grid select {
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  color: #333;
+  height: 38px;
+}
+
 .admin-form input[type="text"]:focus,
 .admin-form input[type="number"]:focus,
 .admin-form select:focus {
@@ -210,6 +332,14 @@
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(139, 95, 191, 0.1);
   background-color: #fff;
+}
+
+.admin-form-grid input:focus,
+.admin-form-grid select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(139, 95, 191, 0.15);
+  transform: translateY(-1px);
 }
 
 .admin-form input[type="text"]::placeholder,
@@ -229,6 +359,45 @@
 .form-group {
   flex: 1 1 200px;
   min-width: 0;
+}
+
+.btn-crear-producto {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9b72c7 100%) !important;
+  box-shadow: 0 4px 12px rgba(139, 95, 191, 0.25) !important;
+  border-radius: 8px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.btn-crear-producto:hover:not(:disabled) {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 10px 25px rgba(139, 95, 191, 0.4) !important;
+}
+
+.btn-crear-producto:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #9b72c7 100%);
+  color: #ffffff !important;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(139, 95, 191, 0.2);
+}
+
+.upload-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 95, 191, 0.3);
 }
 
 .admin-form button {
@@ -322,9 +491,7 @@
   padding: 0;
 }
 
-.admin-cuenta-container li {
-  /* El estilo base de li, pero las categorías usan admin-categoria-item */
-}
+
 .admin-cuenta-container li b {
   color: #6C3483;
 }

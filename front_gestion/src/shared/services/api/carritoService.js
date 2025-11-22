@@ -14,8 +14,7 @@ import { API_ENDPOINTS } from './endpoints';
  * @returns {Promise<Object>} Carrito creado
  */
 export const crearCarrito = async (carritoData) => {
-  const response = await apiClient.post(API_ENDPOINTS.CARRITOS, carritoData);
-  return response.data;
+  return await apiClient.post(API_ENDPOINTS.CARRITOS, carritoData);
 };
 
 /**
@@ -27,10 +26,9 @@ export const crearCarrito = async (carritoData) => {
  */
 export const obtenerCarritos = async (params = {}) => {
   const { skip = 0, limit = 100 } = params;
-  const response = await apiClient.get(API_ENDPOINTS.CARRITOS, {
+  return await apiClient.get(API_ENDPOINTS.CARRITOS, {
     params: { skip, limit }
   });
-  return response.data;
 };
 
 /**
@@ -39,8 +37,7 @@ export const obtenerCarritos = async (params = {}) => {
  * @returns {Promise<Object>} Carrito encontrado
  */
 export const obtenerCarritoPorId = async (carritoId) => {
-  const response = await apiClient.get(API_ENDPOINTS.CARRITO_BY_ID(carritoId));
-  return response.data;
+  return await apiClient.get(API_ENDPOINTS.CARRITO_BY_ID(carritoId));
 };
 
 /**
@@ -49,8 +46,7 @@ export const obtenerCarritoPorId = async (carritoId) => {
  * @returns {Promise<Array>} Lista de productos en el carrito
  */
 export const obtenerProductosDeCarrito = async (carritoId) => {
-  const response = await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_CARRITO(carritoId));
-  return response.data;
+  return await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_CARRITO(carritoId));
 };
 
 /**
@@ -60,8 +56,7 @@ export const obtenerProductosDeCarrito = async (carritoId) => {
  * @returns {Promise<Object>} Carrito actualizado
  */
 export const actualizarCarrito = async (carritoId, carritoData) => {
-  const response = await apiClient.put(API_ENDPOINTS.CARRITO_BY_ID(carritoId), carritoData);
-  return response.data;
+  return await apiClient.put(API_ENDPOINTS.CARRITO_BY_ID(carritoId), carritoData);
 };
 
 /**
@@ -70,8 +65,7 @@ export const actualizarCarrito = async (carritoId, carritoData) => {
  * @returns {Promise<Object>} Carrito eliminado
  */
 export const eliminarCarrito = async (carritoId) => {
-  const response = await apiClient.delete(API_ENDPOINTS.CARRITO_BY_ID(carritoId));
-  return response.data;
+  return await apiClient.delete(API_ENDPOINTS.CARRITO_BY_ID(carritoId));
 };
 
 /**
@@ -80,8 +74,7 @@ export const eliminarCarrito = async (carritoId) => {
  * @returns {Promise<Array>} Lista de carritos del cliente
  */
 export const obtenerCarritosPorCliente = async (clienteId) => {
-  const response = await apiClient.get(API_ENDPOINTS.CARRITOS_BY_CLIENTE(clienteId));
-  return response.data;
+  return await apiClient.get(API_ENDPOINTS.CARRITOS_BY_CLIENTE(clienteId));
 };
 
 // Exportar todas las funciones como objeto default

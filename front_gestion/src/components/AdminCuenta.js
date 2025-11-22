@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../config/supabase";
 import { apiClient } from '../shared/services/api/apiClient';
 import { API_ENDPOINTS } from '../shared/services/api/endpoints';
+import clienteService from '../shared/services/api/clienteService';
 import useAuthStore from '../features/auth/store/authStore';
 
 const ESTADOS = [
@@ -38,6 +39,9 @@ function AdminCuenta() {
   const [verMasId, setVerMasId] = useState(null);
   const [detallesPedido, setDetallesPedido] = useState({});
   const [editandoEstadoId, setEditandoEstadoId] = useState(null);
+  const [showDeletePedidoModal, setShowDeletePedidoModal] = useState(false);
+  const [deletePedidoId, setDeletePedidoId] = useState("");
+  const [deletingPedido, setDeletingPedido] = useState(false);
 
   // Usuarios
   const [usuarioData, setUsuarioData] = useState({ id: "", correo: "", contraseña: "", rol: "", email_verificado: "" });
@@ -63,6 +67,7 @@ function AdminCuenta() {
   // Clientes
   const [clientes, setClientes] = useState([]);
   const [loadingClientes, setLoadingClientes] = useState(false);
+  const [deletingCliente, setDeletingCliente] = useState(false);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [showDeleteClienteModal, setShowDeleteClienteModal] = useState(false);
   const [deleteClienteId, setDeleteClienteId] = useState("");
@@ -374,6 +379,42 @@ function AdminCuenta() {
     }
   };
 
+  // Eliminar pedido
+  const handleEliminarPedido = async () => {
+    // Prevenir doble clic
+    if (deletingPedido) {
+      console.log('Ya se está procesando una eliminación...');
+      return;
+    }
+    
+    setDeletingPedido(true);
+    
+    try {
+      await apiClient.delete(API_ENDPOINTS.PEDIDO_BY_ID(deletePedidoId));
+      setPedidos(pedidos.filter(p => p.id_pedido !== deletePedidoId));
+      // Limpiar detalles si estaban cargados
+      setDetallesPedido(prev => {
+        const newDetails = { ...prev };
+        delete newDetails[deletePedidoId];
+        return newDetails;
+      });
+      if (verMasId === deletePedidoId) {
+        setVerMasId(null);
+      }
+      setShowDeletePedidoModal(false);
+      setSuccessMessage('Pedido eliminado exitosamente');
+      setShowSuccessModal(true);
+      setDeletePedidoId("");
+    } catch (error) {
+      console.error('Error al eliminar el pedido:', error);
+      setShowDeletePedidoModal(false);
+      setErrorMessage('Error al eliminar el pedido: ' + (error.message || 'Error desconocido'));
+      setShowErrorModal(true);
+    } finally {
+      setDeletingPedido(false);
+    }
+  };
+
   // CRUD Usuarios
   const handleObtenerUsuarioActual = async () => {
     setLoadingUsuarioActual(true);
@@ -415,11 +456,10 @@ function AdminCuenta() {
   const handleCargarClientes = async () => {
     setLoadingClientes(true);
     try {
-      const params = new URLSearchParams();
-      params.append('skip', paginacionClientes.skip.toString());
-      params.append('limit', paginacionClientes.limit.toString());
-
-      const data = await apiClient.get(`${API_ENDPOINTS.CLIENTES}?${params.toString()}`);
+      const data = await clienteService.obtenerClientes({
+        skip: paginacionClientes.skip,
+        limit: paginacionClientes.limit
+      });
       setClientes(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error al cargar clientes:', error);
@@ -433,7 +473,7 @@ function AdminCuenta() {
 
   const handleVerDetallesCliente = async (id) => {
     try {
-      const data = await apiClient.get(API_ENDPOINTS.CLIENTE_BY_ID(id));
+      const data = await clienteService.obtenerClientePorId(id);
       setClienteSeleccionado(data);
     } catch (error) {
       console.error('Error al obtener detalles del cliente:', error);
@@ -443,8 +483,16 @@ function AdminCuenta() {
   };
 
   const handleEliminarCliente = async () => {
+    // Prevenir doble clic
+    if (deletingCliente) {
+      console.log('Ya se está procesando una eliminación...');
+      return;
+    }
+    
+    setDeletingCliente(true);
+    
     try {
-      await apiClient.delete(API_ENDPOINTS.CLIENTE_BY_ID(deleteClienteId));
+      await clienteService.eliminarCliente(deleteClienteId);
       setShowDeleteClienteModal(false);
       setSuccessMessage('Cliente eliminado exitosamente');
       setShowSuccessModal(true);
@@ -456,14 +504,28 @@ function AdminCuenta() {
       console.error('Error al eliminar el cliente:', error);
       setShowDeleteClienteModal(false);
       
-      if (error.status === 404 || error.status === 500) {
+      // Si es error 500, el cliente probablemente SÍ fue eliminado (error del backend después de eliminar)
+      if (error.status === 500) {
+        setSuccessMessage('Cliente eliminado (el servidor reportó un error, pero la eliminación fue exitosa)');
+        setShowSuccessModal(true);
+        setDeleteClienteId("");
+        setClienteSeleccionado(null);
+        // Recargar lista para confirmar que se eliminó
+        handleCargarClientes();
+      } else if (error.status === 404) {
         setErrorMessage(`El cliente con ID ${deleteClienteId} no existe o ya fue eliminado.`);
+        setShowErrorModal(true);
+        // Recargar lista por si acaso
+        handleCargarClientes();
       } else if (error.message && error.message.toLowerCase().includes('fetch')) {
         setErrorMessage(`No se pudo conectar con el servidor. Verifica que el cliente con ID ${deleteClienteId} exista.`);
+        setShowErrorModal(true);
       } else {
-        setErrorMessage(error.message || 'Error desconocido al eliminar el cliente');
+        setErrorMessage(error.message || 'Error al eliminar el cliente');
+        setShowErrorModal(true);
       }
-      setShowErrorModal(true);
+    } finally {
+      setDeletingCliente(false);
     }
   };
 
@@ -616,6 +678,7 @@ function AdminCuenta() {
     // Obtener productos del pedido usando el endpoint correcto
     try {
       const productos = await apiClient.get(API_ENDPOINTS.PRODUCTOS_BY_PEDIDO(id_pedido));
+      console.log('Productos del pedido:', productos); // Debug
       
       setDetallesPedido(prev => ({
         ...prev,
@@ -624,6 +687,7 @@ function AdminCuenta() {
       setVerMasId(id_pedido);
     } catch (error) {
       console.error('Error al cargar los productos del pedido:', error);
+      alert('Error al cargar los productos del pedido: ' + (error.message || 'Error desconocido'));
       setDetallesPedido(prev => ({
         ...prev,
         [id_pedido]: []
@@ -666,41 +730,57 @@ function AdminCuenta() {
               style={{padding: "0.5rem", borderRadius: "6px", border: "1.5px solid #6C3483", flex: "1 1 200px"}}
             />
           </div>
-          <form onSubmit={handleCrearProducto} className="admin-form">
+          <form onSubmit={handleCrearProducto} className="admin-form admin-form-compact">
             <input 
               value={nuevoProducto.nombre} 
               onChange={e => setNuevoProducto({ ...nuevoProducto, nombre: e.target.value })} 
-              placeholder="Nombre" 
+              placeholder="Nombre del producto" 
               required 
             />
+            
             <input 
               value={nuevoProducto.descripcion} 
               onChange={e => setNuevoProducto({ ...nuevoProducto, descripcion: e.target.value })} 
               placeholder="Descripción" 
               required 
             />
-            <input 
-              type="number" 
-              value={nuevoProducto.cantidad} 
-              onChange={e => setNuevoProducto({ ...nuevoProducto, cantidad: Number(e.target.value) })} 
-              placeholder="Cantidad" 
-              required 
-            />
-            <input 
-              type="number" 
-              value={nuevoProducto.precio} 
-              onChange={e => setNuevoProducto({ ...nuevoProducto, precio: Number(e.target.value) })} 
-              placeholder="Precio" 
-              required 
-            />
+            
+            <div className="input-with-label">
+              <label className="inline-label">Stock:</label>
+              <input 
+                type="number" 
+                min="0"
+                value={nuevoProducto.cantidad} 
+                onChange={e => setNuevoProducto({ ...nuevoProducto, cantidad: Number(e.target.value) })} 
+                placeholder="0" 
+                required 
+                className="input-small"
+              />
+            </div>
+            
+            <div className="input-with-label">
+              <label className="inline-label">Precio:</label>
+              <input 
+                type="number" 
+                min="0"
+                step="0.01"
+                value={nuevoProducto.precio} 
+                onChange={e => setNuevoProducto({ ...nuevoProducto, precio: Number(e.target.value) })} 
+                placeholder="0.00" 
+                required 
+                className="input-small"
+              />
+            </div>
+            
             <select 
               value={nuevoProducto.id_categoria} 
               onChange={e => setNuevoProducto({ ...nuevoProducto, id_categoria: Number(e.target.value) })} 
               required
             >
-              <option value="">Categoría</option>
+              <option value="">Seleccionar categoría</option>
               {categorias.map(cat => <option key={cat.id_categoria} value={cat.id_categoria}>{cat.nombre}</option>)}
             </select>
+            
             <select 
               value={nuevoProducto.estado} 
               onChange={e => setNuevoProducto({ ...nuevoProducto, estado: e.target.value })}
@@ -708,6 +788,7 @@ function AdminCuenta() {
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
             </select>
+            
             <div className="image-upload-container">
               <input
                 type="file"
@@ -717,13 +798,14 @@ function AdminCuenta() {
                 id="image-upload"
               />
               <label htmlFor="image-upload" className="upload-button">
-                {selectedFile ? 'Cambiar imagen' : 'Seleccionar imagen'}
+                {selectedFile ? 'Imagen seleccionada' : 'Seleccionar imagen'}
               </label>
               {selectedFile && (
                 <span className="file-name">{selectedFile.name}</span>
               )}
             </div>
-            <button type="submit" disabled={uploading}>
+            
+            <button type="submit" className="btn-crear-producto" disabled={uploading}>
               {uploading ? 'Subiendo...' : 'Crear producto'}
             </button>
           </form>
@@ -862,6 +944,16 @@ function AdminCuenta() {
                 <button className="admin-btn-morado" style={{marginLeft: '0.7rem'}} onClick={() => handleVerMas(pedido.id_pedido)}>
                   {verMasId === pedido.id_pedido ? "Ocultar" : "Ver más"}
                 </button>
+                <button 
+                  className="admin-btn-eliminar" 
+                  style={{marginLeft: '0.7rem'}} 
+                  onClick={() => {
+                    setDeletePedidoId(pedido.id_pedido);
+                    setShowDeletePedidoModal(true);
+                  }}
+                >
+                  Eliminar
+                </button>
                 <span> | Cliente: {pedido.id_cliente} | Dirección: {pedido.direccion_envio} | Fecha: {pedido.fecha_pedido}</span>
                 {editandoEstadoId === pedido.id_pedido && (
                   <div style={{marginTop: '0.7rem'}}>
@@ -876,14 +968,20 @@ function AdminCuenta() {
                 {verMasId === pedido.id_pedido && detallesPedido[pedido.id_pedido] && (
                   <div style={{marginTop: '1rem', background: '#f3e5f5', borderRadius: '8px', padding: '1rem'}}>
                     <b>Productos del pedido:</b>
-                    <ul style={{marginTop: '0.7rem'}}>
-                      {detallesPedido[pedido.id_pedido].map((det, idx) => (
-                        <li key={det.id_detalle} style={{marginBottom: '0.5rem'}}>
-                          <b>{det.producto?.nombre}</b> - {det.producto?.descripcion}<br/>
-                          Valor unitario: ${det.producto?.precio} | Cantidad: {det.cantidad} | Subtotal: ${det.subtotal}
-                        </li>
-                      ))}
-                    </ul>
+                    {detallesPedido[pedido.id_pedido].length === 0 ? (
+                      <p style={{marginTop: '0.5rem', color: '#666'}}>No hay productos en este pedido</p>
+                    ) : (
+                      <ul style={{marginTop: '0.7rem'}}>
+                        {detallesPedido[pedido.id_pedido].map((producto, idx) => (
+                          <li key={producto.id_producto || idx} style={{marginBottom: '0.5rem'}}>
+                            <b>{producto.nombre || 'Sin nombre'}</b> - {producto.descripcion || 'Sin descripción'}<br/>
+                            Precio unitario: ${producto.precio?.toFixed(2) || '0.00'} | 
+                            Cantidad: {producto.cantidad || 1} | 
+                            Subtotal: ${producto.subtotal ? producto.subtotal.toFixed(2) : (producto.precio * (producto.cantidad || 1)).toFixed(2)}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 )}
               </li>
@@ -1381,6 +1479,7 @@ function AdminCuenta() {
             <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
               <button 
                 onClick={() => setShowDeleteClienteModal(false)}
+                disabled={deletingCliente}
                 style={{
                   padding: '0.7rem 1.5rem',
                   background: '#f0f0f0',
@@ -1388,24 +1487,101 @@ function AdminCuenta() {
                   border: 'none',
                   borderRadius: '8px',
                   fontWeight: '600',
-                  cursor: 'pointer'
+                  cursor: deletingCliente ? 'not-allowed' : 'pointer',
+                  opacity: deletingCliente ? 0.6 : 1
                 }}
               >
                 Cancelar
               </button>
               <button 
                 onClick={handleEliminarCliente}
+                disabled={deletingCliente}
                 style={{
                   padding: '0.7rem 1.5rem',
-                  background: '#d32f2f',
+                  background: deletingCliente ? '#9e9e9e' : '#d32f2f',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
                   fontWeight: '600',
-                  cursor: 'pointer'
+                  cursor: deletingCliente ? 'not-allowed' : 'pointer',
+                  opacity: deletingCliente ? 0.6 : 1
                 }}
               >
-                Sí, eliminar cliente
+                {deletingCliente ? 'Eliminando...' : 'Sí, eliminar cliente'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal de confirmación para eliminar pedido */}
+      {showDeletePedidoModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '2rem',
+            maxWidth: '500px',
+            width: '90%',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 style={{color: '#d32f2f', marginBottom: '1rem'}}>⚠️ Confirmar eliminación de pedido</h3>
+            <p style={{marginBottom: '1rem', lineHeight: '1.6'}}>
+              ¿Estás seguro de que deseas eliminar el pedido <strong>#{deletePedidoId}</strong>?
+            </p>
+            <div style={{background: '#fff3cd', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid #ffc107'}}>
+              <p style={{margin: '0.5rem 0', fontSize: '0.95rem'}}><strong>Esto eliminará:</strong></p>
+              <ul style={{margin: '0.5rem 0', paddingLeft: '1.5rem', fontSize: '0.95rem'}}>
+                <li>El pedido y toda su información</li>
+                <li>Los detalles de productos asociados al pedido</li>
+              </ul>
+              <p style={{margin: '0.5rem 0', fontSize: '0.95rem', color: '#d32f2f'}}>
+                <strong>Advertencia:</strong> Esta acción no se puede deshacer.
+              </p>
+            </div>
+            <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
+              <button 
+                onClick={() => setShowDeletePedidoModal(false)}
+                disabled={deletingPedido}
+                style={{
+                  padding: '0.7rem 1.5rem',
+                  background: '#f0f0f0',
+                  color: '#333',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: deletingPedido ? 'not-allowed' : 'pointer',
+                  opacity: deletingPedido ? 0.6 : 1
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleEliminarPedido}
+                disabled={deletingPedido}
+                style={{
+                  padding: '0.7rem 1.5rem',
+                  background: deletingPedido ? '#9e9e9e' : '#d32f2f',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  cursor: deletingPedido ? 'not-allowed' : 'pointer',
+                  opacity: deletingPedido ? 0.6 : 1
+                }}
+              >
+                {deletingPedido ? 'Eliminando...' : 'Sí, eliminar pedido'}
               </button>
             </div>
           </div>

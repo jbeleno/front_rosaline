@@ -189,6 +189,18 @@ const useCartStore = create((set, get) => ({
   // Obtener cantidad total de items
   getTotalItems: () => {
     return get().cartItems.reduce((sum, item) => sum + item.cantidad, 0);
+  },
+
+  // Resetear el store (cuando se cierra sesión o cambia de usuario)
+  resetCart: () => {
+    set({ 
+      cart: null, 
+      cartItems: [], 
+      products: [], 
+      total: 0,
+      loading: false,
+      error: null
+    });
   }
 }));
 

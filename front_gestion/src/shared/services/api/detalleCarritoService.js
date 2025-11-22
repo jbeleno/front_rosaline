@@ -17,8 +17,7 @@ import { API_ENDPOINTS } from './endpoints';
  * @returns {Promise<Object>} Detalle de carrito creado
  */
 export const agregarProductoAlCarrito = async (detalleData) => {
-  const response = await apiClient.post(API_ENDPOINTS.DETALLE_CARRITO, detalleData);
-  return response.data;
+  return await apiClient.post(API_ENDPOINTS.DETALLE_CARRITO, detalleData);
 };
 
 /**
@@ -30,10 +29,9 @@ export const agregarProductoAlCarrito = async (detalleData) => {
  */
 export const obtenerDetallesCarrito = async (params = {}) => {
   const { skip = 0, limit = 100 } = params;
-  const response = await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO, {
+  return await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO, {
     params: { skip, limit }
   });
-  return response.data;
 };
 
 /**
@@ -42,8 +40,7 @@ export const obtenerDetallesCarrito = async (params = {}) => {
  * @returns {Promise<Object>} Detalle encontrado
  */
 export const obtenerDetallePorId = async (detalleId) => {
-  const response = await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(detalleId));
-  return response.data;
+  return await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(detalleId));
 };
 
 /**
@@ -53,8 +50,7 @@ export const obtenerDetallePorId = async (detalleId) => {
  * @returns {Promise<Object>} Detalle actualizado
  */
 export const actualizarDetalleCarrito = async (detalleId, detalleData) => {
-  const response = await apiClient.put(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(detalleId), detalleData);
-  return response.data;
+  return await apiClient.put(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(detalleId), detalleData);
 };
 
 /**
@@ -63,8 +59,16 @@ export const actualizarDetalleCarrito = async (detalleId, detalleData) => {
  * @returns {Promise<Object>} Detalle eliminado
  */
 export const eliminarProductoDelCarrito = async (detalleId) => {
-  const response = await apiClient.delete(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(detalleId));
-  return response.data;
+  return await apiClient.delete(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(detalleId));
+};
+
+/**
+ * Obtener detalles de un carrito específico (disponible para el dueño del carrito)
+ * @param {number} carritoId - ID del carrito
+ * @returns {Promise<Array>} Lista de detalles del carrito
+ */
+export const obtenerDetallesPorCarrito = async (carritoId) => {
+  return await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO_BY_CARRITO(carritoId));
 };
 
 // Exportar todas las funciones como objeto default
@@ -73,5 +77,6 @@ export default {
   obtenerDetallesCarrito,
   obtenerDetallePorId,
   actualizarDetalleCarrito,
-  eliminarProductoDelCarrito
+  eliminarProductoDelCarrito,
+  obtenerDetallesPorCarrito
 };

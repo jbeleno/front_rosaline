@@ -15,8 +15,10 @@
 
 .productos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .producto-card {
@@ -38,14 +40,16 @@
 
 /* Imagen del producto */
 .producto-imagen-wrapper {
-  width: 100%;
-  height: 220px;
   position: relative;
+  padding-top: 100%; /* Ratio 1:1 (cuadrado) */
   overflow: hidden;
-  background: #f8f9fa;
+  background: #fffaf7;
 }
 
 .producto-imagen {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -57,23 +61,24 @@
 }
 
 .producto-imagen-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e3e7ed 100%);
-  color: #999;
+  background: #fff5f0;
+  color: #d4a5a5;
   font-size: 0.9rem;
   font-weight: 500;
   gap: 0.5rem;
 }
 
-.producto-imagen-placeholder::before {
-  content: "📷";
+.producto-imagen-placeholder::first-line {
   font-size: 2.5rem;
-  opacity: 0.3;
 }
 
 /* Información del producto */
@@ -159,7 +164,6 @@
   
   .productos-grid {
     gap: 20px;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
 }
 
@@ -175,11 +179,7 @@
   
   .productos-grid {
     gap: 16px;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
-  
-  .producto-imagen-wrapper {
-    height: 200px;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -196,11 +196,7 @@
   
   .productos-grid {
     gap: 16px;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  }
-  
-  .producto-imagen-wrapper {
-    height: 180px;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -222,10 +218,6 @@
   
   .producto-card {
     border-radius: 8px;
-  }
-  
-  .producto-imagen-wrapper {
-    height: 160px;
   }
   
   .producto-info {
@@ -270,9 +262,5 @@
   
   .producto-card {
     max-width: 100%;
-  }
-  
-  .producto-imagen-wrapper {
-    height: 200px;
   }
 }
