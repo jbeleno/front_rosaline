@@ -12,7 +12,7 @@ import './App.css';
 // MODO MANTENIMIENTO
 // ============================================
 // Cambia a 'false' para restaurar el sitio normal
-const MODO_MANTENIMIENTO = true;
+const MODO_MANTENIMIENTO = false;
 
 // ============================================
 // LAZY LOADING DE COMPONENTES
