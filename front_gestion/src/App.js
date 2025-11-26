@@ -5,7 +5,14 @@ import { LoadingSpinner } from './shared/components/UI/LoadingSpinner';
 import { SchemaMarkup } from './shared/components/SEO/SchemaMarkup';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import Mantenimiento from './components/Mantenimiento';
 import './App.css';
+
+// ============================================
+// MODO MANTENIMIENTO
+// ============================================
+// Cambia a 'false' para restaurar el sitio normal
+const MODO_MANTENIMIENTO = false;
 
 // ============================================
 // LAZY LOADING DE COMPONENTES
@@ -45,6 +52,11 @@ const PageLoader = () => (
 );
 
 function App() {
+  // Si está en modo mantenimiento, muestra solo la página de mantenimiento
+  if (MODO_MANTENIMIENTO) {
+    return <Mantenimiento />;
+  }
+
   return (
     <BrowserRouter>
       <SchemaMarkup />
