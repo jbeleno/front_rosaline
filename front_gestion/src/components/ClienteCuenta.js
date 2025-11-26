@@ -464,12 +464,7 @@ function ClienteCuenta() {
               >
                 <FaEdit /> Editar información
               </button>
-              <button 
-                onClick={() => navigate("/cambiar-contraseña")} 
-                className="button button-outline"
-              >
-                <FaKey /> Cambiar contraseña
-              </button>
+              {/* Botón de cambiar contraseña eliminado */}
             </div>
           </>
         )}
