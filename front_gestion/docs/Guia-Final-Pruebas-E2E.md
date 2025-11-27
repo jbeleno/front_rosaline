@@ -22,7 +22,10 @@ Las pruebas E2E simulan el comportamiento de un usuario real interactuando con l
 ### 1. Prerrequisitos
 - El frontend debe estar corriendo: `npm start` (Puerto 3000)
 - El backend debe estar corriendo (Puerto 8080)
-- Archivo `.env.test` configurado con credenciales válidas.
+- **Configuración de Entorno**:
+  1. Copia el archivo de ejemplo: `cp .env.test.example .env.test` (o hazlo manualmente).
+  2. Edita `.env.test` y coloca las credenciales de un usuario REAL que exista en tu base de datos local.
+  > **Nota**: Sin este archivo, las pruebas fallarán inmediatamente.
 
 ### 2. Comandos Principales
 
