@@ -1,0 +1,13 @@
+
+> frontend_tienda@0.1.0 test
+> react-scripts test src/test/LoginRegister.test.js
+
+PASS src/test/LoginRegister.test.js
+  CP-002 - Inicio de sesión
+    √ Verificar que un usuario confirmado puede iniciar sesión y recibe un token JWT (177 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        3.977 s
+Ran all test suites matching /src\\test\\LoginRegister.test.js/i.

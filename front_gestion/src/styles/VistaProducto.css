@@ -39,6 +39,31 @@
   background: linear-gradient(90deg, #FF9AA2, #D4A5E5, #8B5FBF);
 }
 
+/* Botón Volver */
+.vista-producto-btn-volver {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: var(--transition);
+  z-index: 10;
+}
+
+.vista-producto-btn-volver:hover {
+  background-color: var(--color-light);
+  transform: translateX(-5px);
+}
+
 /* Estilos de la imagen */
 .vista-producto-img {
   flex: 0 0 450px;
@@ -55,7 +80,7 @@
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-  
+  margin-top: 20px; /* Espacio para el botón volver si es necesario */
 }
 
 .vista-producto-img:hover {
@@ -102,6 +127,7 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1rem 0;
+  margin-top: 20px;
 }
 
 .vista-producto-info h1 {

@@ -1,0 +1,86 @@
+
+> frontend_tienda@0.1.0 test
+> react-scripts test src/test/LoginRegister.test.js
+
+FAIL src/test/LoginRegister.test.js
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    SyntaxError: C:\Users\Juan Forero\Desktop\rosaline\front_rosaline\front_gestion\src\test\LoginRegister.test.js: Unexpected token (43:0)
+
+    [0m [90m 41 |[39m     })[33m;[39m
+     [90m 42 |[39m })[33m;[39m
+    [31m[1m>[22m[39m[90m 43 |[39m })[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m 44 |[39m[0m
+
+      at toParseError (node_modules/@babel/parser/src/parse-error.ts:95:45)
+      at FlowParserMixin.raise (node_modules/@babel/parser/src/tokenizer/index.ts:1503:19)
+      at FlowParserMixin.unexpected (node_modules/@babel/parser/src/tokenizer/index.ts:1543:16)
+      at FlowParserMixin.parseExprAtom (node_modules/@babel/parser/src/parser/expression.ts:1334:16)
+      at FlowParserMixin.parseExprAtom (node_modules/@babel/parser/src/plugins/jsx/index.ts:583:22)
+      at FlowParserMixin.parseExprSubscripts (node_modules/@babel/parser/src/parser/expression.ts:723:23)
+      at FlowParserMixin.parseUpdate (node_modules/@babel/parser/src/parser/expression.ts:702:21)
+      at FlowParserMixin.parseMaybeUnary (node_modules/@babel/parser/src/parser/expression.ts:664:23)
+      at FlowParserMixin.parseMaybeUnaryOrPrivate (node_modules/@babel/parser/src/parser/expression.ts:398:14)
+      at FlowParserMixin.parseExprOps (node_modules/@babel/parser/src/parser/expression.ts:410:23)
+      at FlowParserMixin.parseMaybeConditional (node_modules/@babel/parser/src/parser/expression.ts:365:23)
+      at FlowParserMixin.parseMaybeAssign (node_modules/@babel/parser/src/parser/expression.ts:296:21)
+      at FlowParserMixin.parseMaybeAssign (node_modules/@babel/parser/src/plugins/flow/index.ts:3097:20)
+      at FlowParserMixin.parseExpressionBase (node_modules/@babel/parser/src/parser/expression.ts:221:23)
+      at callback (node_modules/@babel/parser/src/parser/expression.ts:212:39)
+      at FlowParserMixin.allowInAnd (node_modules/@babel/parser/src/parser/expression.ts:3131:16)
+      at FlowParserMixin.parseExpression (node_modules/@babel/parser/src/parser/expression.ts:212:17)
+      at FlowParserMixin.parseStatementContent (node_modules/@babel/parser/src/parser/statement.ts:654:23)
+      at FlowParserMixin.parseStatementLike (node_modules/@babel/parser/src/parser/statement.ts:449:17)
+      at FlowParserMixin.parseStatementLike (node_modules/@babel/parser/src/plugins/flow/index.ts:1994:26)
+      at FlowParserMixin.parseModuleItem (node_modules/@babel/parser/src/parser/statement.ts:386:17)
+      at FlowParserMixin.parseBlockOrModuleBlockBody (node_modules/@babel/parser/src/parser/statement.ts:1414:16)
+      at FlowParserMixin.parseBlockBody (node_modules/@babel/parser/src/parser/statement.ts:1388:10)
+      at FlowParserMixin.parseProgram (node_modules/@babel/parser/src/parser/statement.ts:225:10)
+      at FlowParserMixin.parseTopLevel (node_modules/@babel/parser/src/parser/statement.ts:203:25)
+      at FlowParserMixin.parseTopLevel (node_modules/@babel/parser/src/plugins/flow/index.ts:3375:30)
+      at FlowParserMixin.parse (node_modules/@babel/parser/src/parser/index.ts:93:10)
+      at parse (node_modules/@babel/parser/src/index.ts:92:38)
+      at parser (node_modules/@babel/core/src/parser/index.ts:28:19)
+          at parser.next (<anonymous>)
+      at normalizeFile (node_modules/@babel/core/src/transformation/normalize-file.ts:49:24)
+          at normalizeFile.next (<anonymous>)
+      at run (node_modules/@babel/core/src/transformation/index.ts:40:36)
+          at run.next (<anonymous>)
+      at transform (node_modules/@babel/core/src/transform.ts:29:20)
+          at transform.next (<anonymous>)
+      at evaluateSync (node_modules/gensync/index.js:251:28)
+      at fn (node_modules/gensync/index.js:89:14)
+      at stopHiding - secret - don't use this - v1 (node_modules/@babel/core/src/errors/rewrite-stack-trace.ts:99:14)
+      at transformSync (node_modules/@babel/core/src/transform.ts:66:52)
+      at ScriptTransformer.transformSource (node_modules/@jest/transform/build/ScriptTransformer.js:619:31)
+      at ScriptTransformer._transformAndBuildScript (node_modules/@jest/transform/build/ScriptTransformer.js:765:40)
+      at ScriptTransformer.transform (node_modules/@jest/transform/build/ScriptTransformer.js:822:19)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        6.569 s
+Ran all test suites matching /src\\test\\LoginRegister.test.js/i.

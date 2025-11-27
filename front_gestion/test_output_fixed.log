@@ -1,0 +1,29 @@
+
+> frontend_tienda@0.1.0 test
+> react-scripts test src/test/LoginRegister.test.js
+
+FAIL src/test/LoginRegister.test.js
+  ● Test suite failed to run
+
+    Cannot find module 'react-router-dom' from 'src/test/LoginRegister.test.js'
+
+    [0m [90m 10 |[39m [90m// Mock de react-router-dom[39m
+     [90m 11 |[39m [36mconst[39m mockNavigate [33m=[39m jest[33m.[39mfn()[33m;[39m
+    [31m[1m>[22m[39m[90m 12 |[39m jest[33m.[39mmock([32m'react-router-dom'[39m[33m,[39m () [33m=>[39m ({
+     [90m    |[39m      [31m[1m^[22m[39m
+     [90m 13 |[39m     useNavigate[33m:[39m () [33m=>[39m mockNavigate[33m,[39m
+     [90m 14 |[39m     useLocation[33m:[39m () [33m=>[39m ({ state[33m:[39m [36mnull[39m })[33m,[39m
+     [90m 15 |[39m     [33mBrowserRouter[39m[33m:[39m ({ children }) [33m=>[39m [33m<[39m[33mdiv[39m[33m>[39m{children}[33m<[39m[33m/[39m[33mdiv[39m[33m>[39m[33m,[39m[0m
+
+      at Resolver.resolveModule (node_modules/jest-resolve/build/resolver.js:324:11)
+      at Object.<anonymous> (src/test/LoginRegister.test.js:12:6)
+      at TestScheduler.scheduleTests (node_modules/@jest/core/build/TestScheduler.js:333:13)
+      at runJest (node_modules/@jest/core/build/runJest.js:404:19)
+      at _run10000 (node_modules/@jest/core/build/cli/index.js:320:7)
+      at runCLI (node_modules/@jest/core/build/cli/index.js:173:3)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        4.81 s
+Ran all test suites matching /src\\test\\LoginRegister.test.js/i.
