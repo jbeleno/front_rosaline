@@ -110,21 +110,18 @@ test.describe('CP-017 - Eliminar producto del carrito', () => {
         await page.goto('/carrito');
         await page.waitForLoadState('networkidle');
 
-        // Eliminar todos los productos
-        let botonesEliminar = page.locator('button:has-text("Eliminar")');
-        let count = await botonesEliminar.count();
+        // Eliminar todos los productos (bucle robusto)
+        console.log('🗑️ Eliminando productos...');
 
-        console.log(`🗑️ Eliminando ${count} producto(s)...`);
-
-        for (let i = 0; i < count; i++) {
+        while (await page.locator('button:has-text("Eliminar")').count() > 0) {
             await page.locator('button:has-text("Eliminar")').first().click();
             await page.waitForTimeout(500);
         }
 
         console.log('✅ Todos los productos eliminados');
 
-        // Verificar que el carrito está vacío
-        await expect(page.locator('text=/Tu carrito está vacío|No hay productos/i')).toBeVisible({ timeout: 5000 });
+        // Verificar que el carrito está vacío con el selector correcto
+        await expect(page.locator('h2:has-text("¡Tu carrito está vacío!")')).toBeVisible({ timeout: 10000 });
         console.log('✅ Mensaje de carrito vacío visible');
 
         // Verificar que no hay items en el carrito

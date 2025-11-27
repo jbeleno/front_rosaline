@@ -21,16 +21,15 @@ test.describe('CP-008 - Suma de productos en el carrito', () => {
             await page.goto('/carrito');
             await page.waitForLoadState('networkidle');
 
-            // Eliminar todos los productos del carrito
-            const botonesEliminar = page.locator('button:has-text("Eliminar")');
-            const count = await botonesEliminar.count();
-
-            for (let i = 0; i < count; i++) {
+            // Eliminar items mientras existan (bucle robusto)
+            while (await page.locator('button:has-text("Eliminar")').count() > 0) {
                 await page.locator('button:has-text("Eliminar")').first().click();
-                await page.waitForTimeout(500);
+                await page.waitForTimeout(500); // Pausa para permitir actualización de UI
             }
 
-            console.log('🧹 Carrito limpiado');
+            // Verificar que realmente se limpió
+            await expect(page.locator('h2:has-text("¡Tu carrito está vacío!")')).toBeVisible({ timeout: 10000 });
+            console.log('🧹 Carrito limpiado y verificado');
 
             // Logout para empezar limpio
             await page.evaluate(() => localStorage.clear());
@@ -68,13 +67,16 @@ test.describe('CP-008 - Suma de productos en el carrito', () => {
         const precioElement = page.locator('.vista-producto-precio').first();
         await expect(precioElement).toBeVisible({ timeout: 5000 });
         const precioCompleto = await precioElement.textContent();
-        const precio = parseFloat(precioCompleto.replace(/[^0-9]/g, ''));
+        // CORRECCIÓN: Incluir punto decimal en el regex
+        const precio = parseFloat(precioCompleto.replace(/[^0-9.]/g, ''));
         console.log(`💰 Precio capturado: "${precioCompleto.trim()}" → ${precio}`);
 
         await page.locator('button:has-text("Agregar al carrito")').click();
-        await expect(page.locator('text=¡Producto añadido al carrito!')).toBeVisible({ timeout: 5000 });
-        await page.waitForTimeout(1000);
-        console.log('✅ Primera Oreo agregada al carrito');
+        await expect(page.locator('text=¡Producto añadido al carrito!')).toBeVisible({ timeout: 10000 });
+
+        // Esperar a que el contador del carrito se actualice a (1)
+        await expect(page.locator('.header-buttons button:has-text("Carrito")')).toContainText('(1)', { timeout: 10000 });
+        console.log('✅ Primera Oreo agregada y confirmada en contador');
 
         // Volver y agregar otra Oreo
         await page.goto('/productos');
@@ -86,9 +88,11 @@ test.describe('CP-008 - Suma de productos en el carrito', () => {
         await page.waitForLoadState('networkidle');
 
         await page.locator('button:has-text("Agregar al carrito")').click();
-        await expect(page.locator('text=¡Producto añadido al carrito!')).toBeVisible({ timeout: 5000 });
-        await page.waitForTimeout(1000);
-        console.log('✅ Segunda Oreo agregada al carrito');
+        await expect(page.locator('text=¡Producto añadido al carrito!')).toBeVisible({ timeout: 10000 });
+
+        // Esperar a que el contador del carrito se actualice a (2)
+        await expect(page.locator('.header-buttons button:has-text("Carrito")')).toContainText('(2)', { timeout: 10000 });
+        console.log('✅ Segunda Oreo agregada y confirmada en contador');
 
         // Calcular total esperado (2 Oreos)
         const totalEsperado = precio * 2;
@@ -147,7 +151,8 @@ test.describe('CP-008 - Suma de productos en el carrito', () => {
         const precioElement = page.locator('.vista-producto-precio').first();
         await expect(precioElement).toBeVisible({ timeout: 5000 });
         const precioCompleto = await precioElement.textContent();
-        const precio = parseFloat(precioCompleto.replace(/[^0-9]/g, ''));
+        // CORRECCIÓN: Incluir punto decimal en el regex
+        const precio = parseFloat(precioCompleto.replace(/[^0-9.]/g, ''));
         console.log(`💰 Precio capturado: "${precioCompleto.trim()}" → ${precio}`);
 
         // Buscar el input de cantidad y cambiar a 3

@@ -70,8 +70,9 @@ test.describe('CP-002-E2E - Inicio de Sesión', () => {
         await page.fill('input[name="contraseña"]', 'PasswordIncorrecta123!');
         await page.locator('form button[type="submit"]:has-text("Iniciar sesión")').click();
 
-        const errorMessage = page.locator('.login-error, [class*="error"]');
-        await expect(errorMessage).toBeVisible({ timeout: 5000 });
+        // Usar un selector específico para el error del formulario (evita conflicto con Toasts)
+        const errorMessage = page.locator('.login-error');
+        await expect(errorMessage).toBeVisible({ timeout: 10000 });
 
         const token = await page.evaluate(() => localStorage.getItem('token'));
         expect(token).toBeNull();

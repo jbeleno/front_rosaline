@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('CP-F24 - Icono y contador de carrito en encabezado', () => {
+    test.setTimeout(60000); // Dar más tiempo (1 minuto) para evitar timeouts en limpieza o red lenta
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
@@ -21,15 +22,15 @@ test.describe('CP-F24 - Icono y contador de carrito en encabezado', () => {
             await page.goto('/carrito');
             await page.waitForLoadState('networkidle');
 
-            const botonesEliminar = page.locator('button:has-text("Eliminar")');
-            const count = await botonesEliminar.count();
-
-            for (let i = 0; i < count; i++) {
+            // Eliminar items mientras existan (bucle robusto)
+            while (await page.locator('button:has-text("Eliminar")').count() > 0) {
                 await page.locator('button:has-text("Eliminar")').first().click();
                 await page.waitForTimeout(500);
             }
 
-            console.log('🧹 Carrito limpiado');
+            // Verificar que realmente se limpió
+            await expect(page.locator('h2:has-text("¡Tu carrito está vacío!")')).toBeVisible({ timeout: 10000 });
+            console.log('🧹 Carrito limpiado y verificado');
         }
     });
 
@@ -38,6 +39,7 @@ test.describe('CP-F24 - Icono y contador de carrito en encabezado', () => {
 
         // 1. Verificar estado inicial (sin contador)
         await page.goto('/');
+        await page.waitForLoadState('networkidle');
         // Selector específico para el botón del header
         const botonCarrito = page.locator('.header-buttons button:has-text("Carrito")');
         await expect(botonCarrito).toBeVisible();
