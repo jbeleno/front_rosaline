@@ -101,6 +101,5 @@ docs/
 ```
 
 ---
-
-**Generado por**: Asistente de IA Google DeepMind  
+ 
 **Fecha**: 26 de Noviembre, 2025
