@@ -42,30 +42,30 @@ const ProductoItem = ({ producto }) => {
   // Función para obtener la URL de la imagen
   const getImagenUrl = () => {
     console.log('Datos del producto:', producto); // Para depuración
-    
+
     // Si hay una URL de imagen directa, la usamos
     if (producto.imagen_url) {
       console.log('Usando imagen_url:', producto.imagen_url);
-      return producto.imagen_url.startsWith('http') 
-        ? producto.imagen_url 
+      return producto.imagen_url.startsWith('http')
+        ? producto.imagen_url
         : `https://api.rosalinebakery.me${producto.imagen_url}`;
     }
-    
+
     // Si hay un campo 'imagen' con la URL
     if (producto.imagen) {
       console.log('Usando imagen:', producto.imagen);
-      return producto.imagen.startsWith('http') 
-        ? producto.imagen 
+      return producto.imagen.startsWith('http')
+        ? producto.imagen
         : `https://api.rosalinebakery.me${producto.imagen}`;
     }
-    
+
     // Si hay un ID de producto, construimos la URL
     if (producto.id_producto) {
       const url = `https://api.rosalinebakery.me/productos/${producto.id_producto}/imagen`;
       console.log('Construyendo URL con id_producto:', url);
       return url;
     }
-    
+
     console.log('No se encontró imagen, usando placeholder');
     // Si no hay imagen, mostramos un placeholder
     return 'https://via.placeholder.com/150?text=Sin+imagen';
@@ -74,10 +74,10 @@ const ProductoItem = ({ producto }) => {
   return (
     <div className="producto-item">
       <div className="producto-imagen-container">
-        <img 
-          src={getImagenUrl()} 
-          alt={producto.nombre} 
-          className="producto-imagen-cliente" 
+        <img
+          src={getImagenUrl()}
+          alt={producto.nombre}
+          className="producto-imagen-cliente"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = 'https://via.placeholder.com/150?text=Imagen+no+disponible';
@@ -111,10 +111,10 @@ function ClienteCuenta() {
   const [isLoading, setIsLoading] = useState(true);
   const [usuarioActual, setUsuarioActual] = useState(null);
   const [loadingUsuarioActual, setLoadingUsuarioActual] = useState(false);
-  const [usuario] = useState(() => {
-    const u = localStorage.getItem("usuario");
-    return u ? JSON.parse(u) : null;
-  });
+
+  // Usar el store para obtener el usuario
+  const usuario = useAuthStore(state => state.user);
+
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
 
@@ -123,7 +123,7 @@ function ClienteCuenta() {
       setIsLoading(false);
       return;
     }
-    
+
     const fetchCliente = async () => {
       try {
         const cli = await clienteService.obtenerClientePorUsuario(usuario.id);
@@ -152,10 +152,10 @@ function ClienteCuenta() {
         setIsLoading(false);
       }
     };
-    
+
     fetchCliente();
   }, [usuario]);
-  
+
   // Efecto para manejar el scroll al cargar
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -163,7 +163,7 @@ function ClienteCuenta() {
 
   useEffect(() => {
     if (!cliente || !cliente.id_cliente) return;
-    
+
     const fetchPedidos = async () => {
       try {
         const pedidosData = await clienteService.obtenerPedidosCliente(cliente.id_cliente);
@@ -174,13 +174,13 @@ function ClienteCuenta() {
         setPedidos([]); // Asegurar que siempre sea un array
       }
     };
-    
+
     fetchPedidos();
   }, [cliente]);
 
   const handleUpdate = async e => {
     e.preventDefault();
-    
+
     if (!cliente || !cliente.id_cliente) {
       // Si no hay cliente, crear uno nuevo
       try {
@@ -207,7 +207,7 @@ function ClienteCuenta() {
       }
       return;
     }
-    
+
     try {
       const updated = await clienteService.actualizarCliente(cliente.id_cliente, {
         id_usuario: usuario.id,
@@ -250,7 +250,7 @@ function ClienteCuenta() {
       setVerMas(verMas === id_pedido ? null : id_pedido);
       return;
     }
-    
+
     try {
       const productos = await apiClient.get(`${API_ENDPOINTS.PEDIDO_BY_ID(id_pedido)}/productos`);
       console.log('Productos del pedido:', productos); // Depuración
@@ -259,6 +259,11 @@ function ClienteCuenta() {
     } catch (error) {
       console.error('Error al obtener productos del pedido:', error);
     }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
   if (isLoading) {
@@ -277,63 +282,59 @@ function ClienteCuenta() {
     return (
       <div className="cliente-cuenta-container">
         <h2>Mi Cuenta</h2>
-        
-        <button 
-          onClick={() => {
-            localStorage.removeItem("usuario");
-            localStorage.removeItem("token");
-            navigate("/");
-          }} 
+
+        <button
+          onClick={handleLogout}
           className="button button-danger"
           style={{ position: 'absolute', top: '2.5rem', right: '2.5rem' }}
         >
           <FaSignOutAlt /> Cerrar sesión
         </button>
-        
+
         <div className="cliente-info-card">
           <h3>Completa tu perfil</h3>
           <p>Para continuar, necesitamos que completes tu información personal.</p>
-          
+
           <form onSubmit={handleUpdate} className="cliente-form">
             <div className="form-group">
               <label>Nombre</label>
-              <input 
-                value={form.nombre || ''} 
-                onChange={e => setForm({ ...form, nombre: e.target.value })} 
-                placeholder="Tu nombre" 
-                required 
+              <input
+                value={form.nombre || ''}
+                onChange={e => setForm({ ...form, nombre: e.target.value })}
+                placeholder="Tu nombre"
+                required
               />
             </div>
-            
+
             <div className="form-group">
               <label>Apellido</label>
-              <input 
-                value={form.apellido || ''} 
-                onChange={e => setForm({ ...form, apellido: e.target.value })} 
-                placeholder="Tu apellido" 
-                required 
+              <input
+                value={form.apellido || ''}
+                onChange={e => setForm({ ...form, apellido: e.target.value })}
+                placeholder="Tu apellido"
+                required
               />
             </div>
-            
+
             <div className="form-group">
               <label>Teléfono</label>
-              <input 
+              <input
                 type="tel"
-                value={form.telefono || ''} 
-                onChange={e => setForm({ ...form, telefono: e.target.value })} 
-                placeholder="Tu teléfono" 
+                value={form.telefono || ''}
+                onChange={e => setForm({ ...form, telefono: e.target.value })}
+                placeholder="Tu teléfono"
               />
             </div>
-            
+
             <div className="form-group">
               <label>Dirección de envío</label>
-              <input 
-                value={form.direccion || ''} 
-                onChange={e => setForm({ ...form, direccion: e.target.value })} 
-                placeholder="Tu dirección" 
+              <input
+                value={form.direccion || ''}
+                onChange={e => setForm({ ...form, direccion: e.target.value })}
+                placeholder="Tu dirección"
               />
             </div>
-            
+
             <div className="button-group">
               <button type="submit" className="button button-primary">
                 <FaCheck /> Crear perfil
@@ -346,9 +347,9 @@ function ClienteCuenta() {
   }
 
   const formatFecha = (fechaString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'long', 
+    const options = {
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -356,93 +357,88 @@ function ClienteCuenta() {
     return new Date(fechaString).toLocaleDateString('es-ES', options);
   };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/");
-  };
-
   return (
     <div className="cliente-cuenta-container">
       <ToastContainer />
       <h2>Mi Cuenta</h2>
-      
-      <button 
-        onClick={handleLogout} 
+
+      <button
+        onClick={handleLogout}
         className="button button-danger"
         style={{ position: 'absolute', top: '2.5rem', right: '2.5rem' }}
       >
         <FaSignOutAlt /> Cerrar sesión
       </button>
-      
+
       <div className="cliente-info-card">
         <h3>Información Personal</h3>
-        
-        <div style={{marginBottom: '2rem', padding: '1.5rem', background: '#f3e5f5', borderRadius: '8px'}}>
-          <h4 style={{marginBottom: '1rem', color: '#6C3483'}}>Mi Información de Usuario</h4>
-          <button 
-            onClick={handleObtenerUsuarioActual} 
+
+        <div style={{ marginBottom: '2rem', padding: '1.5rem', background: '#f3e5f5', borderRadius: '8px' }}>
+          <h4 style={{ marginBottom: '1rem', color: '#6C3483' }}>Mi Información de Usuario</h4>
+          <button
+            onClick={handleObtenerUsuarioActual}
             disabled={loadingUsuarioActual}
             className="button button-primary"
-            style={{marginBottom: usuarioActual ? '1rem' : '0'}}
+            style={{ marginBottom: usuarioActual ? '1rem' : '0' }}
           >
             {loadingUsuarioActual ? 'Cargando...' : 'Ver mi información de usuario'}
           </button>
           {usuarioActual && (
-            <div style={{padding: '1rem', background: 'white', borderRadius: '6px', marginTop: '1rem'}}>
-              <p style={{margin: '0.5rem 0'}}><strong>ID Usuario:</strong> {usuarioActual.id_usuario}</p>
-              <p style={{margin: '0.5rem 0'}}><strong>Correo:</strong> {usuarioActual.sub}</p>
-              <p style={{margin: '0.5rem 0'}}><strong>Rol:</strong> {usuarioActual.rol}</p>
+            <div style={{ padding: '1rem', background: 'white', borderRadius: '6px', marginTop: '1rem' }}>
+              <p style={{ margin: '0.5rem 0' }}><strong>ID Usuario:</strong> {usuarioActual.id_usuario}</p>
+              <p style={{ margin: '0.5rem 0' }}><strong>Correo:</strong> {usuarioActual.sub}</p>
+              <p style={{ margin: '0.5rem 0' }}><strong>Rol:</strong> {usuarioActual.rol}</p>
             </div>
           )}
         </div>
-        
+
         {edit ? (
           <form onSubmit={handleUpdate} className="cliente-form">
             <div className="form-group">
               <label>Nombre</label>
-              <input 
-                value={form.nombre} 
-                onChange={e => setForm({ ...form, nombre: e.target.value })} 
-                placeholder="Tu nombre" 
-                required 
+              <input
+                value={form.nombre}
+                onChange={e => setForm({ ...form, nombre: e.target.value })}
+                placeholder="Tu nombre"
+                required
               />
             </div>
-            
+
             <div className="form-group">
               <label>Apellido</label>
-              <input 
-                value={form.apellido} 
-                onChange={e => setForm({ ...form, apellido: e.target.value })} 
-                placeholder="Tu apellido" 
-                required 
+              <input
+                value={form.apellido}
+                onChange={e => setForm({ ...form, apellido: e.target.value })}
+                placeholder="Tu apellido"
+                required
               />
             </div>
-            
+
             <div className="form-group">
               <label>Teléfono</label>
-              <input 
+              <input
                 type="tel"
-                value={form.telefono} 
-                onChange={e => setForm({ ...form, telefono: e.target.value })} 
-                placeholder="Tu teléfono" 
+                value={form.telefono}
+                onChange={e => setForm({ ...form, telefono: e.target.value })}
+                placeholder="Tu teléfono"
               />
             </div>
-            
+
             <div className="form-group">
               <label>Dirección de envío</label>
-              <input 
-                value={form.direccion} 
-                onChange={e => setForm({ ...form, direccion: e.target.value })} 
-                placeholder="Tu dirección" 
+              <input
+                value={form.direccion}
+                onChange={e => setForm({ ...form, direccion: e.target.value })}
+                placeholder="Tu dirección"
               />
             </div>
-            
+
             <div className="button-group">
               <button type="submit" className="button button-primary">
                 <FaCheck /> Guardar cambios
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="button button-outline"
                 onClick={() => setEdit(false)}
               >
@@ -456,10 +452,10 @@ function ClienteCuenta() {
             <p><b><FaUserEdit /> Apellido:</b> {cliente.apellido}</p>
             <p><b>📞 Teléfono:</b> {cliente.telefono || 'No especificado'}</p>
             <p><b><FaHome /> Dirección:</b> {cliente.direccion || 'No especificada'}</p>
-            
+
             <div className="button-group">
-              <button 
-                onClick={() => setEdit(true)} 
+              <button
+                onClick={() => setEdit(true)}
                 className="button button-primary"
               >
                 <FaEdit /> Editar información
@@ -472,13 +468,13 @@ function ClienteCuenta() {
 
       <div className="pedidos-lista">
         <h3><FaBox /> Mis Pedidos</h3>
-        
+
         {pedidos.length === 0 ? (
           <div className="sin-pedidos">
             <FaBoxOpen size={48} style={{ marginBottom: '1rem', opacity: 0.5 }} />
             <p>Aún no tienes pedidos realizados</p>
-            <button 
-              className="button button-primary" 
+            <button
+              className="button button-primary"
               onClick={() => navigate('/productos')}
               style={{ marginTop: '1rem' }}
             >
@@ -497,8 +493,8 @@ function ClienteCuenta() {
                   <b>Estado:</b> <EstadoPedido estado={pedido.estado} />
                 </p>
               </div>
-              
-              <button 
+
+              <button
                 className="ver-mas-btn"
                 onClick={() => handleVerMas(pedido.id_pedido)}
               >
@@ -514,7 +510,7 @@ function ClienteCuenta() {
                   </>
                 )}
               </button>
-              
+
               {verMas === pedido.id_pedido && productosPedido[pedido.id_pedido] && (
                 <div className="productos-lista">
                   <h4>Productos en este pedido:</h4>
@@ -527,7 +523,7 @@ function ClienteCuenta() {
           ))
         )}
       </div>
-    </div>
+    </div >
   );
 }
 

@@ -4,12 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { apiClient } from '../shared/services/api/apiClient';
 import { API_ENDPOINTS } from '../shared/services/api/endpoints';
 import { useCart } from '../features/cart/hooks/useCart';
+import useAuthStore from '../features/auth/store/authStore';
 
 function Carrito() {
-  const [usuario] = useState(() => {
-    const u = localStorage.getItem("usuario");
-    return u ? JSON.parse(u) : null;
-  });
+  const usuario = useAuthStore(state => state.user);
   const [cliente, setCliente] = useState(null);
   const [carrito, setCarrito] = useState(null);
   const [detalles, setDetalles] = useState([]);
@@ -38,22 +36,22 @@ function Carrito() {
   // Obtener carrito cuando cambia el cliente
   useEffect(() => {
     if (!cliente || !cliente.id_cliente) return;
-    
+
     const fetchCarrito = async () => {
       try {
         const carritos = await apiClient.get(API_ENDPOINTS.CARRITOS_BY_CLIENTE(cliente.id_cliente));
-        
+
         // Verificar si la respuesta es un array
         const carritosArray = Array.isArray(carritos) ? carritos : [];
         const carritoActivo = carritosArray.find(c => c.estado === "activo");
-        
+
         setCarrito(carritoActivo || null);
       } catch (error) {
         console.error('Error al obtener el carrito:', error);
         setCarrito(null);
       }
     };
-    
+
     fetchCarrito();
   }, [cliente]);
 
@@ -64,16 +62,16 @@ function Carrito() {
       setProductos([]);
       return;
     }
-    
+
     const fetchProductosCarrito = async () => {
       try {
         // Obtener los detalles del carrito (ya incluyen el objeto producto completo)
         const detallesAll = await apiClient.get(API_ENDPOINTS.DETALLE_CARRITO);
         const detallesCarrito = detallesAll.filter(d => d.id_carrito === carrito.id_carrito);
-        
+
         // Extraer los productos de los detalles (el backend ya los incluye)
         const productosCarrito = detallesCarrito.map(d => d.producto);
-        
+
         setProductos(productosCarrito);
         setDetalles(detallesCarrito);
       } catch (error) {
@@ -82,7 +80,7 @@ function Carrito() {
         setProductos([]);
       }
     };
-    
+
     fetchProductosCarrito();
   }, [carrito]);
 
@@ -123,9 +121,9 @@ function Carrito() {
         try {
           await actions.order.capture();
           // 1. Obtener cliente
-          const usuario = JSON.parse(localStorage.getItem("usuario"));
+          const usuario = useAuthStore.getState().user;
           const clienteData = await apiClient.get(API_ENDPOINTS.CLIENTE_BY_USUARIO(usuario.id));
-          
+
           // 2. Crear el pedido en el backend
           const pedido = await apiClient.post(API_ENDPOINTS.PEDIDOS, {
             id_cliente: clienteData.id_cliente,
@@ -133,7 +131,7 @@ function Carrito() {
             direccion_envio: clienteData.direccion,
             metodo_pago: "PayPal"
           });
-          
+
           // 3. Crear los detalles de pedido
           for (let i = 0; i < detalles.length; i++) {
             await apiClient.post(API_ENDPOINTS.DETALLE_PEDIDOS, {
@@ -143,12 +141,12 @@ function Carrito() {
               precio_unitario: productos[i].precio
             });
           }
-          
+
           // 4. Eliminar los detalles del carrito (vaciar carrito)
           for (let i = 0; i < detalles.length; i++) {
             await apiClient.delete(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(detalles[i].id_detalle_carrito));
           }
-          
+
           // 5. Redirigir a la vista de confirmación
           navigate(`/pedido-confirmado/${pedido.id_pedido}`);
         } catch (error) {
@@ -174,15 +172,15 @@ function Carrito() {
   const handleEliminar = async (id_detalle) => {
     try {
       await apiClient.delete(API_ENDPOINTS.DETALLE_CARRITO_BY_ID(id_detalle));
-      
+
       // Actualizar el estado local en lugar de recargar la página
       setDetalles(detalles.filter(d => d.id_detalle_carrito !== id_detalle));
-      
+
       // Actualizar productos basándose en los nuevos detalles
       const nuevosDetalles = detalles.filter(d => d.id_detalle_carrito !== id_detalle);
       const nuevosProductos = nuevosDetalles.map(d => d.producto);
       setProductos(nuevosProductos);
-      
+
       // Actualizar el carrito global para que el Header se actualice
       if (cliente?.id_cliente) {
         fetchCart(cliente.id_cliente);
@@ -198,8 +196,8 @@ function Carrito() {
       <div>
         <h2>Inicia sesión</h2>
         <p>Debes iniciar sesión para ver tu carrito de compras.</p>
-        <button 
-          className="carrito-btn-finalizar" 
+        <button
+          className="carrito-btn-finalizar"
           onClick={() => navigate('/login')}
           style={{ marginTop: '1.5rem' }}
         >
@@ -224,8 +222,8 @@ function Carrito() {
       <div>
         <h2>¡Tu carrito está vacío!</h2>
         <p>Parece que aún no has agregado productos a tu carrito.</p>
-        <button 
-          className="carrito-btn-finalizar" 
+        <button
+          className="carrito-btn-finalizar"
           onClick={() => navigate('/productos')}
           style={{ marginTop: '1.5rem' }}
         >
@@ -242,17 +240,17 @@ function Carrito() {
         {detalles.map((detalle) => {
           const producto = detalle.producto;
           const subtotal = detalle.subtotal.toFixed(2);
-          
+
           return (
             <li key={detalle.id_detalle_carrito} className="carrito-item">
               <div className="carrito-img">
                 {producto?.imagen_url ? (
-                  <img 
-                    src={producto.imagen_url} 
-                    alt={producto.nombre} 
+                  <img
+                    src={producto.imagen_url}
+                    alt={producto.nombre}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.parentElement.innerHTML = 
+                      e.target.parentElement.innerHTML =
                         `<div class="carrito-img-placeholder">${producto.nombre.charAt(0).toUpperCase()}</div>`;
                     }}
                   />
@@ -265,18 +263,18 @@ function Carrito() {
               <div className="carrito-info">
                 <h3 className="carrito-nombre">{producto?.nombre || 'Producto no disponible'}</h3>
                 <div className="carrito-precio">{producto?.precio?.toFixed(2) || '0.00'}</div>
-                
+
                 <div className="carrito-cantidad">
                   <label>Cantidad: </label>
                   <span>{detalle.cantidad}</span>
                 </div>
-                
+
                 <div className="carrito-subtotal">
                   Subtotal: <span>${subtotal}</span>
                 </div>
-                
-                <button 
-                  className="carrito-btn-eliminar" 
+
+                <button
+                  className="carrito-btn-eliminar"
                   onClick={() => handleEliminar(detalle.id_detalle_carrito)}
                 >
                   Eliminar
@@ -286,7 +284,7 @@ function Carrito() {
           );
         })}
       </ul>
-      
+
       <div className="carrito-total">
         <span>Total a pagar:</span>
         <span>${total.toFixed(2)}</span>
