@@ -1,102 +1,96 @@
-/**
- * Servicio para gestión de Clientes
- * Maneja las operaciones CRUD de perfiles de clientes
- */
-
-import apiClient from './apiClient';
+import { apiClient } from './apiClient';
 import { API_ENDPOINTS } from './endpoints';
+import { Cliente } from '../../models/Cliente';
+import { Pedido } from '../../models/Pedido';
+import { Carrito } from '../../models/Carrito';
 
-/**
- * Crear un nuevo cliente
- * @param {Object} clienteData - Datos del cliente
- * @param {number} clienteData.id_usuario - ID del usuario asociado
- * @param {string} clienteData.nombre - Nombre del cliente
- * @param {string} clienteData.apellido - Apellido del cliente
- * @param {string} [clienteData.telefono] - Teléfono del cliente
- * @param {string} [clienteData.direccion] - Dirección del cliente
- * @returns {Promise<Object>} Cliente creado
- */
-export const crearCliente = async (clienteData) => {
-  return await apiClient.post(API_ENDPOINTS.CLIENTES, clienteData);
-};
+export class ClienteService {
+  constructor(client = apiClient) {
+    this.client = client;
+  }
 
-/**
- * Obtener todos los clientes (Solo Admin/Super Admin)
- * @param {Object} params - Parámetros de paginación
- * @param {number} [params.skip=0] - Número de registros a saltar
- * @param {number} [params.limit=100] - Número máximo de registros
- * @returns {Promise<Array>} Lista de clientes
- */
-export const obtenerClientes = async (params = {}) => {
-  const { skip = 0, limit = 100 } = params;
-  return await apiClient.get(API_ENDPOINTS.CLIENTES, {
-    params: { skip, limit }
-  });
-};
+  /**
+   * Crear un nuevo cliente
+   * @param {Object} clienteData
+   * @returns {Promise<Cliente>}
+   */
+  async crearCliente(clienteData) {
+    const data = await this.client.post(API_ENDPOINTS.CLIENTES, clienteData);
+    return new Cliente(data);
+  }
 
-/**
- * Obtener cliente por ID de usuario
- * @param {number} usuarioId - ID del usuario
- * @returns {Promise<Object>} Cliente encontrado
- */
-export const obtenerClientePorUsuario = async (usuarioId) => {
-  return await apiClient.get(API_ENDPOINTS.CLIENTE_BY_USUARIO(usuarioId));
-};
+  /**
+   * Obtener todos los clientes (Solo Admin/Super Admin)
+   * @param {Object} params
+   * @returns {Promise<Cliente[]>}
+   */
+  async obtenerClientes(params = {}) {
+    const { skip = 0, limit = 100 } = params;
+    const data = await this.client.get(API_ENDPOINTS.CLIENTES, {
+      params: { skip, limit }
+    });
+    return Array.isArray(data) ? data.map(c => new Cliente(c)) : [];
+  }
 
-/**
- * Obtener cliente por ID
- * @param {number} clienteId - ID del cliente
- * @returns {Promise<Object>} Cliente encontrado
- */
-export const obtenerClientePorId = async (clienteId) => {
-  return await apiClient.get(API_ENDPOINTS.CLIENTE_BY_ID(clienteId));
-};
+  /**
+   * Obtener cliente por ID de usuario
+   * @param {number|string} usuarioId
+   * @returns {Promise<Cliente>}
+   */
+  async obtenerClientePorUsuario(usuarioId) {
+    const data = await this.client.get(API_ENDPOINTS.CLIENTE_BY_USUARIO(usuarioId));
+    return new Cliente(data);
+  }
 
-/**
- * Actualizar un cliente
- * @param {number} clienteId - ID del cliente
- * @param {Object} clienteData - Datos a actualizar
- * @returns {Promise<Object>} Cliente actualizado
- */
-export const actualizarCliente = async (clienteId, clienteData) => {
-  return await apiClient.put(API_ENDPOINTS.CLIENTE_BY_ID(clienteId), clienteData);
-};
+  /**
+   * Obtener cliente por ID
+   * @param {number|string} clienteId
+   * @returns {Promise<Cliente>}
+   */
+  async obtenerClientePorId(clienteId) {
+    const data = await this.client.get(API_ENDPOINTS.CLIENTE_BY_ID(clienteId));
+    return new Cliente(data);
+  }
 
-/**
- * Eliminar un cliente (Solo Admin/Super Admin)
- * @param {number} clienteId - ID del cliente
- * @returns {Promise<Object>} Cliente eliminado
- */
-export const eliminarCliente = async (clienteId) => {
-  return await apiClient.delete(API_ENDPOINTS.CLIENTE_BY_ID(clienteId));
-};
+  /**
+   * Actualizar un cliente
+   * @param {number|string} clienteId
+   * @param {Object} clienteData
+   * @returns {Promise<Cliente>}
+   */
+  async actualizarCliente(clienteId, clienteData) {
+    const data = await this.client.put(API_ENDPOINTS.CLIENTE_BY_ID(clienteId), clienteData);
+    return new Cliente(data);
+  }
 
-/**
- * Obtener pedidos de un cliente
- * @param {number} clienteId - ID del cliente
- * @returns {Promise<Array>} Lista de pedidos del cliente
- */
-export const obtenerPedidosCliente = async (clienteId) => {
-  return await apiClient.get(API_ENDPOINTS.PEDIDOS_BY_CLIENTE(clienteId));
-};
+  /**
+   * Eliminar un cliente (Solo Admin/Super Admin)
+   * @param {number|string} clienteId
+   */
+  async eliminarCliente(clienteId) {
+    return await this.client.delete(API_ENDPOINTS.CLIENTE_BY_ID(clienteId));
+  }
 
-/**
- * Obtener carritos de un cliente
- * @param {number} clienteId - ID del cliente
- * @returns {Promise<Array>} Lista de carritos del cliente
- */
-export const obtenerCarritosCliente = async (clienteId) => {
-  return await apiClient.get(API_ENDPOINTS.CARRITOS_BY_CLIENTE(clienteId));
-};
+  /**
+   * Obtener pedidos de un cliente
+   * @param {number|string} clienteId
+   * @returns {Promise<Pedido[]>}
+   */
+  async obtenerPedidosCliente(clienteId) {
+    const data = await this.client.get(API_ENDPOINTS.PEDIDOS_BY_CLIENTE(clienteId));
+    return Array.isArray(data) ? data.map(p => new Pedido(p)) : [];
+  }
 
-// Exportar todas las funciones como objeto default
-export default {
-  crearCliente,
-  obtenerClientes,
-  obtenerClientePorUsuario,
-  obtenerClientePorId,
-  actualizarCliente,
-  eliminarCliente,
-  obtenerPedidosCliente,
-  obtenerCarritosCliente
-};
+  /**
+   * Obtener carritos de un cliente
+   * @param {number|string} clienteId
+   * @returns {Promise<Carrito[]>}
+   */
+  async obtenerCarritosCliente(clienteId) {
+    const data = await this.client.get(API_ENDPOINTS.CARRITOS_BY_CLIENTE(clienteId));
+    return Array.isArray(data) ? data.map(c => new Carrito(c)) : [];
+  }
+}
+
+export const clienteService = new ClienteService();
+export default clienteService;

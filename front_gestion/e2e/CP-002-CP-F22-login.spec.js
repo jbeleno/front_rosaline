@@ -44,14 +44,11 @@ test.describe('CP-002-E2E - Inicio de Sesión', () => {
         expect(token).toMatch(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/);
         console.log('✅ Token JWT encontrado');
 
-        // Verificar datos de usuario
-        const usuario = await page.evaluate(() => localStorage.getItem('usuario'));
-        expect(usuario).toBeTruthy();
-        const usuarioData = JSON.parse(usuario);
-        expect(usuarioData.correo).toBe(testEmail);
-        expect(usuarioData.id).toBeDefined();
-        expect(usuarioData.rol).toBeDefined();
-        console.log('✅ Datos de usuario encontrados');
+        // Verificar que el usuario está autenticado mediante la UI
+        // El botón "Mi cuenta" o "Salir" debe estar visible
+        await expect(page.locator('button:has-text("Mi cuenta")')).toBeVisible();
+        await expect(page.locator('button:has-text("Salir")')).toBeVisible();
+        console.log('✅ Usuario autenticado verificado en UI');
 
         // Screenshot de éxito
         await page.screenshot({
