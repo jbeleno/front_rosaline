@@ -1,232 +1,212 @@
-# 🎂 Rosaline Bakery - E-Commerce Platform
-
-Modern e-commerce platform developed for **Rosaline Bakery**, a bakery specializing in artisan cakes and desserts. This application provides a complete online shopping experience with product management, user authentication, shopping cart functionality, and comprehensive administration tools.
-
-## ✨ Overview
-
-Rosaline Bakery's platform is built with React and integrates with a FastAPI backend to deliver a seamless experience for both customers and administrators. The application features real-time cart synchronization, secure authentication, order management, and an intuitive admin panel for complete business control.
-
-### Key Highlights
-
-- **Customer Experience**: Browse products by category, view detailed product information, manage shopping cart, and track orders
-- **Admin Panel**: Complete CRUD operations for products, categories, users, clients, and orders
-- **State Management**: Zustand-powered stores for cart and authentication with automatic synchronization
-- **Modern UI/UX**: Responsive design with smooth animations, toast notifications, and modal confirmations
-- **SEO Optimized**: Schema markup, meta tags, and sitemap for better search engine visibility
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 16+ and npm
-- Access to the backend API at `https://api.rosalinebakery.me`
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/jbeleno/front_rosaline.git
-   cd front_rosaline/front_gestion
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment:**
-   
-   Create a `.env` file with your Supabase credentials (see `CONFIGURACION_LOCAL.md` for details).
-
-4. **Start development server:**
-   ```bash
-   npm start
-   ```
-
-   The app will open at `http://localhost:3000`
-
-## 🧑‍💻 Available Scripts
-
-- `npm start` — Starts the development server with hot reload
-- `npm run build` — Creates optimized production build
-- `npm test` — Runs the test suite
-- `npm run eject` — Ejects from Create React App (irreversible)
-
-## 🗂️ Project Structure
-
-```
-front_gestion/
-├── public/               # Static assets and SEO files
-│   ├── img/             # Product images and logos
-│   ├── sitemap.xml      # SEO sitemap
-│   └── robots.txt       # Search engine directives
-├── src/
-│   ├── components/      # React components
-│   │   ├── AdminCuenta.js          # Admin dashboard
-│   │   ├── ClienteCuenta.js        # User profile
-│   │   ├── Carrito.js              # Shopping cart
-│   │   ├── ProductosList.js        # Product catalog
-│   │   ├── LoginRegister.js        # Authentication
-│   │   └── ...
-│   ├── config/          # Configuration files
-│   │   └── supabase.js  # Supabase client setup
-│   ├── features/        # Feature-based modules
-│   │   ├── auth/        # Authentication logic
-│   │   ├── cart/        # Cart management
-│   │   └── products/    # Product operations
-│   ├── shared/          # Shared utilities
-│   │   ├── components/  # Reusable components
-│   │   ├── services/    # API client and services
-│   │   └── hooks/       # Custom React hooks
-│   └── styles/          # Component-specific CSS
-└── package.json
-```
-
-## 🛠️ Technology Stack
-
-### Core Technologies
-
-- **React 19** — Modern UI library with hooks
-- **React Router DOM 7** — Client-side routing
-- **Zustand 4.4.7** — Lightweight state management
-- **React Toastify 10.0.6** — Toast notifications
-
-### Backend Integration
-
-- **FastAPI** — RESTful API at `https://api.rosalinebakery.me`
-- **Supabase** — Authentication and session management
-- **API Services** — Modular service layer (carrito, cliente, producto, pedido, categoria)
-
-### Development & Testing
-
-- **Testing Library** — Component and integration testing
-- **JWT Decode** — Token parsing and validation
-- **Framer Motion** — Smooth animations
-
-### Deployment
-
-- **Vercel** — Production hosting with automatic deployments
-- **SEO Tools** — Schema markup, meta tags, sitemap
-
-## 🌐 Application Routes
-
-### Public Routes
-
-- `/` — Home page with featured products
-- `/productos` — Complete product catalog
-- `/categoria/:id` — Products filtered by category
-- `/producto/:id` — Detailed product view
-- `/login` — User authentication (login/register)
-- `/sobre-nosotros` — About Rosaline Bakery
-- `/recuperar-contraseña` — Password recovery
-- `/confirmar-cuenta/:token` — Email confirmation
-
-### Protected Routes
-
-- `/micuenta` — User account dashboard (client/admin view)
-- `/carrito` — Shopping cart management
-- `/pedido-confirmado/:id` — Order confirmation page
-
-## 🔐 Authentication & Authorization
-
-The application uses a dual authentication system:
-
-- **Supabase Auth** — Email verification and session management
-- **JWT Tokens** — Backend API authentication with HTTPOnly cookies
-- **Role-based Access** — Automatic routing based on user role (cliente/administrador)
-
-### Security Features
-
-- Secure token storage with HTTPOnly cookies
-- Protected routes with authentication guards
-- Automatic session validation
-- CORS-enabled API requests with credentials
-
-## 🛒 Core Features
-
-### For Customers
-
-- **Product Browsing**: Filter by categories, view detailed product information
-- **Shopping Cart**: Add/remove items, real-time price calculations
-- **Order Management**: Place orders, view order history, track status
-- **Account Management**: Update profile, manage delivery addresses
-- **Responsive Design**: Optimized for mobile, tablet, and desktop
-
-### For Administrators
-
-- **Product Management**: Create, edit, delete products with images
-- **Category Management**: Organize product catalog
-- **User Management**: View and manage customer accounts
-- **Order Management**: Process orders, update status, view details
-- **Client Management**: CRUD operations with modal confirmations
-- **Dashboard Analytics**: Overview of store performance
-
-### Advanced Features
-
-- **Cart Synchronization**: Persists across sessions and account changes
-- **Toast Notifications**: User-friendly feedback for all actions
-- **Modal Confirmations**: Prevent accidental deletions
-- **Loading States**: Clear indicators for async operations
-- **Error Handling**: Graceful error messages and recovery
-
-## 🎨 UI/UX Highlights
-
-- **Modern Design**: Clean, professional interface with brand colors
-- **Smooth Animations**: Framer Motion for engaging transitions
-- **Responsive Grid**: Adapts to all screen sizes
-- **Accessible Forms**: Clear labels, validation, and error messages
-- **SEO Optimized**: Schema markup for rich search results
-
-## 📦 State Management
-
-### Zustand Stores
-
-- **authStore**: User session, login/logout, role management
-- **cartStore**: Cart items, quantities, synchronization with backend
-
-### Custom Hooks
-
-- **useAuth**: Authentication logic with auto-refresh
-- **useCart**: Cart operations with cliente tracking
-- **useProducts**: Product fetching and caching
-- **useSEO**: Dynamic meta tags and schema markup
-
-## 🚀 Deployment
-
-### Vercel Deployment
-
-1. Push code to GitHub repository
-2. Connect repository to Vercel
-3. Configure environment variables
-4. Vercel automatically builds and deploys
-
-### Build Configuration
-
-The project includes `vercel.json` for routing configuration and production optimizations.
-
-### Environment Variables
-
-Required variables:
-- `REACT_APP_SUPABASE_URL`
-- `REACT_APP_SUPABASE_ANON_KEY`
-
-## 📝 Documentation
-
-- `CONFIGURACION_LOCAL.md` — Local development setup guide
-- `BUG_ELIMINAR_CLIENTE.md` — Known backend issues and workarounds
-
-## 🤝 Contributing
-
-1. Clone the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is proprietary software for Rosaline Bakery.
+# Rosaline Bakery — Frontend
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![React Router](https://img.shields.io/badge/React_Router-7-CA4245?style=flat-square&logo=react-router&logoColor=white)](https://reactrouter.com/)
+[![Zustand](https://img.shields.io/badge/Zustand-4-F5A623?style=flat-square)](https://zustand-demo.pmnd.rs/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-0055FF?style=flat-square&logo=framer&logoColor=white)](https://www.framer.com/motion/)
+[![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/)
+
+Frontend de e-commerce para una panadería real (**Rosaline Bakery**), con catálogo, carrito, checkout, panel administrativo y autenticación dual (Supabase + JWT). Pareja con [`Back_rosaline`](https://github.com/jbeleno/Back_rosaline).
+
+> Aplicación que vive en producción para un negocio real, no un demo. Foco en flujos de cliente y de administrador con sincronización de carrito, control de roles y SEO optimizado.
 
 ---
 
-**Built with ❤️ for Rosaline Bakery** 
+## Highlights
+
+- 🛒 **Carrito sincronizado** entre sesión, login y backend (Zustand + persistencia en API).
+- 🔐 **Auth dual**: Supabase para verificación de email + JWT con HTTP-only cookies para la API propia.
+- 🧑‍💼 **Panel admin** con CRUD completo (productos, categorías, clientes, usuarios, pedidos) y modales de confirmación.
+- 🎭 **E2E con Playwright** (`/e2e`) cubriendo el flujo real del cliente.
+- 🔍 **SEO**: schema markup JSON-LD, sitemap, meta tags dinámicos, robots.txt.
+- 🌀 **UX**: Framer Motion, react-toastify, slick carousel, react-icons.
+
+## Stack
+
+| Capa | Tecnología |
+|---|---|
+| UI | React 19 |
+| Routing | React Router DOM 7 |
+| State | Zustand 4 + @tanstack/react-query 5 |
+| Auth | Supabase Auth + JWT (HTTP-only cookies) |
+| HTTP | fetch (modular service layer) |
+| Animaciones | Framer Motion 12 |
+| Carrusel | react-slick |
+| Notificaciones | react-toastify |
+| E2E | Playwright |
+| Build | Create React App 5 (react-scripts) |
+| Hosting | Vercel |
+
+---
+
+## Quick start
+
+### Requisitos
+
+- Node.js 18+ y npm
+- Backend corriendo (ver [Back_rosaline](https://github.com/jbeleno/Back_rosaline))
+
+### 1. Instalar
+
+```bash
+cd front_gestion
+npm install
+```
+
+### 2. Configurar variables de entorno
+
+```bash
+cp .env.example .env
+# Editar .env con la URL del backend y credenciales de Supabase
+```
+
+> ⚠️ **Sobre Supabase Anon Key:** está pensada para vivir en el cliente (es pública por diseño). La seguridad real depende de las **políticas de Row Level Security (RLS)** configuradas en Supabase. Verificar que cada tabla accesible por `anon` tenga RLS estricto.
+
+### 3. Levantar dev server
+
+```bash
+npm start
+# http://localhost:3000
+```
+
+---
+
+## Scripts
+
+| Comando | Acción |
+|---|---|
+| `npm start` | Dev server con hot reload |
+| `npm run build` | Build de producción a `/build` |
+| `npm test` | Suite de tests con react-scripts (Jest + Testing Library) |
+| `npm run test:e2e` | E2E con Playwright (headless) |
+| `npm run test:e2e:ui` | Playwright en modo UI interactivo |
+| `npm run test:e2e:headed` | Playwright con browser visible |
+| `npm run test:e2e:report` | Abrir reporte HTML del último run |
+
+---
+
+## Estructura del proyecto
+
+```
+front_gestion/
+├── public/
+│   ├── img/                  # Imágenes de productos y logos
+│   ├── sitemap.xml           # Sitemap para SEO
+│   └── robots.txt
+├── src/
+│   ├── components/           # Componentes de página y dominio
+│   │   ├── AdminCuenta.js    # Dashboard administrativo
+│   │   ├── ClienteCuenta.js  # Perfil de cliente
+│   │   ├── Carrito.js        # Carrito de compras
+│   │   ├── ProductosList.js  # Catálogo
+│   │   └── LoginRegister.js  # Auth
+│   ├── config/
+│   │   └── supabase.js       # Cliente Supabase
+│   ├── features/             # Módulos por feature
+│   │   ├── auth/
+│   │   ├── cart/
+│   │   └── products/
+│   ├── shared/
+│   │   ├── components/       # Componentes reutilizables
+│   │   ├── services/         # Capa HTTP (carrito, cliente, producto, pedido, categoria)
+│   │   └── hooks/            # useAuth, useCart, useProducts, useSEO
+│   └── styles/
+├── e2e/                      # Tests Playwright
+├── docs/
+├── playwright.config.js
+└── package.json
+```
+
+## Rutas
+
+### Públicas
+
+| Ruta | Descripción |
+|---|---|
+| `/` | Home con productos destacados |
+| `/productos` | Catálogo completo |
+| `/categoria/:id` | Productos por categoría |
+| `/producto/:id` | Detalle de producto |
+| `/login` | Auth (login + registro) |
+| `/sobre-nosotros` | About |
+| `/recuperar-contraseña` | Password recovery |
+| `/confirmar-cuenta/:token` | Confirmación de email |
+
+### Protegidas
+
+| Ruta | Descripción |
+|---|---|
+| `/micuenta` | Dashboard (vista cambia por rol cliente/admin) |
+| `/carrito` | Carrito |
+| `/pedido-confirmado/:id` | Confirmación de pedido |
+
+---
+
+## Autenticación
+
+Sistema dual:
+
+- **Supabase Auth** — verificación de email, magic links, recuperación de contraseña.
+- **JWT del backend** — autorización de la API propia, transportado en cookies `HttpOnly`.
+- **Routing por rol** — `cliente` vs `administrador`. El backend devuelve el rol en el JWT y el frontend renderiza la vista correspondiente.
+
+Hooks personalizados:
+
+| Hook | Responsabilidad |
+|---|---|
+| `useAuth` | Login, logout, refresh, rol actual |
+| `useCart` | Operaciones de carrito sincronizadas con backend |
+| `useProducts` | Catálogo con caching |
+| `useSEO` | Meta tags y JSON-LD dinámicos por página |
+
+---
+
+## Estado (Zustand)
+
+Dos stores principales:
+
+- **`authStore`** — sesión, login/logout, rol del usuario.
+- **`cartStore`** — items, cantidades, sincronización con backend al login y al checkout.
+
+Decisión de Zustand sobre Redux: menos boilerplate, integración trivial con hooks, y para esta escala (carrito + auth) Redux era over-engineering.
+
+---
+
+## Despliegue
+
+```bash
+# Vercel auto-detecta CRA y usa vercel.json para routing
+git push  # → trigger automático de deploy
+```
+
+Variables de entorno requeridas en Vercel:
+
+- `REACT_APP_API_URL`
+- `REACT_APP_SUPABASE_URL`
+- `REACT_APP_SUPABASE_ANON_KEY`
+
+---
+
+## Mejoras pendientes (deuda técnica reconocida)
+
+- **Migrar de CRA a Vite**: Create React App está [oficialmente deprecado desde 2025](https://github.com/facebook/create-react-app). Vite ofrece HMR ~10x más rápido y mejor DX.
+- **TypeScript**: actualmente JS plano; migración a TS daría seguridad de tipos en una codebase con 20+ componentes.
+- **Tests unitarios**: la cobertura actual depende de Playwright E2E. Sumar tests de componentes y hooks aislados con Vitest + Testing Library.
+- **Error boundaries** por ruta para evitar que un error en una vista tire la app completa.
+- **Code splitting** por ruta con `React.lazy` + `Suspense` para reducir el bundle inicial.
+- **Lighthouse CI**: medir Performance/Accessibility/SEO automáticamente en cada PR.
+- **Storybook** para componentes compartidos (`shared/components/`).
+
+---
+
+## Backend
+
+API REST: [Back_rosaline](https://github.com/jbeleno/Back_rosaline) — FastAPI + PostgreSQL + Alembic + auth JWT con roles + auditoría automática.
+
+---
+
+## Licencia
+
+Proyecto académico (USCO) usado para una panadería real. Software propietario para Rosaline Bakery.
